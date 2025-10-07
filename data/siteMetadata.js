@@ -8,7 +8,7 @@ const siteMetadata = {
   language: 'en-us',
   theme: 'light', // system, dark or light
   siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://reelvan.com',
-  siteRepo: 'https://github.com/yourusername/reelvan-web',
+  siteRepo: 'https://github.com/markshawn2020/reelvan-web',
   siteLogo: `${process.env.BASE_PATH || ''}/static/images/logo.png`,
   socialBanner: `${process.env.BASE_PATH || ''}/static/images/og-image.png`,
   email: 'hello@reelvan.com',

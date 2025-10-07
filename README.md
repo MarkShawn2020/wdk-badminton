@@ -170,7 +170,7 @@ See full roadmap in [PRD.md](./PRD.md#10-post-mvp-roadmap)
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/yourusername/reelvan-web.git
+git clone https://github.com/markshawn2020/reelvan-web.git
 cd reelvan-web
 ```
 
@@ -531,8 +531,8 @@ See [CLAUDE.md](./CLAUDE.md) for:
 
 ## 🐛 Bug Reports & Feature Requests
 
-- **Bug Reports:** [GitHub Issues](https://github.com/yourusername/reelvan-web/issues/new?template=bug_report.md)
-- **Feature Requests:** [GitHub Issues](https://github.com/yourusername/reelvan-web/issues/new?template=feature_request.md)
+- **Bug Reports:** [GitHub Issues](https://github.com/markshawn2020/reelvan-web/issues/new?template=bug_report.md)
+- **Feature Requests:** [GitHub Issues](https://github.com/markshawn2020/reelvan-web/issues/new?template=feature_request.md)
 - **Security Issues:** Email security@reelvan.com (do not open public issues)
 
 ---
