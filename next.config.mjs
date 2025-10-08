@@ -99,15 +99,6 @@ export default () => {
 
       // Add code inspector plugin (development only)
       if (options.dev && !options.isServer) {
-        config.plugins.push(
-          codeInspectorPlugin({
-            bundler: 'webpack',
-            behavior: {
-              enable: true,
-              enableFloatingBall: true, // Enable floating ball UI
-            },
-          })
-        )
       }
 
       return config

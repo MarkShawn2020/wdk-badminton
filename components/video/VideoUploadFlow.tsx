@@ -112,7 +112,8 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   const handleSubmit = async () => {
     if (!selectedVideo) return
 
-    // Check authentication
+    // Check authentication - userCredits is undefined only if NOT logged in
+    // If logged in but no credits record, server will create one with 100 credits
     if (userCredits === undefined) {
       router.push('/signup')
       return

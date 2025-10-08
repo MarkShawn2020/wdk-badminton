@@ -1,12 +1,9 @@
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 -- ============================================================================
 -- VIDEOS TABLE
 -- Stores video records with processing status and options
 -- ============================================================================
 CREATE TABLE videos (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
 
   -- Original video metadata
@@ -113,7 +110,7 @@ CREATE POLICY "Service role can manage credits"
 -- Audit log for all credit movements
 -- ============================================================================
 CREATE TABLE credit_transactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   video_id UUID REFERENCES videos(id) ON DELETE SET NULL,
 
