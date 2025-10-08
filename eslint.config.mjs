@@ -12,6 +12,7 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 })
 
+/** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
   {
     ignores: ['components/components/ui/**/*'],

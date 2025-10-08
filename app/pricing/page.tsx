@@ -76,11 +76,7 @@ export default function Pricing() {
               <p className="mb-6 text-center text-gray-600 dark:text-gray-400">
                 Redeem your coupon to get free credits instantly
               </p>
-              <CouponInput
-                onSuccess={(credits) => {
-                  console.log(`Received ${credits} credits!`)
-                }}
-              />
+              <CouponInput />
             </div>
           </div>
 

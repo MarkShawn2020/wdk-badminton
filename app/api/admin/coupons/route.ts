@@ -13,6 +13,9 @@ import { z, ZodError } from 'zod'
 import { requireAuth } from '@/lib/api/auth'
 import { successResponse, errorResponse } from '@/lib/api/response'
 import { createServiceClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database'
+
+type Coupon = Database['public']['Tables']['coupons']['Row']
 
 // Schema for creating a coupon
 const createCouponSchema = z.object({
@@ -76,8 +79,9 @@ export async function GET(request: NextRequest) {
     }
 
     // 3. Get redemption count for each coupon
+    const typedCoupons = (coupons || []) as Coupon[]
     const couponsWithStats = await Promise.all(
-      (coupons || []).map(async (coupon) => {
+      typedCoupons.map(async (coupon) => {
         const { count } = await supabase
           .from('coupon_redemptions')
           .select('*', { count: 'exact', head: true })
@@ -153,7 +157,7 @@ export async function POST(request: NextRequest) {
     const { data: newCoupon } = await supabase
       .from('coupons')
       .select('*')
-      .eq('id', couponId)
+      .eq('id', couponId || '')
       .single()
 
     console.log('✅ Coupon created:', {

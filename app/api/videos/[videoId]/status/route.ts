@@ -16,6 +16,10 @@ import { successResponse, errorResponse } from '@/lib/api/response'
 import { requireAuth } from '@/lib/api/auth'
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
+import type { Database } from '@/types/database'
+
+type Video = Database['public']['Tables']['videos']['Row']
+type VideoUpdate = Database['public']['Tables']['videos']['Update']
 
 interface RouteContext {
   params: Promise<{ videoId: string }>
@@ -58,17 +62,19 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return errorResponse('Video not found', 404)
     }
 
+    const typedVideo = video as Video
+
     // 4. If video is still processing, fetch latest status from WaveSpeed
     if (
-      video.status === 'processing' &&
-      video.external_job_id &&
-      video.external_provider === 'wavespeed'
+      typedVideo.status === 'processing' &&
+      typedVideo.external_job_id &&
+      typedVideo.external_provider === 'wavespeed'
     ) {
       try {
         console.log(`🔄 Fetching latest status for video ${videoId} from WaveSpeed...`)
 
         const waveSpeed = getWaveSpeedClient()
-        const prediction = await waveSpeed.getPredictionResult(video.external_job_id)
+        const prediction = await waveSpeed.getPredictionResult(typedVideo.external_job_id)
 
         console.log(`📊 WaveSpeed status: ${prediction.status}`)
 
@@ -82,99 +88,102 @@ export async function GET(request: NextRequest, context: RouteContext) {
             throw new Error('No output URL in completed prediction')
           }
 
+          const updateData: VideoUpdate = {
+            status: 'completed',
+            processed_url: processedUrl,
+            completed_at: new Date().toISOString(),
+            progress: 100,
+          }
           await serviceClient
             .from('videos')
-            .update({
-              status: 'completed',
-              processed_url: processedUrl,
-              completed_at: new Date().toISOString(),
-              progress: 100,
-            } as never)
+            .update(updateData as never)
             .eq('id', videoId)
 
           console.log(`✅ Video ${videoId} completed: ${processedUrl}`)
 
           // Return updated status
           return successResponse({
-            id: video.id,
+            id: typedVideo.id,
             status: 'completed',
             progress: 100,
-            filename: video.original_filename,
+            filename: typedVideo.original_filename,
             processedUrl: processedUrl,
             errorMessage: null,
-            createdAt: video.created_at,
-            startedAt: video.started_processing_at,
+            createdAt: typedVideo.created_at,
+            startedAt: typedVideo.started_processing_at,
             completedAt: new Date().toISOString(),
-            creditsUsed: video.estimated_cost_credits,
+            creditsUsed: typedVideo.estimated_cost_credits,
           })
         } else if (prediction.status === 'failed') {
           // Refund credits on failure
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           await (serviceClient.rpc as any)('refund_credits', {
-            p_user_id: video.user_id,
+            p_user_id: typedVideo.user_id,
             p_video_id: videoId,
-            p_amount: video.estimated_cost_credits,
+            p_amount: typedVideo.estimated_cost_credits,
           })
 
+          const failUpdateData: VideoUpdate = {
+            status: 'failed',
+            error_message: 'Processing failed at WaveSpeed',
+            completed_at: new Date().toISOString(),
+          }
           await serviceClient
             .from('videos')
-            .update({
-              status: 'failed',
-              error_message: 'Processing failed at WaveSpeed',
-              completed_at: new Date().toISOString(),
-            } as never)
+            .update(failUpdateData as never)
             .eq('id', videoId)
 
           console.log(`❌ Video ${videoId} failed`)
 
           return successResponse({
-            id: video.id,
+            id: typedVideo.id,
             status: 'failed',
-            progress: video.progress || 0,
-            filename: video.original_filename,
+            progress: typedVideo.progress || 0,
+            filename: typedVideo.original_filename,
             processedUrl: null,
             errorMessage: 'Processing failed at WaveSpeed',
-            createdAt: video.created_at,
-            startedAt: video.started_processing_at,
+            createdAt: typedVideo.created_at,
+            startedAt: typedVideo.started_processing_at,
             completedAt: new Date().toISOString(),
-            creditsUsed: video.estimated_cost_credits,
+            creditsUsed: typedVideo.estimated_cost_credits,
           })
         } else {
           // Still processing, estimate progress based on time elapsed
-          const startedAt = video.started_processing_at
-            ? new Date(video.started_processing_at)
+          const startedAt = typedVideo.started_processing_at
+            ? new Date(typedVideo.started_processing_at)
             : new Date()
           const elapsedMs = Date.now() - startedAt.getTime()
           const elapsedSeconds = Math.floor(elapsedMs / 1000)
 
           // Rough estimate: 2x video duration processing time
-          const estimatedTotalSeconds = ((video.estimated_cost_credits || 0) / 10) * 5 * 2
+          const estimatedTotalSeconds = ((typedVideo.estimated_cost_credits || 0) / 10) * 5 * 2
           const estimatedProgress = Math.min(
             95,
             Math.floor((elapsedSeconds / estimatedTotalSeconds) * 100)
           )
 
           // Update progress
-          if (estimatedProgress > (video.progress || 0)) {
+          if (estimatedProgress > (typedVideo.progress || 0)) {
+            const progressUpdate: VideoUpdate = { progress: estimatedProgress }
             await serviceClient
               .from('videos')
-              .update({ progress: estimatedProgress } as never)
+              .update(progressUpdate as never)
               .eq('id', videoId)
           }
 
           console.log(`⏳ Video ${videoId} still processing (${estimatedProgress}%)`)
 
           return successResponse({
-            id: video.id,
+            id: typedVideo.id,
             status: 'processing',
             progress: estimatedProgress,
-            filename: video.original_filename,
+            filename: typedVideo.original_filename,
             processedUrl: null,
             errorMessage: null,
-            createdAt: video.created_at,
-            startedAt: video.started_processing_at,
+            createdAt: typedVideo.created_at,
+            startedAt: typedVideo.started_processing_at,
             completedAt: null,
-            creditsUsed: video.estimated_cost_credits,
+            creditsUsed: typedVideo.estimated_cost_credits,
           })
         }
       } catch (apiError) {
@@ -185,16 +194,16 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     // 5. Return current database status (for completed/failed videos or if WaveSpeed query failed)
     return successResponse({
-      id: video.id,
-      status: video.status,
-      progress: video.progress || 0,
-      filename: video.original_filename,
-      processedUrl: video.processed_url,
-      errorMessage: video.error_message,
-      createdAt: video.created_at,
-      startedAt: video.started_processing_at,
-      completedAt: video.completed_at,
-      creditsUsed: video.estimated_cost_credits,
+      id: typedVideo.id,
+      status: typedVideo.status,
+      progress: typedVideo.progress || 0,
+      filename: typedVideo.original_filename,
+      processedUrl: typedVideo.processed_url,
+      errorMessage: typedVideo.error_message,
+      createdAt: typedVideo.created_at,
+      startedAt: typedVideo.started_processing_at,
+      completedAt: typedVideo.completed_at,
+      creditsUsed: typedVideo.estimated_cost_credits,
     })
   } catch (error) {
     console.error('Status API error:', error)

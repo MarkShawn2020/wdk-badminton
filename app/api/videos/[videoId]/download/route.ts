@@ -12,6 +12,9 @@ import { NextRequest } from 'next/server'
 import { errorResponse } from '@/lib/api/response'
 import { requireAuth } from '@/lib/api/auth'
 import { createServerClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database'
+
+type Video = Database['public']['Tables']['videos']['Row']
 
 interface RouteContext {
   params: Promise<{ videoId: string }>
@@ -38,15 +41,17 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return errorResponse('Video not found', 404)
     }
 
+    const typedVideo = video as Video
+
     // 4. Verify video is completed and has processed URL
-    if (video.status !== 'completed' || !video.processed_url) {
+    if (typedVideo.status !== 'completed' || !typedVideo.processed_url) {
       return errorResponse('Video processing not completed', 400)
     }
 
     // 5. Fetch video from external URL
-    console.log(`📥 Downloading video ${videoId} from ${video.processed_url}`)
+    console.log(`📥 Downloading video ${videoId} from ${typedVideo.processed_url}`)
 
-    const videoResponse = await fetch(video.processed_url)
+    const videoResponse = await fetch(typedVideo.processed_url)
 
     if (!videoResponse.ok) {
       console.error('Failed to fetch video from external URL:', videoResponse.status)
@@ -57,7 +62,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const videoBlob = await videoResponse.blob()
 
     // 7. Generate download filename
-    const originalName = video.original_filename || 'video.mp4'
+    const originalName = typedVideo.original_filename || 'video.mp4'
     const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '')
     const downloadFilename = `${nameWithoutExt}_processed.mp4`
 

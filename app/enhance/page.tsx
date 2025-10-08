@@ -8,6 +8,10 @@
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import { VideoUploadFlow } from '@/components/video/VideoUploadFlow'
 import type { Metadata } from 'next'
+import type { Database } from '@/types/database'
+
+type UserCreditsInsert = Database['public']['Tables']['user_credits']['Insert']
+type CreditTransactionInsert = Database['public']['Tables']['credit_transactions']['Insert']
 
 export const metadata: Metadata = {
   title: 'Enhance Your Video | ReelVan',
@@ -31,11 +35,17 @@ export default async function EnhancePage() {
   let userCredits: number | undefined
 
   if (user) {
-    const result = await supabase
+    type UserCreditsRow = { balance: number }
+    type QueryResult = {
+      data: UserCreditsRow | null
+      error: { code?: string } | null
+    }
+
+    const result = (await supabase
       .from('user_credits')
       .select('balance')
       .eq('user_id', user.id)
-      .single()
+      .single()) as unknown as QueryResult
 
     // If query successful and data exists
     if (result.data) {
@@ -48,25 +58,30 @@ export default async function EnhancePage() {
       // Use service role client to bypass RLS
       const serviceSupabase = createServiceClient()
 
-      const { error: insertError } = await serviceSupabase.from('user_credits').insert({
+      const creditsData: UserCreditsInsert = {
         user_id: user.id,
         balance: 100,
         total_earned: 100,
         tier: 'free',
-      })
+      }
+
+      const { error: insertError } = await serviceSupabase
+        .from('user_credits')
+        .insert(creditsData as never)
 
       if (insertError) {
         console.error('Failed to create user_credits:', insertError)
         userCredits = 0 // Fallback to 0 credits
       } else {
         // Also record the signup bonus transaction
-        await serviceSupabase.from('credit_transactions').insert({
+        const transactionData: CreditTransactionInsert = {
           user_id: user.id,
           type: 'signup_bonus',
           amount: 100,
           balance_after: 100,
           description: 'Welcome bonus - 100 free credits',
-        })
+        }
+        await serviceSupabase.from('credit_transactions').insert(transactionData as never)
         userCredits = 100
       }
     }

@@ -14,6 +14,10 @@ import { NextRequest } from 'next/server'
 import { successResponse, errorResponse } from '@/lib/api/response'
 import { createServiceClient } from '@/lib/supabase/server'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
+import type { Database } from '@/types/database'
+
+type Video = Database['public']['Tables']['videos']['Row']
+type VideoUpdate = Database['public']['Tables']['videos']['Update']
 
 export async function GET(request: NextRequest) {
   try {
@@ -56,7 +60,7 @@ export async function GET(request: NextRequest) {
       errors: 0,
     }
 
-    for (const video of processingVideos) {
+    for (const video of processingVideos as Video[]) {
       try {
         if (video.external_provider !== 'wavespeed' || !video.external_job_id) {
           console.warn(`⚠️ Video ${video.id} has invalid provider or job ID`)
@@ -78,14 +82,15 @@ export async function GET(request: NextRequest) {
           }
 
           // Update database
+          const updateData: VideoUpdate = {
+            status: 'completed',
+            processed_url: processedUrl,
+            completed_at: new Date().toISOString(),
+            progress: 100,
+          }
           await supabase
             .from('videos')
-            .update({
-              status: 'completed',
-              processed_url: processedUrl,
-              completed_at: new Date().toISOString(),
-              progress: 100,
-            } as never)
+            .update(updateData as never)
             .eq('id', video.id)
 
           console.log(`✅ Video ${video.id} completed: ${processedUrl}`)
@@ -100,13 +105,14 @@ export async function GET(request: NextRequest) {
           })
 
           // Update database
+          const updateData: VideoUpdate = {
+            status: 'failed',
+            error_message: 'Processing failed at WaveSpeed',
+            completed_at: new Date().toISOString(),
+          }
           await supabase
             .from('videos')
-            .update({
-              status: 'failed',
-              error_message: 'Processing failed at WaveSpeed',
-              completed_at: new Date().toISOString(),
-            } as never)
+            .update(updateData as never)
             .eq('id', video.id)
 
           console.log(`❌ Video ${video.id} failed`)

@@ -13,6 +13,10 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { successResponse, errorResponse } from '@/lib/api/response'
 import { createServiceClient } from '@/lib/supabase/server'
+import type { Database } from '@/types/database'
+
+type Video = Database['public']['Tables']['videos']['Row']
+type VideoUpdate = Database['public']['Tables']['videos']['Update']
 
 // Schema for WaveSpeed webhook payload (adjust based on actual webhook format)
 const webhookPayloadSchema = z.object({
@@ -51,6 +55,8 @@ export async function POST(request: NextRequest) {
       return successResponse({ message: 'Video not found' })
     }
 
+    const typedVideo = video as Video
+
     // 4. Update video status based on webhook
     if (payload.status === 'completed') {
       const processedUrl = payload.outputs?.[0]
@@ -60,44 +66,47 @@ export async function POST(request: NextRequest) {
         return errorResponse('No output URL', 400)
       }
 
+      const updateData: VideoUpdate = {
+        status: 'completed',
+        processed_url: processedUrl,
+        completed_at: new Date().toISOString(),
+        progress: 100,
+      }
       await supabase
         .from('videos')
-        .update({
-          status: 'completed',
-          processed_url: processedUrl,
-          completed_at: new Date().toISOString(),
-          progress: 100,
-        } as never)
-        .eq('id', video.id)
+        .update(updateData as never)
+        .eq('id', typedVideo.id)
 
-      console.log(`✅ Video ${video.id} marked as completed via webhook`)
+      console.log(`✅ Video ${typedVideo.id} marked as completed via webhook`)
     } else if (payload.status === 'failed') {
       // Refund credits
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       await (supabase.rpc as any)('refund_credits', {
-        p_user_id: video.user_id,
-        p_video_id: video.id,
-        p_amount: video.estimated_cost_credits,
+        p_user_id: typedVideo.user_id,
+        p_video_id: typedVideo.id,
+        p_amount: typedVideo.estimated_cost_credits,
       })
 
+      const failData: VideoUpdate = {
+        status: 'failed',
+        error_message: payload.error || 'Processing failed',
+        completed_at: new Date().toISOString(),
+      }
       await supabase
         .from('videos')
-        .update({
-          status: 'failed',
-          error_message: payload.error || 'Processing failed',
-          completed_at: new Date().toISOString(),
-        } as never)
-        .eq('id', video.id)
+        .update(failData as never)
+        .eq('id', typedVideo.id)
 
-      console.log(`❌ Video ${video.id} marked as failed via webhook`)
+      console.log(`❌ Video ${typedVideo.id} marked as failed via webhook`)
     } else if (payload.status === 'processing') {
+      const procData: VideoUpdate = {
+        status: 'processing',
+        progress: 50, // Generic progress update
+      }
       await supabase
         .from('videos')
-        .update({
-          status: 'processing',
-          progress: 50, // Generic progress update
-        } as never)
-        .eq('id', video.id)
+        .update(procData as never)
+        .eq('id', typedVideo.id)
     }
 
     return successResponse({ message: 'Webhook processed' })

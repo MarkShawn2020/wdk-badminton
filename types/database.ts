@@ -130,7 +130,13 @@ export interface Database {
           id: string
           user_id: string
           video_id: string | null
-          type: 'purchase' | 'signup_bonus' | 'refund' | 'processing_debit' | 'admin_adjustment'
+          type:
+            | 'purchase'
+            | 'signup_bonus'
+            | 'refund'
+            | 'processing_debit'
+            | 'admin_adjustment'
+            | 'coupon_redemption'
           amount: number
           balance_after: number
           stripe_payment_id: string | null
@@ -143,7 +149,13 @@ export interface Database {
           id?: string
           user_id: string
           video_id?: string | null
-          type: 'purchase' | 'signup_bonus' | 'refund' | 'processing_debit' | 'admin_adjustment'
+          type:
+            | 'purchase'
+            | 'signup_bonus'
+            | 'refund'
+            | 'processing_debit'
+            | 'admin_adjustment'
+            | 'coupon_redemption'
           amount: number
           balance_after: number
           stripe_payment_id?: string | null
@@ -156,7 +168,13 @@ export interface Database {
           id?: string
           user_id?: string
           video_id?: string | null
-          type?: 'purchase' | 'signup_bonus' | 'refund' | 'processing_debit' | 'admin_adjustment'
+          type?:
+            | 'purchase'
+            | 'signup_bonus'
+            | 'refund'
+            | 'processing_debit'
+            | 'admin_adjustment'
+            | 'coupon_redemption'
           amount?: number
           balance_after?: number
           stripe_payment_id?: string | null
@@ -164,6 +182,82 @@ export interface Database {
           description?: string | null
           metadata?: Json | null
           created_at?: string
+        }
+      }
+      coupons: {
+        Row: {
+          id: string
+          code: string
+          description: string | null
+          credits_amount: number
+          max_uses: number | null
+          current_uses: number
+          max_uses_per_user: number
+          valid_from: string
+          valid_until: string | null
+          is_active: boolean
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          code: string
+          description?: string | null
+          credits_amount: number
+          max_uses?: number | null
+          current_uses?: number
+          max_uses_per_user?: number
+          valid_from?: string
+          valid_until?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          code?: string
+          description?: string | null
+          credits_amount?: number
+          max_uses?: number | null
+          current_uses?: number
+          max_uses_per_user?: number
+          valid_from?: string
+          valid_until?: string | null
+          is_active?: boolean
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      coupon_redemptions: {
+        Row: {
+          id: string
+          coupon_id: string
+          user_id: string
+          credits_received: number
+          redeemed_at: string
+          ip_address: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          id?: string
+          coupon_id: string
+          user_id: string
+          credits_received: number
+          redeemed_at?: string
+          ip_address?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          id?: string
+          coupon_id?: string
+          user_id?: string
+          credits_received?: number
+          redeemed_at?: string
+          ip_address?: string | null
+          user_agent?: string | null
         }
       }
     }
@@ -200,6 +294,45 @@ export interface Database {
           p_progress?: number
         }
         Returns: boolean
+      }
+      validate_coupon: {
+        Args: {
+          p_code: string
+          p_user_id: string
+        }
+        Returns: {
+          valid: boolean
+          reason: string
+          coupon_id: string | null
+          credits_amount: number
+        }[]
+      }
+      redeem_coupon: {
+        Args: {
+          p_code: string
+          p_user_id: string
+          p_ip_address?: string
+          p_user_agent?: string
+        }
+        Returns: {
+          success: boolean
+          message: string
+          credits_received: number
+          new_balance: number | null
+        }[]
+      }
+      create_coupon: {
+        Args: {
+          p_code: string
+          p_credits_amount: number
+          p_description?: string
+          p_max_uses?: number
+          p_max_uses_per_user?: number
+          p_valid_from?: string
+          p_valid_until?: string
+          p_created_by?: string
+        }
+        Returns: string
       }
     }
   }
