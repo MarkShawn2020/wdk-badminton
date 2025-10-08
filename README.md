@@ -38,6 +38,21 @@ A complete video upload, processing, and enhancement system is now implemented!
 - ✅ Complete API routes and webhooks
 - ✅ Production-ready database schema
 
+## 🔐 **NEW: Google OAuth Authentication**
+
+Secure, fast sign-in with Google is now live!
+
+**Setup Guide**: [GOOGLE_OAUTH_SETUP.md](./docs/GOOGLE_OAUTH_SETUP.md) - Complete configuration walkthrough
+
+**What's included:**
+
+- ✅ Google Sign-In button component with branded UI
+- ✅ OAuth 2.0 PKCE flow (secure code exchange)
+- ✅ Integrated login and signup pages
+- ✅ Error handling with helpful troubleshooting
+- ✅ Support for provider tokens (Google API access)
+- ✅ Mobile-responsive authentication flow
+
 ---
 
 ## 📖 Table of Contents

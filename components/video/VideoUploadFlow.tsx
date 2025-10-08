@@ -14,7 +14,7 @@
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { VideoUploader } from './VideoUploader'
-import { ProcessingOptions } from './ProcessingOptions'
+import { ProcessingOptionsPresets } from './ProcessingOptionsPresets'
 import { Button } from '@/components/components/ui/button'
 import { AlertCircle, Loader2, Sparkles } from 'lucide-react'
 import { ProcessingOptions as ProcessingOptionsType } from '@/lib/validations/video'
@@ -154,6 +154,23 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
       // Step 2: Upload file to Supabase Storage
       await uploadVideoToStorage(selectedVideo.file, uploadUrl, token)
 
+      // Step 2.5: Get public URL for the uploaded video
+      const publicUrlResponse = await fetch('/api/storage/public-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ storagePath }),
+      })
+
+      if (publicUrlResponse.ok) {
+        const publicUrlData = await publicUrlResponse.json()
+        const publicUrl = publicUrlData.data.publicUrl
+        console.log('✅ Video uploaded successfully!')
+        console.log('📹 Storage Path:', storagePath)
+        console.log('🔗 Public URL:', publicUrl)
+        console.log('📊 File Size:', (selectedVideo.file.size / (1024 * 1024)).toFixed(2), 'MB')
+        console.log('⏱️ Duration:', selectedVideo.duration.toFixed(1), 'seconds')
+      }
+
       // Step 3: Submit to processing API
       const processResponse = await fetch('/api/process', {
         method: 'POST',
@@ -227,7 +244,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
               Configure Processing
             </h2>
           </div>
-          <ProcessingOptions onChange={handleOptionsChange} disabled={isUploading} />
+          <ProcessingOptionsPresets onChange={handleOptionsChange} disabled={isUploading} />
         </div>
       )}
 

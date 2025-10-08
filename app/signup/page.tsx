@@ -1,5 +1,6 @@
 import Link from '@/components/Link'
 import { genPageMetadata } from 'app/seo'
+import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
 
 export const metadata = genPageMetadata({
   title: 'Sign Up - ReelVan',
@@ -28,16 +29,31 @@ export default function SignUp() {
             </svg>
           </div>
           <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-            Coming Soon
+            Create Your Account
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Sign up functionality is currently under development
+            Start enhancing your AI videos today. No credit card required.
           </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 dark:bg-gray-900">
             <div className="space-y-6">
+              {/* Google Sign In */}
+              <GoogleSignInButton redirectTo="/dashboard" />
+
+              {/* Divider */}
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-white px-2 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+                    Email coming soon
+                  </span>
+                </div>
+              </div>
+
               <div className="rounded-md bg-blue-50 p-4 dark:bg-blue-900/20">
                 <div className="flex">
                   <div className="flex-shrink-0">
@@ -49,19 +65,16 @@ export default function SignUp() {
                       />
                     </svg>
                   </div>
-                  <div className="ml-3 flex-1 md:flex md:justify-between">
+                  <div className="ml-3 flex-1">
                     <div>
                       <p className="text-sm text-blue-700 dark:text-blue-300">
-                        We're building an amazing experience for you!
-                      </p>
-                      <p className="mt-3 text-sm text-blue-700 dark:text-blue-300">
-                        <strong>What to expect:</strong>
+                        <strong>What you get with your free account:</strong>
                       </p>
                       <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-blue-700 dark:text-blue-300">
-                        <li>Fast email/Google sign up</li>
-                        <li>Instant free tier access</li>
-                        <li>Secure authentication with Supabase</li>
-                        <li>No credit card required to start</li>
+                        <li>1 free video enhancement per day</li>
+                        <li>Instant access to all features</li>
+                        <li>Secure authentication with Google</li>
+                        <li>No credit card required</li>
                       </ul>
                     </div>
                   </div>
