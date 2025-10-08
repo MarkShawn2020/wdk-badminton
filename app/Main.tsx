@@ -1,5 +1,6 @@
 import Link from '@/components/Link'
 import siteMetadata from '@/data/siteMetadata'
+import { PricingPreview } from '@/components/pricing/PricingPreview'
 
 export default function Home({ posts }) {
   return (
@@ -265,126 +266,7 @@ export default function Home({ posts }) {
       </section>
 
       {/* Pricing Preview Section */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-primary-600 text-base leading-7 font-semibold">Pricing</h2>
-            <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-gray-100">
-              Start Free, Pay As You Grow
-            </p>
-          </div>
-          <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center gap-y-6 sm:mt-20 sm:gap-y-0 lg:max-w-4xl lg:grid-cols-3">
-            {/* Free Tier */}
-            <div className="rounded-3xl p-8 ring-1 ring-gray-200 sm:p-10 dark:ring-gray-800">
-              <h3 className="text-base leading-7 font-semibold text-gray-900 dark:text-gray-100">
-                Free
-              </h3>
-              <p className="mt-4 flex items-baseline gap-x-2">
-                <span className="text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                  $0
-                </span>
-              </p>
-              <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-400">
-                Try ReelVan risk-free
-              </p>
-              <ul className="mt-8 space-y-3 text-sm leading-6 text-gray-600 dark:text-gray-400">
-                <li className="flex gap-x-3">
-                  <span>✓ 1 video per day</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ Max 30 seconds</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ 1080p quality</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ All core features</span>
-                </li>
-              </ul>
-              <Link
-                href="/signup"
-                className="text-primary-600 ring-primary-200 hover:ring-primary-300 mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold ring-1 ring-inset"
-              >
-                Start free
-              </Link>
-            </div>
-
-            {/* Pay-as-you-go */}
-            <div className="bg-primary-600 relative rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10 sm:p-10">
-              <h3 className="text-base leading-7 font-semibold text-white">Pay-as-you-go</h3>
-              <p className="mt-4 flex items-baseline gap-x-2">
-                <span className="text-5xl font-bold tracking-tight text-white">~$0.07</span>
-                <span className="text-base leading-7 font-semibold text-gray-100">/second</span>
-              </p>
-              <p className="mt-6 text-base leading-7 text-gray-100">Perfect for active creators</p>
-              <ul className="mt-8 space-y-3 text-sm leading-6 text-white">
-                <li className="flex gap-x-3">
-                  <span>✓ No daily limits</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ Up to 2 minutes per video</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ 4K quality</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ No ReelVan watermark</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ Buy credits anytime</span>
-                </li>
-              </ul>
-              <Link
-                href="/pricing"
-                className="text-primary-600 mt-8 block rounded-md bg-white px-3 py-2 text-center text-sm leading-6 font-semibold shadow-sm hover:bg-gray-50"
-              >
-                Buy credits
-              </Link>
-            </div>
-
-            {/* Pro Subscription */}
-            <div className="rounded-3xl p-8 ring-1 ring-gray-200 sm:p-10 dark:ring-gray-800">
-              <h3 className="text-base leading-7 font-semibold text-gray-900 dark:text-gray-100">
-                Pro
-              </h3>
-              <p className="mt-4 flex items-baseline gap-x-2">
-                <span className="text-5xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
-                  $29
-                </span>
-                <span className="text-base leading-7 font-semibold text-gray-600 dark:text-gray-400">
-                  /month
-                </span>
-              </p>
-              <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-400">
-                Best value for professionals
-              </p>
-              <ul className="mt-8 space-y-3 text-sm leading-6 text-gray-600 dark:text-gray-400">
-                <li className="flex gap-x-3">
-                  <span>✓ 500 credits included</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ 20% discount on extras</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ Priority processing</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ Saved templates</span>
-                </li>
-                <li className="flex gap-x-3">
-                  <span>✓ Email support</span>
-                </li>
-              </ul>
-              <Link
-                href="/pricing"
-                className="text-primary-600 ring-primary-200 hover:ring-primary-300 mt-8 block rounded-md px-3 py-2 text-center text-sm leading-6 font-semibold ring-1 ring-inset"
-              >
-                Subscribe
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PricingPreview />
 
       {/* Social Proof Section */}
       <section className="bg-gray-50 py-24 sm:py-32 dark:bg-gray-900/50">

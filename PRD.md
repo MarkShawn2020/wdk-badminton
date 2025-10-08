@@ -262,28 +262,36 @@ User Pays: 420 credits (1 credit = $0.01)
 #### F11: Pricing & Plans
 
 **Priority:** P0 (Critical)
-**Free Tier:**
 
-- 1 video/day
-- Max 30 seconds
-- 1080p max quality
-- ReelVan watermark on output
+**Model:** Pay-as-you-go (流量包模式) - Buy credits, no subscriptions
 
-**Pay-as-you-go:**
+**Credit Packages:**
 
-- No daily limits
-- Up to 2 minutes per video
-- 4K quality
-- No ReelVan watermark
-- ~$0.07 per second processed
+- **Trial Pack:** $1.00 for 100 credits (0% discount) - Process ~1 short video
+- **Casual Pack:** $4.50 for 500 credits (10% discount) - Process ~5 videos
+- **Regular Pack:** $16.00 for 2,000 credits (20% discount) - Process ~20 videos ⭐ Most Popular
+- **Business Pack:** $70.00 for 10,000 credits (30% discount) - Process ~100 videos
 
-**Pro Subscription ($29/mo):**
+**Pricing Formula:**
 
-- 500 credits included (~70 seconds)
-- 20% discount on additional credits
-- Priority processing
-- Saved templates
-- Email support
+- 1 credit = $0.01
+- Processing cost: ~8 credits per second
+- Typical 30-second video ≈ 240 credits ($2.40)
+- Credits never expire
+
+**Tier System (Rate Limits Only):**
+
+All users get the same features (4K quality, watermark removal, etc.). Tiers only affect daily processing limits:
+
+- **Free Tier:** 3 videos/day (signup bonus: 100 free credits)
+- **Paid Tier:** 50 videos/day (unlocked on first purchase)
+- **Pro Tier:** 200 videos/day (unlocked at $50+ lifetime purchases)
+
+**Technical Limits (Universal):**
+
+- Max video duration: 120 seconds
+- Max file size: 500MB
+- Supported formats: MP4, MOV, WebM
 
 ---
 

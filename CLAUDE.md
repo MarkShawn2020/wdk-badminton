@@ -40,7 +40,8 @@ ReelVan is a **video enhancement SaaS platform** specializing in AI-generated vi
 
 - Third-party API costs: ~$0.10 per 5 seconds of video
 - Revenue target: 3-5x markup on API costs
-- Freemium + Pay-as-you-go + Subscription tiers
+- Pay-as-you-go credit packages (流量包模式) - No subscriptions
+- Tier system for rate limits (free → paid → pro)
 - Heavy reliance on SEO for organic user acquisition
 
 ### 1.2 Success Metrics
