@@ -14,7 +14,7 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: [],
+    ignores: ['components/components/ui/**/*'],
   },
   js.configs.recommended,
   ...compat.extends(
