@@ -144,8 +144,7 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
           {/* Download Section */}
           <div className="flex gap-4">
             <a
-              href={video.processed_url!}
-              download
+              href={`/api/videos/${video.id}/download`}
               className="bg-primary hover:bg-primary/90 flex-1 rounded-lg px-6 py-3 text-center font-semibold text-white"
             >
               Download Processed Video

@@ -120,7 +120,7 @@ export function UserAvatar() {
         <DropdownMenuItem asChild>
           <Link href="/dashboard" className="flex cursor-pointer items-center">
             <Video className="mr-2 h-4 w-4" />
-            <span>My Videos</span>
+            <span>Dashboard</span>
           </Link>
         </DropdownMenuItem>
 
@@ -128,13 +128,6 @@ export function UserAvatar() {
           <Link href="/enhance" className="flex cursor-pointer items-center">
             <Video className="mr-2 h-4 w-4" />
             <span>Upload Video</span>
-          </Link>
-        </DropdownMenuItem>
-
-        <DropdownMenuItem asChild>
-          <Link href="/profile" className="flex cursor-pointer items-center">
-            <UserIcon className="mr-2 h-4 w-4" />
-            <span>Profile</span>
           </Link>
         </DropdownMenuItem>
 
