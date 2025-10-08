@@ -21,7 +21,7 @@ import {
   sanitizeFilename,
   validateMimeTypeMatchesExtension,
 } from '@/lib/validations/video'
-import { calculateCreditsRequired, validateVideoDuration } from '@/lib/video/cost'
+import { calculateCreditsRequired, validateVideoConstraints } from '@/lib/video/cost'
 
 export async function POST(request: NextRequest) {
   try {

@@ -27,9 +27,7 @@ import { Database } from '@/types/database'
 import {
   calculateCreditsRequired,
   calculateApiCost,
-  validateVideoDuration,
-  checkTierLimits,
-  UserTier,
+  validateVideoConstraints,
 } from '@/lib/video/cost'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
 
@@ -61,13 +59,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validated = processRequestSchema.parse(body)
 
-    // 3. Validate video duration
-    const durationValidation = validateVideoDuration(validated.duration)
-    if (!durationValidation.valid) {
-      return errorResponse(durationValidation.reason!, 400)
+    // 3. Validate video constraints (universal limits)
+    const constraintsValidation = validateVideoConstraints(validated.duration, validated.fileSize)
+    if (!constraintsValidation.valid) {
+      return errorResponse(constraintsValidation.reason!, 400)
     }
 
-    // 4. Get user tier and check limits
+    // 4. Get user credits and tier
     const supabase = await createServerClient()
     const { data: userCredits, error: creditsError } = await supabase
       .from('user_credits')
@@ -79,13 +77,8 @@ export async function POST(request: NextRequest) {
       return errorResponse('User credits not found', 404)
     }
 
-    // TypeScript type assertion - we know userCredits exists after the check
-    const userTier = (userCredits as { balance: number; tier?: string }).tier || 'free'
-    const tier = userTier as UserTier
-    const tierCheck = checkTierLimits(validated.duration, validated.fileSize, tier)
-    if (!tierCheck.canProcess) {
-      return errorResponse(tierCheck.reason!, 403)
-    }
+    // Note: Tier only affects rate limiting, not video capabilities
+    // Rate limiting is handled separately (see /api/rate-limit or client-side)
 
     // 5. Calculate cost
     const creditsRequired = calculateCreditsRequired(validated.duration)

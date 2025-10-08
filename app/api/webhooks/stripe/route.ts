@@ -77,6 +77,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Add credits to user account
+        // Note: add_credits RPC function also handles tier upgrades automatically
+        // based on total_earned credits threshold
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error: addCreditsError } = await (supabase.rpc as any)('add_credits', {
           p_user_id: userId,
@@ -89,7 +91,7 @@ export async function POST(request: NextRequest) {
           console.error('Failed to add credits:', addCreditsError)
           // Don't throw - log for manual review
         } else {
-          console.log('Credits added successfully:', {
+          console.log('✅ Credits added successfully:', {
             user_id: userId,
             amount: credits,
           })

@@ -53,6 +53,30 @@ Secure, fast sign-in with Google is now live!
 - ✅ Support for provider tokens (Google API access)
 - ✅ Mobile-responsive authentication flow
 
+## 💳 **NEW: Stripe Payment Integration**
+
+Complete credit purchase system with automatic tier upgrades!
+
+**Quick Start**: [STRIPE_QUICKSTART.md](./docs/STRIPE_QUICKSTART.md) - Setup in 5 minutes
+**Full Documentation**: [STRIPE_SETUP.md](./docs/STRIPE_SETUP.md) - Complete integration guide
+**Checklist**: [STRIPE_CHECKLIST.md](./docs/STRIPE_CHECKLIST.md) - Configuration verification
+
+**What's included:**
+
+- ✅ Credit package purchases (100 - 10,000 credits)
+- ✅ Stripe Checkout integration with dynamic pricing
+- ✅ Webhook handling for payment events
+- ✅ Automatic tier upgrades (free → paid → pro)
+- ✅ Transaction history and audit logging
+- ✅ Refund support and error handling
+- ✅ Test mode for development
+
+**Pricing Model:**
+
+- Flow-based (pay-as-you-go), not subscription
+- Volume discounts (10% - 30% off)
+- 1 credit = $0.01
+
 ---
 
 ## 📖 Table of Contents

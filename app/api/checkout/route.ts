@@ -33,14 +33,24 @@ const checkoutSchema = z.object({
 })
 
 /**
- * Credit package pricing
- * Can be customized or fetched from database
+ * Credit package pricing (simplified)
+ *
+ * Design philosophy:
+ * - No pre-created Stripe Products needed (dynamic pricing)
+ * - Clear value progression (100 → 500 → 2000 → 10000)
+ * - Discount incentives for larger purchases
+ *
+ * User segments:
+ * - 100 credits: Trial users (1 short video)
+ * - 500 credits: Casual users (~5 videos)
+ * - 2000 credits: Regular users (~20 videos)
+ * - 10000 credits: Business/Pro users (~100 videos)
  */
 const PRICING_TIERS = [
-  { credits: 100, price: 100, discount: 0 }, // $1.00
-  { credits: 500, price: 450, discount: 10 }, // $4.50 (10% off)
-  { credits: 1000, price: 800, discount: 20 }, // $8.00 (20% off)
-  { credits: 5000, price: 3500, discount: 30 }, // $35.00 (30% off)
+  { credits: 100, price: 100, discount: 0 }, // $1.00 - Trial
+  { credits: 500, price: 450, discount: 10 }, // $4.50 - Save $0.50
+  { credits: 2000, price: 1600, discount: 20 }, // $16.00 - Save $4
+  { credits: 10000, price: 7000, discount: 30 }, // $70.00 - Save $30
 ]
 
 /**

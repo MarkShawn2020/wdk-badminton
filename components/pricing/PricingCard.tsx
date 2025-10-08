@@ -1,11 +1,11 @@
 'use client'
 
 /**
- * Pricing Card Component
+ * Pricing Card Component (流量包模式)
  *
- * Shows appropriate CTA button based on user authentication status:
+ * Shows credit packages with Stripe checkout integration:
  * - Not logged in: "Get started" → /signup
- * - Logged in: "Buy credits" → Stripe checkout (TODO)
+ * - Logged in: "Buy Now" → Stripe checkout
  */
 
 import { useState, useEffect } from 'react'
@@ -15,16 +15,20 @@ import { createClient } from '@/lib/supabase/client'
 interface PricingCardProps {
   tier: {
     name: string
-    price: string
+    credits: number
+    price: number // in cents
+    priceDisplay: string
+    discount: number
     description: string
-    features: Array<{ text: string; included: boolean }>
-    highlighted?: boolean
+    features: Array<{ text: string; included: boolean; highlight?: boolean }>
+    popular?: boolean
     ctaText: string
   }
 }
 
 export function PricingCard({ tier }: PricingCardProps) {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -37,46 +41,87 @@ export function PricingCard({ tier }: PricingCardProps) {
     checkAuth()
   }, [])
 
-  // Show loading state while checking auth
-  if (isLoggedIn === null) {
-    return <PricingCardSkeleton highlighted={tier.highlighted} />
+  const handleBuyCredits = async () => {
+    if (isLoading) return
+
+    setIsLoading(true)
+    try {
+      // Call /api/checkout to create Stripe session
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          credits: tier.credits,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success && data.data.url) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.data.url
+      } else {
+        console.error('Checkout failed:', data)
+        alert('Failed to create checkout session. Please try again.')
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      alert('An error occurred. Please try again.')
+      setIsLoading(false)
+    }
   }
 
-  const cardClasses = tier.highlighted
+  // Show loading state while checking auth
+  if (isLoggedIn === null) {
+    return <PricingCardSkeleton popular={tier.popular} />
+  }
+
+  const cardClasses = tier.popular
     ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10'
     : 'flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
 
-  const textColor = tier.highlighted ? 'text-white' : 'text-gray-900 dark:text-gray-100'
-  const subtextColor = tier.highlighted ? 'text-gray-100' : 'text-gray-500 dark:text-gray-400'
-  const featureColor = tier.highlighted ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+  const textColor = tier.popular ? 'text-white' : 'text-gray-900 dark:text-gray-100'
+  const subtextColor = tier.popular ? 'text-gray-100' : 'text-gray-500 dark:text-gray-400'
+  const featureColor = tier.popular ? 'text-white' : 'text-gray-700 dark:text-gray-300'
 
   return (
     <div className={cardClasses}>
-      {tier.highlighted && (
+      {tier.popular && (
         <div className="bg-primary-700 absolute -top-5 right-0 left-0 mx-auto w-32 rounded-full px-3 py-2 text-center text-sm font-semibold text-white">
           Most Popular
         </div>
       )}
 
+      {tier.discount > 0 && (
+        <div className="absolute -top-3 -right-3 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
+          Save {tier.discount}%
+        </div>
+      )}
+
       <div className="flex-1">
         <h3 className={`text-xl font-semibold ${textColor}`}>{tier.name}</h3>
+
         <p className="mt-4 flex items-baseline">
-          <span className={`text-5xl font-bold tracking-tight ${textColor}`}>{tier.price}</span>
-          {tier.name === 'Pay-as-you-go' && (
-            <span className={`ml-1 text-xl ${subtextColor}`}>/second</span>
-          )}
-          {tier.name === 'Pro' && <span className={`ml-1 text-xl ${subtextColor}`}>/month</span>}
+          <span className={`text-5xl font-bold tracking-tight ${textColor}`}>
+            {tier.priceDisplay}
+          </span>
         </p>
+
+        <p className={`mt-2 text-sm ${subtextColor}`}>{tier.credits.toLocaleString()} credits</p>
+
         <p className={`mt-6 text-base ${subtextColor}`}>{tier.description}</p>
 
-        <ul className="mt-8 space-y-4">
+        <ul className="mt-8 space-y-3">
           {tier.features.map((feature, idx) => (
             <li key={idx} className="flex items-start">
-              <span className={tier.highlighted ? 'mr-3 text-white' : 'text-primary-600 mr-3'}>
+              <span className={tier.popular ? 'mr-3 text-white' : 'text-primary-600 mr-3'}>
                 {feature.included ? '✓' : '−'}
               </span>
               <span
-                className={feature.included ? featureColor : 'text-gray-500 dark:text-gray-400'}
+                className={`${feature.included ? featureColor : 'text-gray-500 dark:text-gray-400'} ${feature.highlight ? 'font-semibold' : ''}`}
               >
                 {feature.text}
               </span>
@@ -87,43 +132,24 @@ export function PricingCard({ tier }: PricingCardProps) {
 
       {/* CTA Button */}
       {isLoggedIn ? (
-        // Logged in: Show appropriate action
-        tier.name === 'Free' ? (
-          <Link
-            href="/enhance"
-            className={
-              tier.highlighted
-                ? 'text-primary-600 mt-8 block rounded-lg bg-white px-4 py-3 text-center text-base font-semibold hover:bg-gray-50'
-                : 'mt-8 block rounded-lg bg-gray-50 px-4 py-3 text-center text-base font-semibold text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
-            }
-          >
-            Start Processing
-          </Link>
-        ) : (
-          // TODO: Implement Stripe checkout
-          <button
-            onClick={() => alert('Stripe checkout coming soon!')}
-            className={
-              tier.highlighted
-                ? 'text-primary-600 mt-8 block w-full rounded-lg bg-white px-4 py-3 text-center text-base font-semibold hover:bg-gray-50'
-                : tier.name === 'Pro'
-                  ? 'bg-primary-600 hover:bg-primary-700 mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold text-white'
-                  : 'mt-8 block w-full rounded-lg bg-gray-50 px-4 py-3 text-center text-base font-semibold text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
-            }
-          >
-            {tier.ctaText}
-          </button>
-        )
+        <button
+          onClick={handleBuyCredits}
+          disabled={isLoading}
+          className={`${
+            tier.popular
+              ? 'text-primary-600 mt-8 block w-full rounded-lg bg-white px-4 py-3 text-center text-base font-semibold hover:bg-gray-50 disabled:opacity-50'
+              : 'bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold text-white disabled:opacity-50'
+          }`}
+        >
+          {isLoading ? 'Loading...' : tier.ctaText}
+        </button>
       ) : (
-        // Not logged in: Show signup
         <Link
           href="/signup"
           className={
-            tier.highlighted
+            tier.popular
               ? 'text-primary-600 mt-8 block rounded-lg bg-white px-4 py-3 text-center text-base font-semibold hover:bg-gray-50'
-              : tier.name === 'Pro'
-                ? 'bg-primary-600 hover:bg-primary-700 mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold text-white'
-                : 'mt-8 block rounded-lg bg-gray-50 px-4 py-3 text-center text-base font-semibold text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700'
+              : 'bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold text-white'
           }
         >
           Get started
@@ -134,11 +160,11 @@ export function PricingCard({ tier }: PricingCardProps) {
 }
 
 // Loading skeleton
-function PricingCardSkeleton({ highlighted }: { highlighted?: boolean }) {
+function PricingCardSkeleton({ popular }: { popular?: boolean }) {
   return (
     <div
       className={
-        highlighted
+        popular
           ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10'
           : 'flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
       }

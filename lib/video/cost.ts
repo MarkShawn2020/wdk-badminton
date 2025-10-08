@@ -14,32 +14,36 @@ export const PRICING = {
   CREDITS_PER_DOLLAR: 100, // 1 credit = $0.01
   MARKUP_MULTIPLIER: 4, // 4x markup on API costs for profit margin
 
-  // Free tier
+  // Signup bonus
   FREE_SIGNUP_CREDITS: 100, // $1 worth of credits on signup
-  MAX_FREE_VIDEO_DURATION: 30, // 30 seconds max for free users
 
-  // Limits
+  // Universal technical limits (same for all users)
   MAX_VIDEO_DURATION: 120, // 2 minutes max
   MAX_FILE_SIZE: 500 * 1024 * 1024, // 500MB max
   MIN_VIDEO_DURATION: 1, // 1 second minimum
 
-  // Rate limits per tier
+  // Rate limits by tier (anti-abuse)
+  // Note: All users have SAME duration/filesize limits
+  //       Only videos-per-day differs to prevent abuse
   RATE_LIMITS: {
     free: {
-      videosPerDay: 1,
-      maxDuration: 30, // seconds
-      maxFileSize: 100 * 1024 * 1024, // 100MB
+      videosPerDay: 3, // Enough to try, not enough to abuse
+      description: 'Free users with signup bonus',
     },
     paid: {
-      videosPerDay: 50,
-      maxDuration: 120, // seconds
-      maxFileSize: 500 * 1024 * 1024, // 500MB
+      videosPerDay: 50, // Reasonable for paying customers
+      description: 'Users who purchased credits',
     },
     pro: {
-      videosPerDay: 200,
-      maxDuration: 120, // seconds
-      maxFileSize: 1024 * 1024 * 1024, // 1GB
+      videosPerDay: 200, // Heavy users / businesses
+      description: 'Users with $50+ lifetime purchases',
     },
+  },
+
+  // Tier upgrade thresholds (auto-upgrade based on purchases)
+  TIER_UPGRADE_THRESHOLDS: {
+    paid: 1, // Any purchase upgrades to 'paid'
+    pro: 5000, // 5000 credits ($50) upgrades to 'pro'
   },
 } as const
 
@@ -95,46 +99,19 @@ export function calculateUserPrice(durationSeconds: number): number {
 }
 
 /**
- * Check if user can process video based on tier limits
+ * Validate video file constraints (universal technical limits)
+ *
+ * These limits apply to ALL users regardless of tier
  *
  * @param durationSeconds - Video duration in seconds
  * @param fileSizeBytes - File size in bytes
- * @param tier - User tier
- * @returns Object with canProcess flag and reason if rejected
+ * @returns Object with valid flag and reason if rejected
  */
-export function checkTierLimits(
+export function validateVideoConstraints(
   durationSeconds: number,
-  fileSizeBytes: number,
-  tier: UserTier
-): { canProcess: boolean; reason?: string } {
-  const limits = PRICING.RATE_LIMITS[tier]
-
-  if (durationSeconds > limits.maxDuration) {
-    return {
-      canProcess: false,
-      reason: `Video duration (${durationSeconds}s) exceeds ${tier} tier limit of ${limits.maxDuration}s`,
-    }
-  }
-
-  if (fileSizeBytes > limits.maxFileSize) {
-    const maxSizeMB = Math.round(limits.maxFileSize / (1024 * 1024))
-    const actualSizeMB = Math.round(fileSizeBytes / (1024 * 1024))
-    return {
-      canProcess: false,
-      reason: `File size (${actualSizeMB}MB) exceeds ${tier} tier limit of ${maxSizeMB}MB`,
-    }
-  }
-
-  return { canProcess: true }
-}
-
-/**
- * Validate video duration against absolute limits
- */
-export function validateVideoDuration(durationSeconds: number): {
-  valid: boolean
-  reason?: string
-} {
+  fileSizeBytes: number
+): { valid: boolean; reason?: string } {
+  // Check duration
   if (durationSeconds < PRICING.MIN_VIDEO_DURATION) {
     return {
       valid: false,
@@ -149,7 +126,43 @@ export function validateVideoDuration(durationSeconds: number): {
     }
   }
 
+  // Check file size
+  if (fileSizeBytes > PRICING.MAX_FILE_SIZE) {
+    const maxSizeMB = Math.round(PRICING.MAX_FILE_SIZE / (1024 * 1024))
+    const actualSizeMB = Math.round(fileSizeBytes / (1024 * 1024))
+    return {
+      valid: false,
+      reason: `File size (${actualSizeMB}MB) exceeds maximum of ${maxSizeMB}MB`,
+    }
+  }
+
   return { valid: true }
+}
+
+/**
+ * Get rate limit for user tier
+ *
+ * @param tier - User tier ('free', 'paid', 'pro')
+ * @returns Videos per day limit
+ */
+export function getRateLimit(tier: UserTier): number {
+  return PRICING.RATE_LIMITS[tier].videosPerDay
+}
+
+/**
+ * Determine tier upgrade based on total credits earned
+ *
+ * @param totalEarnedCredits - Total credits user has purchased (lifetime)
+ * @returns Recommended tier
+ */
+export function calculateTierFromPurchases(totalEarnedCredits: number): UserTier {
+  if (totalEarnedCredits >= PRICING.TIER_UPGRADE_THRESHOLDS.pro) {
+    return 'pro'
+  }
+  if (totalEarnedCredits >= PRICING.TIER_UPGRADE_THRESHOLDS.paid) {
+    return 'paid'
+  }
+  return 'free'
 }
 
 /**
