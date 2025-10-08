@@ -31,6 +31,7 @@ import {
   checkTierLimits,
   UserTier,
 } from '@/lib/video/cost'
+import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
 
 /**
  * Combined request schema for video processing
@@ -162,21 +163,29 @@ export async function POST(request: NextRequest) {
 
     creditsDeducted = true
 
-    // 10. Submit to video processing API
-    // TODO: Replace with actual API client (WaveSpeed, Replicate, etc.)
+    // 10. Submit to WaveSpeed API
     try {
-      await submitToProcessingAPI(video.id, urlData.signedUrl, validated)
+      const waveSpeed = getWaveSpeedClient()
+      const prediction = await waveSpeed.createPrediction(urlData.signedUrl)
 
-      // Update status to processing
+      // Update database with external job ID
       await supabase
         .from('videos')
         .update({
           status: 'processing',
           started_processing_at: new Date().toISOString(),
+          external_job_id: prediction.id,
+          external_provider: 'wavespeed',
         } as never)
         .eq('id', videoId)
+
+      console.log('✅ Video submitted to WaveSpeed:', {
+        videoId,
+        predictionId: prediction.id,
+        status: prediction.status,
+      })
     } catch (apiError) {
-      console.error('Failed to submit to processing API:', apiError)
+      console.error('Failed to submit to WaveSpeed API:', apiError)
 
       // Refund credits
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -191,7 +200,8 @@ export async function POST(request: NextRequest) {
         .from('videos')
         .update({
           status: 'failed',
-          error_message: 'Failed to submit to processing API',
+          error_message:
+            apiError instanceof Error ? apiError.message : 'Failed to submit to processing API',
         } as never)
         .eq('id', videoId)
 
@@ -237,47 +247,4 @@ export async function POST(request: NextRequest) {
     // Generic error
     return errorResponse('Internal server error', 500)
   }
-}
-
-/**
- * Submit video to external processing API
- * TODO: Implement actual API client (WaveSpeed, Replicate, etc.)
- */
-async function submitToProcessingAPI(
-  videoId: string,
-  videoUrl: string,
-  options: z.infer<typeof processRequestSchema>
-): Promise<void> {
-  // Mock implementation - replace with actual API call
-  // Example for WaveSpeed:
-  // const response = await fetch(process.env.VIDEO_API_URL + '/process', {
-  //   method: 'POST',
-  //   headers: {
-  //     'Authorization': `Bearer ${process.env.VIDEO_API_KEY}`,
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify({
-  //     video_url: videoUrl,
-  //     remove_watermark: options.removeWatermark,
-  //     target_resolution: options.targetResolution,
-  //     target_aspect_ratio: options.targetAspectRatio,
-  //     enhance_quality: options.enhanceQuality,
-  //     webhook_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/processing`,
-  //     metadata: { video_id: videoId }
-  //   })
-  // })
-  //
-  // if (!response.ok) {
-  //   throw new Error('API request failed')
-  // }
-
-  // For now, just log
-  console.log('Mock: Submitting video to processing API', {
-    videoId,
-    videoUrl,
-    options,
-  })
-
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 1000))
 }
