@@ -116,7 +116,13 @@ export async function GET(request: NextRequest) {
           results.stillProcessing++
         }
       } catch (error) {
-        console.error(`Error polling video ${video.id}:`, error)
+        console.error(`❌ Error polling video ${video.id}:`, error)
+        console.error('Error details:', {
+          videoId: video.id,
+          externalJobId: video.external_job_id,
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined,
+        })
         results.errors++
       }
     }

@@ -13,9 +13,9 @@ import { createServerClient } from '@/lib/supabase/server'
 import { VideoList } from '@/components/video/VideoList'
 import { Button } from '@/components/components/ui/button'
 import { Card } from '@/components/components/ui/card'
-import { Sparkles, CreditCard, Video as VideoIcon, Clock } from 'lucide-react'
+import { CreditsCard } from '@/components/dashboard/CreditsCard'
+import { Sparkles, Video as VideoIcon, Clock } from 'lucide-react'
 import type { Metadata } from 'next'
-import { formatCredits, formatCreditsAsUSD } from '@/lib/video/cost'
 import type { Database } from '@/types/database'
 
 type VideoRow = Database['public']['Tables']['videos']['Row']
@@ -104,28 +104,12 @@ export default async function DashboardPage() {
 
       {/* Stats Cards */}
       <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Credit Balance */}
-        <Card className="p-6">
-          <div className="flex items-center gap-4">
-            <div className="bg-primary/10 rounded-full p-3">
-              <CreditCard className="text-primary h-6 w-6" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Credits</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {credits ? formatCredits(credits.balance) : '0'}
-              </p>
-              <p className="text-xs text-gray-500">
-                {credits ? formatCreditsAsUSD(credits.balance) : '$0.00'}
-              </p>
-            </div>
-          </div>
-          <Link href="/pricing" className="mt-4 block">
-            <Button variant="outline" size="sm" className="w-full">
-              Buy Credits
-            </Button>
-          </Link>
-        </Card>
+        {/* Credit Balance with Coupon Input */}
+        <CreditsCard
+          balance={credits?.balance || 0}
+          totalEarned={credits?.total_earned}
+          totalSpent={credits?.total_spent}
+        />
 
         {/* Total Videos */}
         <Card className="p-6">

@@ -40,6 +40,20 @@ CRON_SECRET=your_random_secret_string
 
 ## API 端点
 
+### WaveSpeed API 响应格式
+
+**重要：** WaveSpeed API 所有响应都使用以下信封格式：
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    // 实际数据在这里
+  }
+}
+```
+
 ### 1. 提交视频处理
 
 **POST /api/process**

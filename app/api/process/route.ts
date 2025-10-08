@@ -186,6 +186,10 @@ export async function POST(request: NextRequest) {
       })
     } catch (apiError) {
       console.error('Failed to submit to WaveSpeed API:', apiError)
+      console.error('API Error details:', {
+        message: apiError instanceof Error ? apiError.message : 'Unknown error',
+        stack: apiError instanceof Error ? apiError.stack : undefined,
+      })
 
       // Refund credits
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

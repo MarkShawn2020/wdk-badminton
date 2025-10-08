@@ -20,17 +20,39 @@ export const CreatePredictionRequestSchema = z.object({
   video: z.string().url().describe('URL to the video file'),
 })
 
-export const PredictionResponseSchema = z.object({
-  id: z.string().describe('Unique identifier for the prediction'),
-  model: z.string().describe('Model ID used for the prediction'),
-  status: PredictionStatusSchema,
-  created_at: z.string().datetime().describe('ISO timestamp when request was created'),
-  outputs: z.array(z.string()).describe('Array of URLs to generated content'),
-  has_nsfw_contents: z.array(z.boolean()).optional(),
-  urls: z.object({}).passthrough().describe('Related API endpoints'),
+// Raw response from API (may vary)
+const PredictionResponseRawSchema = z
+  .object({
+    id: z.string().optional(),
+    request_id: z.string().optional(),
+    model: z.string().optional(),
+    status: PredictionStatusSchema.optional(),
+    created_at: z.string().optional(),
+    outputs: z.array(z.string()).optional().nullable(),
+    has_nsfw_contents: z.array(z.boolean()).optional().nullable(),
+    urls: z.object({}).passthrough().optional().nullable(),
+  })
+  .passthrough() // Allow extra fields we don't know about
+
+export const PredictionResponseSchema = PredictionResponseRawSchema.transform((data) => {
+  // Handle different API response formats
+  const id = data.id || data.request_id
+  if (!id) {
+    throw new Error('WaveSpeed API response missing required id/request_id field')
+  }
+
+  return {
+    id,
+    model: data.model || 'wavespeed-watermark-remover',
+    status: data.status || 'created',
+    created_at: data.created_at || new Date().toISOString(),
+    outputs: data.outputs || [],
+    has_nsfw_contents: data.has_nsfw_contents,
+    urls: data.urls || {},
+  }
 })
 
-export type PredictionResponse = z.infer<typeof PredictionResponseSchema>
+export type PredictionResponse = z.output<typeof PredictionResponseSchema>
 
 // ============================================================================
 // WaveSpeed API Client
@@ -69,7 +91,22 @@ export class WaveSpeedClient {
       throw new Error(`WaveSpeed API error (${response.status}): ${errorText}`)
     }
 
-    const data = await response.json()
+    const responseBody = await response.json()
+
+    // WaveSpeed API wraps response in { code, message, data } envelope
+    if (responseBody.code !== 200) {
+      throw new Error(`WaveSpeed API error: ${responseBody.message || 'Unknown error'}`)
+    }
+
+    // Extract the actual prediction data from the envelope
+    const data = responseBody.data
+
+    if (!data) {
+      throw new Error('WaveSpeed API response missing data field')
+    }
+
+    console.log('✅ WaveSpeed prediction created:', data.id)
+
     return PredictionResponseSchema.parse(data)
   }
 
@@ -93,7 +130,20 @@ export class WaveSpeedClient {
       throw new Error(`WaveSpeed API error (${response.status}): ${errorText}`)
     }
 
-    const data = await response.json()
+    const responseBody = await response.json()
+
+    // WaveSpeed API wraps response in { code, message, data } envelope
+    if (responseBody.code !== 200) {
+      throw new Error(`WaveSpeed API error: ${responseBody.message || 'Unknown error'}`)
+    }
+
+    // Extract the actual prediction data from the envelope
+    const data = responseBody.data
+
+    if (!data) {
+      throw new Error('WaveSpeed API response missing data field')
+    }
+
     return PredictionResponseSchema.parse(data)
   }
 

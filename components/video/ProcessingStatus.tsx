@@ -13,13 +13,11 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { Loader2, CheckCircle2, XCircle, Clock, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/components/ui/button'
 import { Progress } from '@/components/components/ui/progress'
-import type { Database } from '@/types/database'
 
-type VideoStatus = Database['public']['Tables']['videos']['Row']['status']
+type VideoStatus = 'pending' | 'uploading' | 'processing' | 'completed' | 'failed' | 'cancelled'
 
 interface ProcessingStatusProps {
   videoId: string
@@ -81,107 +79,85 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
   const [isPolling, setIsPolling] = useState(false)
 
   /**
-   * Fetch current video status
+   * Fetch current video status from API
+   * The API will query WaveSpeed and update the database automatically
    */
   const fetchStatus = useCallback(async () => {
     try {
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('videos')
-        .select('status, progress, error_message, processed_url')
-        .eq('id', videoId)
-        .single<{
-          status: VideoStatus
-          progress: number
-          error_message: string | null
-          processed_url: string | null
-        }>()
+      const response = await fetch(`/api/videos/${videoId}/status`)
 
-      if (error) {
-        console.error('Failed to fetch video status:', error)
+      if (!response.ok) {
+        console.error('❌ Failed to fetch video status:', response.status)
         return
       }
 
-      if (data) {
-        setStatus(data.status)
-        setProgress(data.progress || 0)
-        setErrorMessage(data.error_message)
-        setProcessedUrl(data.processed_url)
+      const result = await response.json()
 
-        // Trigger callback if completed
-        if (data.status === 'completed' && data.processed_url) {
-          onComplete?.(data.processed_url)
-        }
+      if (!result.success) {
+        console.error('❌ API returned error:', result.error)
+        return
+      }
+
+      const data = result.data
+
+      console.log('📊 Video status:', {
+        status: data.status,
+        progress: data.progress,
+        hasProcessedUrl: !!data.processedUrl,
+        errorMessage: data.errorMessage,
+      })
+
+      setStatus(data.status)
+      setProgress(data.progress || 0)
+      setErrorMessage(data.errorMessage)
+      setProcessedUrl(data.processedUrl)
+
+      // Trigger callback if completed
+      if (data.status === 'completed' && data.processedUrl) {
+        console.log('✅ Video completed, triggering callback')
+        onComplete?.(data.processedUrl)
       }
     } catch (error) {
-      console.error('Error fetching status:', error)
+      console.error('❌ Error fetching status:', error)
     }
   }, [videoId, onComplete])
 
   /**
-   * Set up real-time subscription
+   * Set up polling on mount
    */
   useEffect(() => {
-    const supabase = createClient()
+    console.log('🎬 Initializing video status monitoring for:', videoId)
 
     // Initial fetch
+    console.log('📥 Fetching initial video status...')
     fetchStatus()
 
-    // Subscribe to real-time updates
-    const channel = supabase
-      .channel(`video-${videoId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'videos',
-          filter: `id=eq.${videoId}`,
-        },
-        (payload) => {
-          console.log('Real-time update:', payload)
-          const newData = payload.new as Database['public']['Tables']['videos']['Row']
-
-          setStatus(newData.status)
-          setProgress(newData.progress || 0)
-          setErrorMessage(newData.error_message)
-          setProcessedUrl(newData.processed_url)
-
-          // Trigger callback if completed
-          if (newData.status === 'completed' && newData.processed_url) {
-            onComplete?.(newData.processed_url)
-          }
-        }
-      )
-      .subscribe((subscriptionStatus) => {
-        console.log('Subscription status:', subscriptionStatus)
-
-        // If subscription fails, fall back to polling
-        const statusStr = String(subscriptionStatus)
-        if (statusStr === 'SUBSCRIPTION_ERROR' || statusStr === 'CHANNEL_ERROR') {
-          console.warn('Real-time subscription failed, falling back to polling')
-          setIsPolling(true)
-        }
-      })
-
-    // Cleanup
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [videoId, fetchStatus, onComplete])
+    // Start polling immediately
+    console.log('⏰ Starting polling (every 5 seconds)...')
+    setIsPolling(true)
+  }, [videoId, fetchStatus])
 
   /**
-   * Polling fallback (if real-time fails)
+   * Polling for status updates
    */
   useEffect(() => {
     if (!isPolling) return
 
+    // Stop polling if video is in a final state
+    if (status === 'completed' || status === 'failed' || status === 'cancelled') {
+      console.log('Video in final state, stopping polling')
+      setIsPolling(false)
+      return
+    }
+
     const interval = setInterval(() => {
+      const timestamp = new Date().toISOString().split('T')[1].slice(0, 8)
+      console.log(`🔄 [${timestamp}] Polling video status...`)
       fetchStatus()
     }, 5000) // Poll every 5 seconds
 
     return () => clearInterval(interval)
-  }, [isPolling, fetchStatus])
+  }, [isPolling, fetchStatus, status])
 
   /**
    * Handle retry
