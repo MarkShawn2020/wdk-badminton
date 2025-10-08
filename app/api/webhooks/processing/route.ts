@@ -10,7 +10,8 @@
 import { NextRequest } from 'next/server'
 import { createServiceClient } from '@/lib/supabase/server'
 import { successResponse, errorResponse } from '@/lib/api/response'
-import { z } from 'zod'
+import { z, ZodError } from 'zod'
+import { Database } from '@/types/database'
 
 /**
  * Webhook payload schema
@@ -54,11 +55,19 @@ export async function POST(request: NextRequest) {
     const supabase = createServiceClient()
 
     // Fetch video to get user_id and credits
-    const { data: video, error: fetchError } = await supabase
+    const videoId = validated.video_id
+    // Note: Type cast needed due to Supabase SSR client type inference limitations
+    const result = (await supabase
       .from('videos')
       .select('user_id, estimated_cost_credits, status as current_status')
-      .eq('id', validated.video_id)
-      .single()
+
+      // @ts-ignore
+      .eq('id', videoId)
+      .single()) as {
+      data: { user_id: string; estimated_cost_credits: number; current_status: string } | null
+      error: unknown
+    }
+    const { data: video, error: fetchError } = result
 
     if (fetchError || !video) {
       console.error('Video not found:', validated.video_id)
@@ -66,29 +75,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare update data
-    const updateData: Record<string, unknown> = {
+    const updateData = {
       status: validated.status,
       progress: validated.progress || (validated.status === 'completed' ? 100 : undefined),
       processed_url: validated.processed_url,
       error_message: validated.error,
-    }
-
-    // Set completion timestamp
-    if (validated.status === 'completed') {
-      updateData.completed_at = new Date().toISOString()
-      updateData.actual_cost_credits = video.estimated_cost_credits
-    }
-
-    // Set completion/failure timestamp
-    if (validated.status === 'failed' || validated.status === 'cancelled') {
-      updateData.completed_at = new Date().toISOString()
+      ...(validated.status === 'completed' && {
+        completed_at: new Date().toISOString(),
+        actual_cost_credits: video.estimated_cost_credits,
+      }),
+      ...((validated.status === 'failed' || validated.status === 'cancelled') && {
+        completed_at: new Date().toISOString(),
+      }),
     }
 
     // Update video status
-    const { error: updateError } = await supabase
+    // Note: Type cast needed due to Supabase SSR client type inference limitations
+    const updateResult = (await supabase
       .from('videos')
+
+      // @ts-ignore
       .update(updateData)
-      .eq('id', validated.video_id)
+
+      // @ts-ignore
+      .eq('id', validated.video_id)) as { error: unknown }
+    const { error: updateError } = updateResult
 
     if (updateError) {
       console.error('Failed to update video:', updateError)
@@ -107,7 +118,8 @@ export async function POST(request: NextRequest) {
         amount: video.estimated_cost_credits,
       })
 
-      const { error: refundError } = await supabase.rpc('refund_credits', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { error: refundError } = await (supabase.rpc as any)('refund_credits', {
         p_user_id: video.user_id,
         p_video_id: validated.video_id,
         p_amount: video.estimated_cost_credits,
@@ -135,8 +147,8 @@ export async function POST(request: NextRequest) {
     console.error('Webhook processing error:', error)
 
     // Handle validation errors
-    if (error instanceof z.ZodError) {
-      return errorResponse('Invalid webhook payload', 400, error.errors)
+    if (error instanceof ZodError) {
+      return errorResponse('Invalid webhook payload', 400, error.issues)
     }
 
     // Generic error

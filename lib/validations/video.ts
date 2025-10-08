@@ -46,9 +46,7 @@ export const videoUploadSchema = z.object({
     ),
 
   mimeType: z.enum(ALLOWED_VIDEO_MIME_TYPES, {
-    errorMap: () => ({
-      message: `File type must be one of: ${ALLOWED_VIDEO_MIME_TYPES.join(', ')}`,
-    }),
+    message: `File type must be one of: ${ALLOWED_VIDEO_MIME_TYPES.join(', ')}`,
   }),
 
   width: z.number().int().positive().optional(),

@@ -12,17 +12,24 @@ import { NextRequest } from 'next/server'
 import Stripe from 'stripe'
 import { createServiceClient } from '@/lib/supabase/server'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-})
+/**
+ * Get Stripe instance (lazy initialization to avoid build-time errors)
+ */
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-09-30.clover',
+  })
+}
 
 /**
  * Stripe webhook endpoint
  * Must use raw body for signature verification
  */
 export async function POST(request: NextRequest) {
+  const stripe = getStripe()
   const body = await request.text()
-  const signature = headers().get('stripe-signature')
+  const headersList = await headers()
+  const signature = headersList.get('stripe-signature')
 
   if (!signature) {
     console.error('Missing Stripe signature')
@@ -70,7 +77,8 @@ export async function POST(request: NextRequest) {
         }
 
         // Add credits to user account
-        const { error: addCreditsError } = await supabase.rpc('add_credits', {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { error: addCreditsError } = await (supabase.rpc as any)('add_credits', {
           p_user_id: userId,
           p_amount: parseInt(credits),
           p_stripe_payment_id: session.payment_intent as string,

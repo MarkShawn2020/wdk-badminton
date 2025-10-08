@@ -90,7 +90,12 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
         .from('videos')
         .select('status, progress, error_message, processed_url')
         .eq('id', videoId)
-        .single()
+        .single<{
+          status: VideoStatus
+          progress: number
+          error_message: string | null
+          processed_url: string | null
+        }>()
 
       if (error) {
         console.error('Failed to fetch video status:', error)
@@ -148,11 +153,12 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
           }
         }
       )
-      .subscribe((status) => {
-        console.log('Subscription status:', status)
+      .subscribe((subscriptionStatus) => {
+        console.log('Subscription status:', subscriptionStatus)
 
         // If subscription fails, fall back to polling
-        if (status === 'SUBSCRIPTION_ERROR' || status === 'CHANNEL_ERROR') {
+        const statusStr = String(subscriptionStatus)
+        if (statusStr === 'SUBSCRIPTION_ERROR' || statusStr === 'CHANNEL_ERROR') {
           console.warn('Real-time subscription failed, falling back to polling')
           setIsPolling(true)
         }

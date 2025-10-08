@@ -13,9 +13,12 @@ import { createServerClient } from '@/lib/supabase/server'
 import { VideoList } from '@/components/video/VideoList'
 import { Button } from '@/components/components/ui/button'
 import { Card } from '@/components/components/ui/card'
-import { Sparkles, CreditCard, Video, Clock } from 'lucide-react'
+import { Sparkles, CreditCard, Video as VideoIcon, Clock } from 'lucide-react'
 import type { Metadata } from 'next'
 import { formatCredits, formatCreditsAsUSD } from '@/lib/video/cost'
+import type { Database } from '@/types/database'
+
+type VideoRow = Database['public']['Tables']['videos']['Row']
 
 export const metadata: Metadata = {
   title: 'Dashboard | ReelVan',
@@ -35,14 +38,21 @@ export default async function DashboardPage() {
   }
 
   // Fetch user credits
-  const { data: credits } = await supabase
+  const creditsResult = await supabase
     .from('user_credits')
     .select('balance, total_earned, total_spent, tier')
     .eq('user_id', user.id)
     .single()
 
+  const credits = creditsResult.data as {
+    balance: number
+    total_earned: number
+    total_spent: number
+    tier: string
+  } | null
+
   // Fetch videos with pagination
-  const { data: videos, count } = await supabase
+  const result = await supabase
     .from('videos')
     .select(
       `
@@ -63,6 +73,10 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(20)
+
+  const videos = result.data as VideoRow[] | null
+
+  const count = result.count
 
   // Calculate statistics
   const completedCount = videos?.filter((v) => v.status === 'completed').length || 0
@@ -117,7 +131,7 @@ export default async function DashboardPage() {
         <Card className="p-6">
           <div className="flex items-center gap-4">
             <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
-              <Video className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              <VideoIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Total Videos</p>

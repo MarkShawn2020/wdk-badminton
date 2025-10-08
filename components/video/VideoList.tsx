@@ -25,6 +25,7 @@ const STATUS_CONFIG = {
     icon: Clock,
     label: 'Queued',
     color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    spin: false,
   },
   uploading: {
     icon: Loader2,
@@ -42,16 +43,19 @@ const STATUS_CONFIG = {
     icon: CheckCircle2,
     label: 'Completed',
     color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    spin: false,
   },
   failed: {
     icon: XCircle,
     label: 'Failed',
     color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    spin: false,
   },
   cancelled: {
     icon: XCircle,
     label: 'Cancelled',
     color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+    spin: false,
   },
 }
 

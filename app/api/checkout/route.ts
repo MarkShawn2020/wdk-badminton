@@ -11,9 +11,14 @@ import Stripe from 'stripe'
 import { requireAuth } from '@/lib/api/auth'
 import { successResponse, errorResponse } from '@/lib/api/response'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-09-30.clover',
-})
+/**
+ * Get Stripe instance (lazy initialization to avoid build-time errors)
+ */
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-09-30.clover',
+  })
+}
 
 /**
  * Request schema
@@ -61,6 +66,9 @@ export async function POST(request: NextRequest) {
 
     // Calculate price
     const price = calculatePrice(validated.credits)
+
+    // Get Stripe instance
+    const stripe = getStripe()
 
     // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({

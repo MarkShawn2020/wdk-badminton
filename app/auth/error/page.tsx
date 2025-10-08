@@ -7,8 +7,13 @@ export const metadata = genPageMetadata({
   description: 'An error occurred during authentication.',
 })
 
-export default function AuthError({ searchParams }: { searchParams: { message?: string } }) {
-  const errorMessage = searchParams.message || 'An unexpected error occurred during authentication'
+export default async function AuthError({
+  searchParams,
+}: {
+  searchParams: Promise<{ message?: string }>
+}) {
+  const params = await searchParams
+  const errorMessage = params.message || 'An unexpected error occurred during authentication'
 
   return (
     <>

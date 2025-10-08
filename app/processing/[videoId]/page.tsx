@@ -11,6 +11,9 @@ import { createServerClient } from '@/lib/supabase/server'
 import { ProcessingStatus } from '@/components/video/ProcessingStatus'
 import { VideoComparison } from '@/components/video/VideoComparison'
 import type { Metadata } from 'next'
+import type { Database } from '@/types/database'
+
+type VideoRow = Database['public']['Tables']['videos']['Row']
 
 interface ProcessingPageProps {
   params: Promise<{
@@ -65,14 +68,16 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
     )
   }
 
-  const { data: video, error } = await supabase
+  const result = await supabase
     .from('videos')
     .select('*')
     .eq('id', videoId)
     .eq('user_id', user.id)
     .single()
 
-  if (error || !video) {
+  const video = result.data as VideoRow | null
+
+  if (result.error || !video) {
     notFound()
   }
 

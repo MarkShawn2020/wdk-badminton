@@ -1,5 +1,6 @@
 import { withContentlayer } from 'next-contentlayer2'
 import bundleAnalyzer from '@next/bundle-analyzer'
+import { codeInspectorPlugin } from '@neurora/code-inspector-plugin'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -95,6 +96,19 @@ export default () => {
         test: /\.svg$/,
         use: ['@svgr/webpack'],
       })
+
+      // Add code inspector plugin (development only)
+      if (options.dev && !options.isServer) {
+        config.plugins.push(
+          codeInspectorPlugin({
+            bundler: 'webpack',
+            behavior: {
+              enable: true,
+              enableFloatingBall: true, // Enable floating ball UI
+            },
+          })
+        )
+      }
 
       return config
     },

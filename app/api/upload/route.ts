@@ -12,7 +12,7 @@
  */
 
 import { NextRequest } from 'next/server'
-import { z } from 'zod'
+import { z, ZodError } from 'zod'
 import { requireAuth } from '@/lib/api/auth'
 import { successResponse, errorResponse } from '@/lib/api/response'
 import { createServerClient } from '@/lib/supabase/server'
@@ -68,8 +68,8 @@ export async function POST(request: NextRequest) {
     console.error('Upload API error:', error)
 
     // Handle Zod validation errors
-    if (error instanceof z.ZodError) {
-      return errorResponse('Invalid request data', 400, error.errors)
+    if (error instanceof ZodError) {
+      return errorResponse('Invalid request data', 400, error.issues)
     }
 
     // Handle authentication errors

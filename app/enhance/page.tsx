@@ -31,12 +31,13 @@ export default async function EnhancePage() {
   let userCredits: number | undefined
 
   if (user) {
-    const { data: credits } = await supabase
+    const result = await supabase
       .from('user_credits')
       .select('balance')
       .eq('user_id', user.id)
       .single()
 
+    const credits = result.data as { balance: number } | null
     userCredits = credits?.balance
   }
 

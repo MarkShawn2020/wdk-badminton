@@ -18,11 +18,12 @@
  */
 
 import { NextRequest } from 'next/server'
-import { z } from 'zod'
+import { z, ZodError } from 'zod'
 import { requireAuth } from '@/lib/api/auth'
 import { successResponse, errorResponse } from '@/lib/api/response'
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import { videoUploadSchema, processingOptionsSchema } from '@/lib/validations/video'
+import { Database } from '@/types/database'
 import {
   calculateCreditsRequired,
   calculateApiCost,
@@ -140,7 +141,10 @@ export async function POST(request: NextRequest) {
 
     // 9. Deduct credits using database function
     const serviceClient = createServiceClient()
-    const { error: deductError } = await serviceClient.rpc('deduct_credits', {
+    // NOTE: Type assertion needed due to Supabase RPC type inference issue
+    // See: https://github.com/supabase/supabase-js/issues/1018
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error: deductError } = await (serviceClient.rpc as any)('deduct_credits', {
       p_user_id: user.id,
       p_video_id: videoId,
       p_amount: creditsRequired,
@@ -150,7 +154,10 @@ export async function POST(request: NextRequest) {
       console.error('Failed to deduct credits:', deductError)
       // Cleanup: delete video record
       await supabase.from('videos').delete().eq('id', videoId)
-      return errorResponse('Failed to deduct credits: ' + deductError.message, 500)
+      return errorResponse(
+        'Failed to deduct credits: ' + (deductError.message || 'Unknown error'),
+        500
+      )
     }
 
     creditsDeducted = true
@@ -172,7 +179,8 @@ export async function POST(request: NextRequest) {
       console.error('Failed to submit to processing API:', apiError)
 
       // Refund credits
-      await serviceClient.rpc('refund_credits', {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await (serviceClient.rpc as any)('refund_credits', {
         p_user_id: user.id,
         p_video_id: videoId,
         p_amount: creditsRequired,
@@ -184,7 +192,7 @@ export async function POST(request: NextRequest) {
         .update({
           status: 'failed',
           error_message: 'Failed to submit to processing API',
-        })
+        } as never)
         .eq('id', videoId)
 
       return errorResponse('Failed to start processing', 500)
@@ -205,7 +213,8 @@ export async function POST(request: NextRequest) {
       try {
         const user = await requireAuth()
         const serviceClient = createServiceClient()
-        await serviceClient.rpc('refund_credits', {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        await (serviceClient.rpc as any)('refund_credits', {
           p_user_id: user.id,
           p_video_id: videoId,
           p_amount: calculateCreditsRequired(0), // This would need the actual amount
@@ -216,8 +225,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Handle validation errors
-    if (error instanceof z.ZodError) {
-      return errorResponse('Invalid request data', 400, error.errors)
+    if (error instanceof ZodError) {
+      return errorResponse('Invalid request data', 400, error.issues)
     }
 
     // Handle authentication errors
