@@ -34,65 +34,70 @@ export function CreditsCard({ balance, totalEarned, totalSpent }: CreditsCardPro
   }
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center gap-4">
-        <div className="bg-primary/10 rounded-full p-3">
-          <CreditCard className="text-primary h-6 w-6" />
+    <Card className="overflow-hidden">
+      <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="rounded-xl bg-white/20 p-3 backdrop-blur-sm">
+              <CreditCard className="h-8 w-8" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-white/80">Available Credits</p>
+              <p className="text-4xl font-bold">{formatCredits(currentBalance)}</p>
+              <p className="text-sm text-white/60">{formatCreditsAsUSD(currentBalance)}</p>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="flex gap-2">
+            <Link href="/pricing">
+              <Button variant="secondary" size="sm" className="gap-2">
+                <CreditCard className="h-4 w-4" />
+                Buy Credits
+              </Button>
+            </Link>
+          </div>
         </div>
-        <div className="flex-1">
-          <p className="text-sm text-gray-600 dark:text-gray-400">Credits</p>
-          <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {formatCredits(currentBalance)}
-          </p>
-          <p className="text-xs text-gray-500">{formatCreditsAsUSD(currentBalance)}</p>
-        </div>
+
+        {/* Usage Stats */}
+        {(totalEarned !== undefined || totalSpent !== undefined) && (
+          <div className="mt-4 grid grid-cols-2 gap-4 border-t border-white/20 pt-4">
+            <div>
+              <p className="text-xs text-white/60">Total Earned</p>
+              <p className="text-lg font-semibold">{formatCredits(totalEarned || 0)}</p>
+            </div>
+            <div>
+              <p className="text-xs text-white/60">Total Spent</p>
+              <p className="text-lg font-semibold">{formatCredits(totalSpent || 0)}</p>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Action Buttons */}
-      <div className="mt-4 space-y-2">
-        <Link href="/pricing" className="block">
-          <Button variant="outline" size="sm" className="w-full">
-            <CreditCard className="mr-2 h-4 w-4" />
-            Buy Credits
-          </Button>
-        </Link>
-
+      {/* Coupon Section */}
+      <div className="p-4">
         <Button
           variant="ghost"
           size="sm"
-          className="w-full"
+          className="w-full justify-start text-left"
           onClick={() => setShowCoupon(!showCoupon)}
         >
-          <Gift className="mr-2 h-4 w-4" />
-          Redeem Coupon
+          <Gift className="mr-2 h-4 w-4 text-purple-500" />
+          <span className="flex-1">Have a coupon code?</span>
           {showCoupon ? (
-            <ChevronUp className="ml-auto h-4 w-4" />
+            <ChevronUp className="h-4 w-4 text-gray-400" />
           ) : (
-            <ChevronDown className="ml-auto h-4 w-4" />
+            <ChevronDown className="h-4 w-4 text-gray-400" />
           )}
         </Button>
+
+        {/* Coupon Input (Collapsible) */}
+        {showCoupon && (
+          <div className="mt-3">
+            <CouponInput onSuccess={handleCouponSuccess} />
+          </div>
+        )}
       </div>
-
-      {/* Coupon Input (Collapsible) */}
-      {showCoupon && (
-        <div className="mt-4 border-t pt-4">
-          <CouponInput onSuccess={handleCouponSuccess} />
-        </div>
-      )}
-
-      {/* Usage Stats (Optional) */}
-      {(totalEarned !== undefined || totalSpent !== undefined) && (
-        <div className="mt-4 border-t pt-4 text-xs text-gray-500 dark:text-gray-400">
-          <div className="flex justify-between">
-            <span>Total Earned:</span>
-            <span className="font-medium">{formatCredits(totalEarned || 0)}</span>
-          </div>
-          <div className="mt-1 flex justify-between">
-            <span>Total Spent:</span>
-            <span className="font-medium">{formatCredits(totalSpent || 0)}</span>
-          </div>
-        </div>
-      )}
     </Card>
   )
 }

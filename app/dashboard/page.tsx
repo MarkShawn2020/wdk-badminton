@@ -87,73 +87,80 @@ export default async function DashboardPage() {
   const totalVideos = count || 0
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto max-w-7xl px-4 py-8">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Manage your videos and credits</p>
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+            <p className="mt-1 text-gray-600 dark:text-gray-400">Manage your videos and credits</p>
+          </div>
+          <Link href="/enhance">
+            <Button size="lg" className="gap-2">
+              <Sparkles className="h-5 w-5" />
+              New Video
+            </Button>
+          </Link>
         </div>
-        <Link href="/enhance">
-          <Button size="lg">
-            <Sparkles className="mr-2 h-5 w-5" />
-            New Video
-          </Button>
-        </Link>
       </div>
 
-      {/* Stats Cards */}
-      <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Credit Balance with Coupon Input */}
+      {/* Credits Card - Full Width */}
+      <div className="mb-6">
         <CreditsCard
           balance={credits?.balance || 0}
           totalEarned={credits?.total_earned}
           totalSpent={credits?.total_spent}
         />
+      </div>
 
+      {/* Stats Cards - 3 Columns */}
+      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {/* Total Videos */}
-        <Card className="p-6">
+        <Card className="p-6 transition-shadow hover:shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="rounded-full bg-blue-100 p-3 dark:bg-blue-900">
+            <div className="rounded-xl bg-blue-100 p-3 dark:bg-blue-900">
               <VideoIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Total Videos</p>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Videos</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalVideos}</p>
-              <p className="text-xs text-gray-500">{completedCount} completed</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{completedCount} completed</p>
             </div>
           </div>
         </Card>
 
         {/* Processing */}
-        <Card className="p-6">
+        <Card className="p-6 transition-shadow hover:shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="rounded-full bg-yellow-100 p-3 dark:bg-yellow-900">
+            <div className="rounded-xl bg-yellow-100 p-3 dark:bg-yellow-900">
               <Clock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Processing</p>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Processing</p>
               <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 {processingCount}
               </p>
-              <p className="text-xs text-gray-500">Active jobs</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Active jobs</p>
             </div>
           </div>
         </Card>
 
         {/* Tier Badge */}
-        <Card className="p-6">
+        <Card className="p-6 transition-shadow hover:shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="rounded-full bg-purple-100 p-3 dark:bg-purple-900">
+            <div className="rounded-xl bg-purple-100 p-3 dark:bg-purple-900">
               <Sparkles className="h-6 w-6 text-purple-600 dark:text-purple-400" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Plan</p>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Plan</p>
               <p className="text-2xl font-bold text-gray-900 capitalize dark:text-gray-100">
                 {credits?.tier || 'Free'}
               </p>
-              <Link href="/pricing" className="text-primary text-xs hover:underline">
-                Upgrade
+              <Link
+                href="/pricing"
+                className="text-primary hover:text-primary/80 text-xs font-medium underline-offset-4 hover:underline"
+              >
+                Upgrade Plan
               </Link>
             </div>
           </div>
@@ -162,7 +169,12 @@ export default async function DashboardPage() {
 
       {/* Video List */}
       <div>
-        <h2 className="mb-4 text-xl font-bold text-gray-900 dark:text-gray-100">Your Videos</h2>
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Your Videos</h2>
+          {totalVideos > 0 && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">{totalVideos} total</p>
+          )}
+        </div>
         <VideoList initialVideos={videos || []} initialTotal={totalVideos} />
       </div>
     </div>
