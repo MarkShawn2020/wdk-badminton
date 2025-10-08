@@ -18,10 +18,10 @@ export default function Home({ posts }) {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
-                href="/signup"
+                href="/enhance"
                 className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
-                Try Free
+                Enhance Your Video
               </Link>
               <Link
                 href="#features"

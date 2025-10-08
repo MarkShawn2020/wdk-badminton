@@ -18,6 +18,28 @@
 
 ---
 
+## 🎬 **NEW: Video Processing Feature**
+
+A complete video upload, processing, and enhancement system is now implemented!
+
+**Quick Start**: [QUICK_START_VIDEO.md](./QUICK_START_VIDEO.md) - Get running in 5 minutes
+**Full Documentation**: [README_VIDEO_FEATURE.md](./README_VIDEO_FEATURE.md) - Complete implementation guide
+**Setup Guide**: [SETUP.md](./SETUP.md) - Detailed configuration instructions
+**Feature Summary**: [VIDEO_FEATURE_SUMMARY.md](./VIDEO_FEATURE_SUMMARY.md) - Architecture overview
+
+**What's included:**
+
+- ✅ Drag-and-drop video upload with real-time cost estimation
+- ✅ Processing options (watermark removal, resolution, aspect ratio)
+- ✅ Real-time status updates via Supabase Realtime
+- ✅ Side-by-side video comparison player
+- ✅ Credit system with automatic refunds
+- ✅ User dashboard with processing history
+- ✅ Complete API routes and webhooks
+- ✅ Production-ready database schema
+
+---
+
 ## 📖 Table of Contents
 
 - [About](#-about)

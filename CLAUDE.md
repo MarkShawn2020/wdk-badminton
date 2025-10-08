@@ -1350,3 +1350,4 @@ git commit -m "feat: description"
 For questions or updates, contact the dev team or update this document.
 
 - github repo 是 markshawn2020/reelvan-web
+- 禁止pnpm build（因为本地在pnpm dev）；任务完成后，只要pnpm lint即可
