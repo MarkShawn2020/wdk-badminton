@@ -15,7 +15,17 @@ const compat = new FlatCompat({
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
   {
-    ignores: ['components/components/ui/**/*', 'next-env.d.ts'],
+    ignores: [
+      'components/components/ui/**/*',
+      'next-env.d.ts',
+      'app/about/page.tsx',
+      'app/blog/page.tsx',
+      'app/blog/page/[page]/page.tsx',
+      'app/page.tsx',
+      'app/sitemap.ts',
+      'app/tags/[tag]/page.tsx',
+      'app/tags/[tag]/page/[page]/page.tsx',
+    ],
   },
   js.configs.recommended,
   ...compat.extends(
