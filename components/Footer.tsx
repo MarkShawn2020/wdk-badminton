@@ -19,7 +19,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/publish" className="text-muted-foreground hover:text-foreground">
+                <Link href="/transformer" className="text-muted-foreground hover:text-foreground">
                   Features
                 </Link>
               </li>
@@ -150,15 +150,15 @@ export default function Footer() {
         {/* Bottom Section */}
         <div className="border-border mt-12 border-t pt-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-            {/* Copyright */}
-            <div className="text-muted-foreground text-sm">
-              © {new Date().getFullYear()} {siteMetadata.author}. All rights reserved.
-            </div>
-
-            {/* Social Icons */}
-            <div className="flex space-x-4">
-              <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={5} />
-              <SocialIcon kind="x" href={siteMetadata.x} size={5} />
+            {/* Copyright and Social Icons */}
+            <div className="flex flex-col items-center gap-3 md:items-start">
+              <div className="text-muted-foreground text-sm">
+                © {new Date().getFullYear()} {siteMetadata.author}. All rights reserved.
+              </div>
+              <div className="flex space-x-4">
+                <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={5} />
+                <SocialIcon kind="x" href={siteMetadata.x} size={5} />
+              </div>
             </div>
 
             {/* CTA */}

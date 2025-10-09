@@ -125,7 +125,7 @@ export function UserAvatar() {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/publish" className="flex cursor-pointer items-center">
+          <Link href="/transformer" className="flex cursor-pointer items-center">
             <Video className="mr-2 h-4 w-4" />
             <span>Upload Video</span>
           </Link>

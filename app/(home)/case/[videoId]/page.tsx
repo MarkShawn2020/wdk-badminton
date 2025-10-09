@@ -1,7 +1,7 @@
 /**
- * Video Processing Status Page
+ * Video Case Page
  *
- * Dynamic route: /processing/[videoId]
+ * Dynamic route: /case/[videoId]
  * Shows real-time processing status and comparison when complete
  */
 
@@ -16,7 +16,7 @@ import type { Database } from '@/types/database'
 
 type VideoRow = Database['public']['Tables']['videos']['Row']
 
-interface ProcessingPageProps {
+interface CasePageProps {
   params: Promise<{
     videoId: string
   }>
@@ -25,22 +25,22 @@ interface ProcessingPageProps {
 /**
  * Generate metadata for SEO
  */
-export async function generateMetadata({ params }: ProcessingPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: CasePageProps): Promise<Metadata> {
   await params // Await params in Next.js 15
   return {
-    title: 'Processing Video | ReelVan',
+    title: 'Video Case | ReelVan',
     description: 'Your video is being processed with AI enhancement',
     robots: {
-      index: false, // Don't index processing pages
+      index: false, // Don't index case pages
       follow: false,
     },
   }
 }
 
 /**
- * Processing Page (Server Component)
+ * Case Page (Server Component)
  */
-export default async function ProcessingPage({ params }: ProcessingPageProps) {
+export default async function CasePage({ params }: CasePageProps) {
   const { videoId } = await params // Await params in Next.js 15
 
   // Validate UUID format
@@ -148,7 +148,7 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
             <ShareToDiscoverButton videoId={video.id} />
 
             <Link
-              href="/publish"
+              href="/transformer"
               className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-center font-semibold text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:hover:bg-gray-900"
             >
               Process Another

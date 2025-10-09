@@ -108,7 +108,17 @@ export default () => {
       return [
         {
           source: '/enhance',
-          destination: '/publish',
+          destination: '/transformer',
+          permanent: true, // 301 redirect
+        },
+        {
+          source: '/publish',
+          destination: '/transformer',
+          permanent: true, // 301 redirect
+        },
+        {
+          source: '/processing/:videoId',
+          destination: '/case/:videoId',
           permanent: true, // 301 redirect
         },
       ]

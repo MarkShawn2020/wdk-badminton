@@ -245,10 +245,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
       const processData = await processResponse.json()
       const { videoId } = processData.data
 
-      // Step 4: Redirect to processing page
-      router.push(`/processing/${videoId}`)
+      // Step 4: Redirect to case page
+      router.push(`/case/${videoId}`)
     } catch (err) {
-      console.error('Upload/processing error:', err)
+      console.error('Upload/case error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
       setIsUploading(false)
       setUploadProgress(0)
@@ -263,25 +263,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-12 sm:pb-16">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
-              Turn Your Video Instantly Shareable
-            </h1>
-            <p className="text-text-faded mt-6 text-lg leading-8">
-              Transform AI videos into ready-to-post social content. Remove watermarks, enhance
-              quality, add branding—all in minutes.
-            </p>
-          </div>
-        </div>
-      </section>
-
       {/* Main Upload Section */}
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl">
+          <div className="mx-auto max-w-6xl">
             <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
               {/* Header with Settings Button */}
               <div className="mb-6 flex items-center justify-between">
@@ -328,17 +313,6 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
                       )
                     })}
                   </div>
-                  {selectedVideo && (
-                    <div className="border-border mt-3 flex items-center justify-between border-t pt-3">
-                      <div className="text-muted-foreground text-sm">Estimated Cost</div>
-                      <div className="text-right">
-                        <div className="text-primary font-bold">{formatCredits(estimatedCost)}</div>
-                        <div className="text-muted-foreground text-xs">
-                          {formatCreditsAsUSD(estimatedCost)}
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -352,24 +326,16 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
               {selectedVideo && (
                 <div className="mt-6 space-y-4">
                   {/* Credits Check */}
-                  {userCredits !== undefined && (
+                  {userCredits !== undefined && !canAfford && (
                     <div className="border-border bg-muted flex items-center justify-between rounded-lg border p-4">
-                      <div>
-                        <div className="text-muted-foreground text-sm">Your Balance</div>
-                        <div className="text-foreground text-2xl font-bold">
-                          {formatCredits(userCredits)}
+                      <div className="text-right">
+                        <div className="text-destructive text-sm font-semibold">
+                          Insufficient credits
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          Need {formatCredits(estimatedCost - userCredits)} more
                         </div>
                       </div>
-                      {!canAfford && (
-                        <div className="text-right">
-                          <div className="text-destructive text-sm font-semibold">
-                            Insufficient credits
-                          </div>
-                          <div className="text-muted-foreground text-xs">
-                            Need {formatCredits(estimatedCost - userCredits)} more
-                          </div>
-                        </div>
-                      )}
                     </div>
                   )}
 
@@ -416,7 +382,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
                     ) : (
                       <>
                         <Sparkles className="mr-2 h-6 w-6" />
-                        Start Processing ({formatCredits(estimatedCost)})
+                        Start Processing (About {formatCredits(estimatedCost)})
                       </>
                     )}
                   </Button>

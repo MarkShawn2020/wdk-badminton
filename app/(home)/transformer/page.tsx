@@ -1,8 +1,8 @@
 /**
- * Video Publishing Page
+ * Video Transformer Page
  *
- * Main page for uploading and preparing videos for social media
- * Route: /publish
+ * Main page for uploading and transforming videos for social media
+ * Route: /transformer
  */
 
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
@@ -14,17 +14,17 @@ type UserCreditsInsert = Database['public']['Tables']['user_credits']['Insert']
 type CreditTransactionInsert = Database['public']['Tables']['credit_transactions']['Insert']
 
 export const metadata: Metadata = {
-  title: 'Publish Your Video | ReelVan',
+  title: 'Transform Your Video | ReelVan',
   description:
     'Transform AI videos into ready-to-post social content. Remove watermarks, enhance quality, add branding, and get AI-generated captions for Instagram, TikTok, YouTube.',
   openGraph: {
-    title: 'Publish Your Video | ReelVan',
+    title: 'Transform Your Video | ReelVan',
     description:
       'Turn your AI video instantly shareable with professional processing and AI captions',
   },
 }
 
-export default async function PublishPage() {
+export default async function TransformerPage() {
   const supabase = await createServerClient()
 
   // Get authenticated user

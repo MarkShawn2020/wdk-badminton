@@ -117,7 +117,7 @@ export default function DiscoverPage() {
 
               {/* CTA */}
               <div className="pt-4">
-                <Link href="/publish">
+                <Link href="/transformer">
                   <Button size="lg" className="gap-2">
                     <Upload className="h-5 w-5" />
                     Create Your First Video

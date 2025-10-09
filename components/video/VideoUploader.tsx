@@ -288,14 +288,6 @@ export function VideoUploader({
                       ⏱️ {Math.round(selectedVideo.duration)}s
                     </span>
                   </div>
-                  {estimatedCost && (
-                    <div className="bg-muted inline-flex items-center gap-2 rounded-lg px-3 py-1.5 shadow-sm">
-                      <span className="text-muted-foreground text-sm">Estimated cost:</span>
-                      <span className="text-primary text-base font-bold">
-                        {formatCredits(estimatedCost)}
-                      </span>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
