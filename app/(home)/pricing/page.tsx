@@ -1,25 +1,32 @@
-import { genPageMetadata } from 'app/seo'
+'use client'
+
 import { PricingCard } from '@/components/pricing/PricingCard'
 import { CouponInput } from '@/components/coupon/CouponInput'
-import { creditPackages } from '@/data/pricingData'
+import { pricingPlans } from '@/data/pricingData'
 
-export const metadata = genPageMetadata({
-  title: 'Pricing - ReelVan',
-  description:
-    'Pay as you go with credits. No subscriptions, no monthly fees. Save up to 30% with larger packages. Starter package from $5.',
-})
+// Note: metadata must be exported from server component
+// Moved to layout.tsx or separate metadata file
 
 export default function Pricing() {
   return (
     <>
       <div className="divide-border divide-y">
+        {/* Promotion Banner */}
+        <div className="from-primary-600 to-primary-700 bg-gradient-to-r py-3 text-center">
+          <div className="flex items-center justify-center gap-2 text-sm font-semibold text-white md:text-base">
+            <span className="text-xl">🎉</span>
+            <span>First subscription gets 2x credits! Save up to 43%</span>
+            <span className="hidden sm:inline">· Cancel anytime, no commitment</span>
+          </div>
+        </div>
+
         {/* Hero Section */}
         <div className="space-y-4 pt-6 pb-8 md:space-y-6">
           <h1 className="text-foreground text-3xl leading-9 font-extrabold tracking-tight sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
             Simple, Transparent Pricing
           </h1>
           <p className="text-muted-foreground text-xl leading-8">
-            Pay as you go with credits. No subscriptions, no monthly fees.
+            Pay once or subscribe. Choose what works best for you.
           </p>
           <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
             <div className="flex items-center gap-2">
@@ -52,7 +59,7 @@ export default function Pricing() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span>Credits never expire</span>
+              <span>Subscriptions: Save up to 43%</span>
             </div>
             <div className="flex items-center gap-2">
               <svg
@@ -68,24 +75,24 @@ export default function Pricing() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span>Volume discounts up to 30%</span>
+              <span>First purchase: 2x credits bonus</span>
             </div>
           </div>
         </div>
 
         <div className="py-16">
-          {/* Credit Packages */}
+          {/* Pricing Plans */}
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="mb-16 text-center">
-              <h2 className="text-foreground text-3xl font-bold">Choose Your Credit Package</h2>
+            <div className="mb-12 text-center">
+              <h2 className="text-foreground text-3xl font-bold">Choose Your Plan</h2>
               <p className="text-muted-foreground mt-4 text-lg">
-                1 credit = $0.01 • Typical 30s video ≈ 240 credits ($2.40)
+                1 credit = $0.01 • 10s video ≈ 80 credits ($0.80)
               </p>
             </div>
 
             <div className="mx-auto grid grid-cols-1 gap-5 pt-6 sm:max-w-2xl sm:grid-cols-2 lg:max-w-none lg:grid-cols-4 lg:gap-6">
-              {creditPackages.map((pkg) => (
-                <PricingCard key={pkg.name} tier={pkg} />
+              {pricingPlans.map((plan) => (
+                <PricingCard key={plan.name} tier={plan} />
               ))}
             </div>
           </div>
@@ -206,40 +213,50 @@ export default function Pricing() {
             <dl className="space-y-8">
               <div>
                 <dt className="text-foreground text-lg font-semibold">
-                  How does the credit system work?
+                  Pay-as-you-go vs Subscription: What's the difference?
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
-                  Credits are used to process videos. 1 credit = $0.01. Processing cost depends on
-                  video duration: approximately 8 credits per second. For example, a 30-second video
-                  costs about 240 credits ($2.40). You only pay for what you use.
-                </dd>
-              </div>
-              <div>
-                <dt className="text-foreground text-lg font-semibold">Do credits expire?</dt>
-                <dd className="text-muted-foreground mt-2 text-base">
-                  No, purchased credits never expire. Buy them once and use them whenever you need.
-                  Your balance carries over indefinitely.
-                </dd>
-              </div>
-              <div>
-                <dt className="text-foreground text-lg font-semibold">
-                  What's the difference between Free, Paid, and Pro users?
-                </dt>
-                <dd className="text-muted-foreground mt-2 text-base">
-                  All users get the same features (watermark removal, 4K quality, etc.). The only
-                  difference is daily processing limits: Free (3 videos/day), Starter/Pro (50/day),
-                  Max/Business (100/day). These limits are permanent - once unlocked, they never
-                  reset.
+                  <strong>Pay-as-you-go:</strong> $10 for 1,000 credits that never expire. Perfect
+                  for occasional users who want flexibility.
+                  <br />
+                  <br />
+                  <strong>Subscription:</strong> Monthly plans with more credits at better prices -
+                  save up to 43%! First purchase gets 2x credits. Credits reset monthly
+                  (use-it-or-lose-it). Ideal for regular creators.
                 </dd>
               </div>
               <div>
                 <dt className="text-foreground text-lg font-semibold">
-                  Is this a subscription service?
+                  Do subscription credits expire?
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
-                  No. ReelVan uses a pay-as-you-go model with no monthly fees or recurring charges.
-                  You buy credits once and use them at your own pace. No commitments, no automatic
-                  renewals.
+                  Yes. Subscription credits reset monthly (use-it-or-lose-it) to encourage
+                  consistent creation. However, pay-as-you-go credits never expire! Your first
+                  purchase 2x bonus credits are also permanent.
+                </dd>
+              </div>
+              <div>
+                <dt className="text-foreground text-lg font-semibold">
+                  What's included in each plan?
+                </dt>
+                <dd className="text-muted-foreground mt-2 text-base">
+                  All plans include the same core features (watermark removal, 4K quality, etc.).
+                  The differences:
+                  <br />• <strong>Pay-as-you-go</strong>: 1,000 credits (lifetime), 3 videos/day
+                  <br />• <strong>Starter</strong>: 2,500 credits/month, save 24%, 3 videos/day
+                  <br />• <strong>Pro</strong>: 7,000 credits/month, save 43%, 50 videos/day +
+                  priority
+                  <br />• <strong>Business</strong>: Custom, save up to 50%
+                </dd>
+              </div>
+              <div>
+                <dt className="text-foreground text-lg font-semibold">
+                  Can I cancel my subscription anytime?
+                </dt>
+                <dd className="text-muted-foreground mt-2 text-base">
+                  Absolutely! Cancel anytime with no penalties. You'll keep access until the end of
+                  your current billing period. Pay-as-you-go credits never expire. We want happy
+                  customers, not trapped ones.
                 </dd>
               </div>
               <div>

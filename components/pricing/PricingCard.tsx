@@ -15,12 +15,15 @@ import { createClient } from '@/lib/supabase/client'
 interface PricingCardProps {
   tier: {
     name: string
-    credits: number
-    price: number // in cents
+    type: 'one-time' | 'subscription' | 'contact'
+    credits?: number
+    monthlyCredits?: number
+    price: number
     priceDisplay: string
     discount: number
     description: string
-    features: Array<{ text: string; included: boolean; highlight?: boolean }>
+    videoExamples: string
+    features: Array<{ text: string; included: boolean; highlight?: boolean; badge?: string }>
     popular?: boolean
     ctaText: string
     isContactSales?: boolean
@@ -42,19 +45,23 @@ export function PricingCard({ tier }: PricingCardProps) {
     checkAuth()
   }, [])
 
-  const handleBuyCredits = async () => {
+  const handlePurchase = async () => {
     if (isLoading) return
 
     setIsLoading(true)
     try {
-      // Call /api/checkout to create Stripe session
+      // Call /api/checkout to create Stripe checkout session
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          planName: tier.name,
+          type: tier.type,
           credits: tier.credits,
+          monthlyCredits: tier.monthlyCredits,
+          price: tier.price,
         }),
       })
 
@@ -119,14 +126,24 @@ export function PricingCard({ tier }: PricingCardProps) {
         </div>
 
         <div className="mt-3 flex h-20 flex-col justify-center xl:mt-4 xl:h-24">
-          <p className={`text-2xl font-bold tracking-tight xl:text-3xl ${textColor}`}>
-            {tier.priceDisplay}
-          </p>
+          <div className="flex items-baseline gap-2">
+            <p className={`text-2xl font-bold tracking-tight xl:text-3xl ${textColor}`}>
+              {tier.priceDisplay}
+            </p>
+            {tier.type === 'subscription' && <span className={`text-sm ${subtextColor}`}>/mo</span>}
+          </div>
           <p className={`mt-1 text-[11px] xl:text-xs ${subtextColor}`}>
             {tier.isContactSales
               ? 'Tailored to your needs'
-              : `${tier.credits.toLocaleString()} credits`}
+              : tier.type === 'one-time'
+                ? `${tier.credits?.toLocaleString()} credits (one-time)`
+                : `${tier.monthlyCredits?.toLocaleString()} credits/month`}
           </p>
+          {tier.discount > 0 && !tier.isContactSales && (
+            <p className="text-success mt-0.5 text-[10px] font-semibold xl:text-[11px]">
+              Save {tier.discount}% vs pay-as-you-go
+            </p>
+          )}
         </div>
 
         <p className={`mt-3 text-[11px] leading-tight xl:mt-4 xl:text-xs ${subtextColor}`}>
@@ -135,21 +152,30 @@ export function PricingCard({ tier }: PricingCardProps) {
 
         <ul className="mt-3 space-y-1 xl:mt-4 xl:space-y-1.5">
           {tier.features.map((feature, idx) => (
-            <li key={idx} className="flex items-start">
-              <span
-                className={
-                  tier.popular
-                    ? 'text-primary-foreground mr-1.5 flex-shrink-0 text-xs'
-                    : 'text-primary-600 mr-1.5 flex-shrink-0 text-xs'
-                }
-              >
-                {feature.included ? '✓' : '−'}
-              </span>
-              <span
-                className={`text-[11px] leading-tight xl:text-xs ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
-              >
-                {feature.text}
-              </span>
+            <li key={idx} className="flex items-start justify-between gap-2">
+              <div className="flex items-start">
+                <span
+                  className={
+                    tier.popular
+                      ? 'text-primary-foreground mr-1.5 flex-shrink-0 text-xs'
+                      : 'text-primary-600 mr-1.5 flex-shrink-0 text-xs'
+                  }
+                >
+                  {feature.included ? '✓' : '−'}
+                </span>
+                <span
+                  className={`text-[11px] leading-tight xl:text-xs ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
+                >
+                  {feature.text}
+                </span>
+              </div>
+              {feature.badge && (
+                <span
+                  className={`${tier.popular ? 'bg-primary-800' : 'bg-primary-600'} flex-shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold text-white`}
+                >
+                  {feature.badge}
+                </span>
+              )}
             </li>
           ))}
         </ul>
@@ -165,7 +191,7 @@ export function PricingCard({ tier }: PricingCardProps) {
         </Link>
       ) : isLoggedIn ? (
         <button
-          onClick={handleBuyCredits}
+          onClick={handlePurchase}
           disabled={isLoading}
           className={`${
             tier.popular
