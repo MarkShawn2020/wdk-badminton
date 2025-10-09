@@ -13,9 +13,9 @@ export default function Home({ posts }) {
               Turn Your Video Instantly Shareable
             </h1>
             <p className="text-muted-foreground mt-6 text-lg leading-8">
-              Transform AI videos from Sora, Veo, Kling & JiMeng into professional content. Remove
-              watermarks, enhance quality, adjust aspect ratios, and add custom branding—all in
-              minutes.
+              Transform AI videos from Sora, Veo, Kling & JiMeng into ready-to-post social content.
+              Remove watermarks, enhance quality, add custom branding, and get AI-generated
+              captions—all in minutes.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
@@ -110,8 +110,8 @@ export default function Home({ posts }) {
               ReelVan Transforms Your AI Videos
             </p>
             <p className="text-muted-foreground mt-6 text-lg leading-8">
-              All-in-one platform designed specifically for AI-generated video content. Process your
-              videos in minutes, not hours.
+              Complete publishing workflow for AI-generated videos. From processing to posting—get
+              your video and captions ready in minutes, not hours.
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
@@ -147,14 +147,14 @@ export default function Home({ posts }) {
               <div className="flex flex-col">
                 <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
                   <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">📐</span>
+                    <span className="text-xl text-white">📝</span>
                   </div>
-                  Aspect Ratio Conversion
+                  AI Caption Generation
                 </dt>
                 <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
                   <p className="flex-auto">
-                    Smart cropping for 16:9, 9:16 Stories, 1:1 Square, and 4:5 Feed. Optimized for
-                    YouTube, TikTok, Instagram, and more.
+                    Get platform-optimized captions instantly. Instagram, TikTok, YouTube,
+                    LinkedIn—each with perfect tone, hashtags, and CTAs. Ready to copy and post.
                   </p>
                 </dd>
               </div>

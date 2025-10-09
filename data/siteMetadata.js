@@ -1,10 +1,10 @@
 /** @type {import("pliny/config").PlinyConfig } */
 const siteMetadata = {
-  title: 'ReelVan - Transform AI-Generated Videos | Remove Watermarks & Enhance Quality',
+  title: 'ReelVan - Turn Your Video Instantly Shareable | AI Video Enhancement & Captions',
   author: 'ReelVan Team',
   headerTitle: 'ReelVan',
   description:
-    'Professional video enhancement for AI-generated content. Remove watermarks from Sora, Veo, Kling & JiMeng videos. Enhance quality, change aspect ratios, add custom branding. Try free.',
+    'Transform AI videos into ready-to-post social content. Remove watermarks from Sora, Veo, Kling & JiMeng videos. Enhance quality, add branding, get AI-generated captions. Try free.',
   language: 'en-us',
   theme: 'light', // system, dark or light
   siteUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://reelvan.com',

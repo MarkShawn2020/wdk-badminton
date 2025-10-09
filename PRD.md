@@ -10,11 +10,11 @@
 
 ### Product Vision
 
-ReelVan is a specialized video enhancement platform for AI-generated content creators. We solve the critical pain points of watermarks, quality limitations, and aspect ratio constraints that plague AI video platforms (Sora, Veo, Kling, JiMeng).
+ReelVan is a specialized content publishing platform for AI-generated video creators. We solve the critical pain points of watermarks, quality limitations, and the "what do I write?" friction that prevents creators from sharing AI videos on social media (Sora, Veo, Kling, JiMeng).
 
 ### Tagline
 
-**Share Your AI Video** - Transform AI-generated videos into professional, share-ready content.
+**Turn Your Video Instantly Shareable** - Transform AI-generated videos into ready-to-post social content in minutes.
 
 ### Business Model
 
@@ -47,17 +47,19 @@ ReelVan is a specialized video enhancement platform for AI-generated content cre
 
 - ❌ Platform watermarks ruin professional presentation
 - ❌ AI videos often have quality artifacts
-- ❌ Fixed aspect ratios don't work across platforms
+- ❌ Writer's block: "What caption should I use for this video?"
+- ❌ Time-consuming to optimize copy for each platform (Instagram, TikTok, YouTube)
 - ❌ No branding options for redistribution
 - ❌ Expensive video editing software required
 
 ### Competitive Advantage
 
-- ✅ **Specialized**: Built specifically for AI-generated videos
+- ✅ **Specialized**: Built specifically for AI-generated videos + social publishing
 - ✅ **Fast**: Cloud processing, no software installation
 - ✅ **SEO-First**: Discoverable when users search for solutions
-- ✅ **All-in-One**: Multiple enhancement features in one flow
+- ✅ **End-to-End**: Video processing + caption generation in one flow
 - ✅ **Cost-Effective**: Pay only for what you process
+- ✅ **Unique Position**: Only platform combining watermark removal with AI caption generation
 
 ---
 
@@ -127,29 +129,9 @@ ReelVan is a specialized video enhancement platform for AI-generated content cre
 
 ---
 
-#### F4: Aspect Ratio Conversion
+#### F4: Custom Watermark Addition
 
 **Priority:** P0 (Critical)
-**User Story:** As a user, I can convert videos to different aspect ratios for various platforms.
-
-**Requirements:**
-
-- Preset ratios: 16:9, 9:16 (Stories), 1:1 (Square), 4:5 (Feed)
-- Smart cropping with AI focus detection
-- Manual adjustment option
-- Platform suggestions (YouTube, TikTok, Instagram)
-
-**Technical Notes:**
-
-- Implement smart cropping algorithm
-- Preserve important visual elements
-- Preview cropped result before processing
-
----
-
-#### F5: Custom Watermark Addition
-
-**Priority:** P1 (High)
 **User Story:** As a user, I can add my own branding/watermark to processed videos.
 
 **Requirements:**
@@ -165,6 +147,42 @@ ReelVan is a specialized video enhancement platform for AI-generated content cre
 - Support PNG with transparency
 - Saved watermark templates for repeat users
 - Apply watermark in final processing step
+
+---
+
+#### F5: AI Caption Generation
+
+**Priority:** P0 (Critical)
+**User Story:** As a user, I can generate platform-optimized captions for my processed videos.
+
+**Requirements:**
+
+- Automatic caption generation based on video content and context
+- Platform-specific variants: Instagram, TikTok, YouTube, Twitter, LinkedIn
+- Tone options: Professional, Casual, Humorous, Inspirational, Educational
+- Hashtag suggestions relevant to content
+- Emoji integration (platform-appropriate)
+- Call-to-action (CTA) suggestions
+- Edit capability before copying
+- Copy to clipboard functionality
+- Caption history/library for re-use
+
+**Technical Notes:**
+
+- Integrate LLM API (OpenAI GPT-4, Claude, or similar)
+- Parallel processing: Generate captions while video processes
+- Prompt engineering for high-quality, platform-specific outputs
+- Store generated captions in database for analytics
+- Character limits per platform (Instagram 2,200, TikTok 300, YouTube 5,000)
+- Cost estimation: ~$0.001-0.01 per caption generation (negligible vs video processing)
+
+**Caption Generation Flow:**
+
+1. User uploads video with optional context (target audience, message, brand voice)
+2. System analyzes video metadata (filename, duration, any user-provided description)
+3. LLM generates 3-5 caption variants per selected platform
+4. User reviews, edits if needed, and copies preferred captions
+5. Captions saved to user's caption library for future reference
 
 ---
 
@@ -300,24 +318,35 @@ All users get the same features (4K quality, watermark removal, etc.). Tiers onl
 ### Primary Flow: First-Time User Video Processing
 
 ```
-1. Land on homepage (SEO traffic) → See value prop + examples
-2. Click "Try Free" → Sign up (email or OAuth)
+1. Land on homepage (SEO traffic) → See value prop: "Turn Your Video Instantly Shareable"
+2. Click "Enhance Your Video" → Sign up (email or OAuth)
 3. Upload video → Drag & drop MP4 file
-4. Select enhancements → Check: Remove watermark, Enhance quality, 16:9
-5. Preview & price → See cost: 280 credits (free tier: 0 available)
-6. Purchase credits → Pay $5 for 500 credits
-7. Start processing → Real-time progress bar
-8. Download result → Compare before/after, download MP4
-9. Share or process another → Repeat or share results
+4. Select enhancements → Check: Remove watermark, Enhance quality, Add custom watermark
+5. Optional: Add context → Target platform (Instagram/TikTok/YouTube), brand voice
+6. Preview & price → See cost: 240 credits (30-sec video)
+7. Purchase credits → Pay $4.50 for 500 credits (100 free credits for new users)
+8. Start processing → Real-time progress bar (video + caption generation in parallel)
+9. Results ready → Compare before/after, download MP4 + copy platform-specific captions
+10. Share → Post to Instagram/TikTok with generated captions, or process another video
 ```
 
 ### Secondary Flow: Returning User
 
 ```
-1. Login → Dashboard shows remaining credits
-2. Upload video → Quick upload (remembered settings)
+1. Login → Dashboard shows remaining credits + caption history
+2. Upload video → Quick upload (remembered settings & brand voice)
 3. Process → One-click process with saved preferences
-4. Download → Notification when ready
+4. Download + Captions → Video ready + 3-5 caption variants per platform
+5. Post → Copy preferred caption, post to social media
+```
+
+### Tertiary Flow: Caption-Only Generation (Future Feature)
+
+```
+1. User has existing video (already processed or from other source)
+2. Upload thumbnail or describe video → Provide context
+3. Generate captions → AI creates platform-specific variants
+4. Copy & use → No video processing needed
 ```
 
 ---
@@ -327,28 +356,59 @@ All users get the same features (4K quality, watermark removal, etc.). Tiers onl
 ### 5.1 Architecture
 
 ```
-┌─────────────┐
-│   Next.js   │  Frontend (SSR, SSG for SEO)
-│   App       │
-└──────┬──────┘
-       │
-       ├─────────────────┐
-       │                 │
-┌──────▼──────┐   ┌──────▼──────┐
-│  Supabase   │   │   Stripe    │
-│             │   │             │
-│ - Auth      │   │ - Payments  │
-│ - Database  │   │ - Webhooks  │
-│ - Storage   │   └─────────────┘
+┌─────────────────────────────────────────┐
+│           Next.js App Router            │
+│      (SSR/SSG for SEO optimization)     │
+└──────┬──────────────────────────┬───────┘
+       │                          │
+       │                          │
+┌──────▼──────┐           ┌───────▼────────┐
+│  Supabase   │           │    Stripe      │
+│             │           │                │
+│ - Auth      │           │ - Payments     │
+│ - Database  │           │ - Webhooks     │
+│ - Storage   │           └────────────────┘
 │ - Realtime  │
 └──────┬──────┘
        │
-┌──────▼──────────────┐
-│  Video Processing   │
-│  API (3rd Party)    │
-│                     │
-│  Cost: per 5 sec    │
-└─────────────────────┘
+       ├────────────────────┬─────────────────────┐
+       │                    │                     │
+┌──────▼─────────────┐  ┌──▼────────────┐  ┌─────▼────────────┐
+│ Video Processing   │  │  LLM API      │  │  CDN (Vercel)    │
+│ API (3rd Party)    │  │ (OpenAI/      │  │                  │
+│                    │  │  Anthropic)   │  │ - Video delivery │
+│ - Watermark remove │  │               │  │ - Static assets  │
+│ - Quality enhance  │  │ - Caption gen │  └──────────────────┘
+│ - Custom watermark │  │ - Multi-      │
+│                    │  │   platform    │
+│ Cost: ~$0.10/5 sec │  │               │
+└────────────────────┘  │ Cost: ~$0.01  │
+                        │   per request │
+                        └───────────────┘
+```
+
+**Processing Pipeline:**
+
+```
+User Upload
+    │
+    ├──→ [Video Storage] (Supabase)
+    │
+    ├──→ [Video Processing API] (Parallel)
+    │     - Watermark removal
+    │     - Quality enhancement
+    │     - Custom watermark addition
+    │     ↓
+    │   [Processed Video] → CDN
+    │
+    └──→ [Caption Generation API] (Parallel)
+          - Video metadata extraction
+          - Context analysis
+          - Platform-specific LLM prompts
+          ↓
+        [Generated Captions] → Database
+
+Both processes complete → User notified → Download + Copy
 ```
 
 ### 5.2 Tech Stack
@@ -396,6 +456,7 @@ profiles (
   id uuid PRIMARY KEY REFERENCES auth.users,
   credits integer DEFAULT 0,
   subscription_tier text,
+  brand_voice text, -- Saved brand voice for caption generation
   created_at timestamp,
   updated_at timestamp
 )
@@ -410,14 +471,32 @@ videos (
   status text, -- uploaded, processing, completed, failed
   enhancements jsonb, -- selected features
   cost_credits integer,
+  video_description text, -- Optional user-provided context for caption generation
   created_at timestamp,
   completed_at timestamp
 )
 
+video_captions (
+  id uuid PRIMARY KEY,
+  video_id uuid REFERENCES videos,
+  user_id uuid REFERENCES auth.users,
+  platform text, -- instagram, tiktok, youtube, twitter, linkedin
+  caption_text text,
+  hashtags text[],
+  tone text, -- professional, casual, humorous, inspirational
+  was_edited boolean DEFAULT false, -- Track if user edited AI output
+  was_used boolean DEFAULT false, -- Track if user copied/used this caption
+  created_at timestamp
+)
+
+-- Index for fast caption retrieval
+CREATE INDEX idx_video_captions_video_id ON video_captions(video_id);
+CREATE INDEX idx_video_captions_user_id ON video_captions(user_id);
+
 transactions (
   id uuid PRIMARY KEY,
   user_id uuid REFERENCES auth.users,
-  type text, -- purchase, deduction
+  type text, -- purchase, deduction, signup_bonus
   amount_credits integer,
   stripe_payment_id text,
   created_at timestamp
@@ -451,20 +530,49 @@ watermark_templates (
 
 **Target Keywords (High Intent):**
 
+**Primary (Video Processing):**
+
 - "remove watermark from AI video"
 - "Sora video watermark removal"
 - "enhance AI generated video quality"
 - "Veo video editor"
-- "Kling video aspect ratio converter"
+- "Kling video enhancement"
 - "AI video post-processing"
 
+**Primary (Caption Generation - NEW):**
+
+- "AI video caption generator"
+- "Instagram caption for AI video"
+- "TikTok description generator"
+- "social media captions for videos"
+- "Sora video captions"
+- "AI generated video marketing copy"
+- "YouTube description generator AI"
+
+**Long-tail (High Commercial Intent):**
+
+- "how to share Sora videos on Instagram"
+- "best captions for AI generated videos"
+- "turn AI video into social media post"
+- "Veo to TikTok workflow"
+
 **Content Strategy:**
+
+**Video Enhancement Content:**
 
 - Blog posts: "How to Remove [Platform] Watermark"
 - Guides: "Best Practices for AI Video Quality"
 - Comparisons: "Sora vs Veo vs Kling Video Output"
 - Case studies: Before/after examples
 - Tool pages: Dedicated pages per platform
+
+**Caption Generation Content (NEW):**
+
+- Blog posts: "How to Write Viral Captions for Sora Videos"
+- Guides: "Instagram Caption Templates for AI Videos"
+- Tutorials: "From Sora to Social Media in 5 Minutes"
+- Lists: "100 Caption Ideas for AI-Generated Videos"
+- Case studies: "How AI Captions Increased Engagement by 300%"
 
 ### 6.3 On-Page Optimization
 
@@ -481,7 +589,9 @@ watermark_templates (
 
 ### North Star Metric
 
-**Monthly Revenue (MRR + Variable Revenue)**
+**Videos Published to Social Media with ReelVan** (not just "videos processed")
+
+This measures actual value delivered: helping users share their content.
 
 ### Key Metrics (Track from Day 1)
 
@@ -494,25 +604,37 @@ watermark_templates (
 **Activation:**
 
 - Sign up → First video processed (target: 40%+)
-- Time to first value (<5 minutes)
+- Sign up → First caption generated (target: 35%+)
+- Time to first value: video + caption (<5 minutes)
+
+**Engagement (Caption Feature - NEW):**
+
+- Caption generation adoption rate (target: 80%+ of processed videos)
+- Platforms selected per video (target: 2.5+ platforms)
+- Captions copied per video (target: 70%+ copy at least one)
+- Caption edit rate (target: <40% = indicates good quality)
+- Caption re-use rate (from library)
 
 **Revenue:**
 
-- Average revenue per user (ARPU) (target: $8-12)
+- Average revenue per user (ARPU) (target: $10-15, increased due to caption value)
 - Credits purchased per user
 - Subscription conversion rate (target: 3-5% of active users)
 
 **Retention:**
 
-- 7-day return rate (target: 20%+)
+- 7-day return rate (target: 25%+, improved by caption feature)
 - Monthly active users (MAU)
 - Processing frequency (videos per user per month)
 
 **Efficiency:**
 
 - API cost as % of revenue (target: <30%)
+  - Video processing: ~$0.10-0.15 per 5 seconds
+  - Caption generation: ~$0.001-0.01 per request (negligible)
 - Processing success rate (target: >95%)
 - Average processing time per video
+- Caption generation quality (measured by edit rate)
 
 ---
 
@@ -537,10 +659,10 @@ watermark_templates (
 ### Phase 3: Enhancement Features (Weeks 5-6)
 
 - [ ] Quality enhancement
-- [ ] Aspect ratio conversion
 - [ ] Custom watermark addition
+- [ ] AI caption generation (LLM integration)
 - [ ] User dashboard
-- [ ] Processing history
+- [ ] Processing history + caption library
 
 ### Phase 4: Monetization (Week 7)
 
@@ -620,6 +742,49 @@ watermark_templates (
 - Additional features (branding, analytics)
 - Build moat through SEO and community
 
+#### R6: Caption Quality Variability (NEW)
+
+**Risk:** LLM-generated captions may be low quality, generic, or inappropriate
+**Mitigation:**
+
+- Extensive prompt engineering and testing
+- Generate 3-5 variants per platform for user choice
+- Allow full editing capability before copying
+- Learn from user edits to improve future generations
+- A/B test different LLM providers (OpenAI, Anthropic, open-source)
+- Set clear expectations: "AI-generated suggestions, review before posting"
+
+#### R7: LLM API Cost Unpredictability (NEW)
+
+**Risk:** OpenAI/Anthropic pricing changes or API rate limits
+**Mitigation:**
+
+- Multi-provider strategy (can switch between OpenAI, Claude, Gemini)
+- Monitor costs per generation in real-time
+- Set hard caps on token usage per request
+- Bundle caption generation in base price (marginal cost is low)
+- Develop fallback to open-source models if needed
+
+#### R8: Platform Caption Requirements Change (NEW)
+
+**Risk:** Instagram/TikTok/YouTube change character limits or policies
+**Mitigation:**
+
+- Flexible prompt system (easy to update character limits)
+- Monitor platform API documentation regularly
+- Quick deployment pipeline for prompt updates
+- Store platform requirements in database (configurable)
+
+#### R9: AI Content Disclosure Requirements (NEW)
+
+**Risk:** Regulations may require labeling AI-generated captions
+**Mitigation:**
+
+- Add optional disclaimer text (" AI-assisted")
+- Stay informed on FTC/EU regulations
+- Emphasize captions are "suggestions" and user-editable
+- Provide transparency in terms of service
+
 ---
 
 ## 10. Post-MVP Roadmap
@@ -627,13 +792,17 @@ watermark_templates (
 ### Phase 6: Scale Features (Months 2-3)
 
 - Batch processing (multiple videos)
-- Video trimming and basic editing
+- **Brand voice training** (learn user's writing style for better captions)
+- **A/B testing captions** (generate variants, predict performance)
+- **Caption-only mode** (generate captions without video processing)
 - Audio enhancement
 - Subtitle generation
-- Template marketplace
 
 ### Phase 7: Advanced Features (Months 4-6)
 
+- **Caption performance analytics** (track engagement by caption type)
+- **Hashtag research tool** (trending + relevant suggestions)
+- **Content calendar integration** (schedule posts directly)
 - API for developers
 - Team/agency accounts
 - White-label solutions
@@ -643,7 +812,8 @@ watermark_templates (
 ### Phase 8: Platform Play (Months 6-12)
 
 - Direct integrations with AI video platforms
-- Social media auto-posting
+- **Social media auto-posting** (post with captions directly to platforms)
+- **Multi-video campaign generator** (cohesive caption series)
 - Analytics and performance tracking
 - Community showcase
 - Affiliate program
