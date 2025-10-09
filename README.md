@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![ReelVan Logo](./public/logo.png)
+![ReelVan Logo](./public/static/images/logo.svg)
 
 **Transform AI-generated videos into professional, share-ready content**
 
@@ -407,7 +407,9 @@ reelvan-web/
 ├── public/                   # Static assets
 │   ├── images/
 │   ├── videos/
-│   └── logo.png
+│   └── static/
+│       └── images/
+│           └── logo.svg
 │
 ├── docs/                     # Additional documentation
 │   ├── api.md

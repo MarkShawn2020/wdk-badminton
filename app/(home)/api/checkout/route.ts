@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: `${validated.credits.toLocaleString()} ReelVan Credits`,
               description: 'Credits for video processing on ReelVan',
-              images: [`${process.env.NEXT_PUBLIC_APP_URL}/logo.png`],
+              images: [`${process.env.NEXT_PUBLIC_APP_URL}/static/images/logo.svg`],
             },
             unit_amount: price, // Amount in cents
           },

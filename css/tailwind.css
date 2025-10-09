@@ -14,19 +14,19 @@
     var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
-  /* Colors - ReelVan Brand Orange #D97757 */
-  /* Base color: #D97757 = oklch(0.6435 0.2577 20.9) */
-  --color-primary-50: oklch(0.97 0.03 20.9);
-  --color-primary-100: oklch(0.95 0.05 20.9);
-  --color-primary-200: oklch(0.9 0.1 20.9);
-  --color-primary-300: oklch(0.82 0.16 20.9);
-  --color-primary-400: oklch(0.72 0.22 20.9);
-  --color-primary-500: oklch(0.6435 0.2577 20.9);
-  --color-primary-600: oklch(0.58 0.24 20.9);
-  --color-primary-700: oklch(0.52 0.21 20.9);
-  --color-primary-800: oklch(0.45 0.18 20.9);
-  --color-primary-900: oklch(0.4 0.15 20.9);
-  --color-primary-950: oklch(0.28 0.11 20.9);
+  /* Colors - ReelVan Brand Terracotta #CC785C */
+  /* Base color: #CC785C = oklch(0.61 0.133 35.5) */
+  --color-primary-50: oklch(0.97 0.015 35.5);
+  --color-primary-100: oklch(0.95 0.03 35.5);
+  --color-primary-200: oklch(0.9 0.06 35.5);
+  --color-primary-300: oklch(0.82 0.09 35.5);
+  --color-primary-400: oklch(0.72 0.12 35.5);
+  --color-primary-500: oklch(0.61 0.133 35.5);
+  --color-primary-600: oklch(0.55 0.12 35.5);
+  --color-primary-700: oklch(0.48 0.11 35.5);
+  --color-primary-800: oklch(0.42 0.09 35.5);
+  --color-primary-900: oklch(0.36 0.07 35.5);
+  --color-primary-950: oklch(0.26 0.05 35.5);
 
   --color-gray-50: oklch(0.985 0.002 247.839);
   --color-gray-100: oklch(0.967 0.003 264.542);
@@ -40,11 +40,46 @@
   --color-gray-900: oklch(0.21 0.034 264.665);
   --color-gray-950: oklch(0.13 0.028 261.692);
 
+  /* === Claude-inspired Semantic Colors === */
+
+  /* Text Colors - 符合设计指南 */
+  --color-text-main: oklch(0.145 0 0);
+  --color-text-faded: oklch(0.556 0.012 80);
+  --color-text-inverse: oklch(0.985 0 0);
+
+  /* Background Colors - Claude 设计系统 */
+  --color-bg-main: oklch(0.985 0.005 85);
+  --color-bg-ivory: oklch(0.952 0.008 85);
+  --color-bg-oat: oklch(0.97 0.01 85);
+  --color-bg-dark: oklch(0.15 0 0);
+  --color-bg-faded: oklch(0.25 0 0);
+
+  /* Swatch Colors - Claude 品牌调色板（用于 feature highlights） */
+  --color-swatch-slate: oklch(0.556 0.012 80);
+  --color-swatch-cloud: oklch(0.925 0.01 85);
+  --color-swatch-fig: oklch(0.68 0.12 300);
+  --color-swatch-olive: oklch(0.75 0.08 100);
+  --color-swatch-cactus: oklch(0.62 0.06 180);
+  --color-swatch-sky: oklch(0.72 0.08 240);
+  --color-swatch-heather: oklch(0.78 0.1 310);
+
+  /* Border Colors */
+  --color-border-subtle: oklch(0.556 0.012 80);
+
   /* Line heights */
   --line-height-11: 2.75rem;
   --line-height-12: 3rem;
   --line-height-13: 3.25rem;
   --line-height-14: 3.5rem;
+
+  /* Spacing System - Claude 设计指南 */
+  --spacing-text: 1rem;
+  --spacing-gutter: 2rem;
+  --spacing-s: 1rem;
+  --spacing-m: 1.5rem;
+  --spacing-l: 3rem;
+  --spacing-xl: 4rem;
+  --spacing-xxl: 6rem;
 
   /* Z-index values */
   --z-60: 60;
@@ -523,18 +558,18 @@ input:-webkit-autofill:focus {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.6435 0.2577 20.9);
+  --primary: oklch(0.61 0.133 35.5);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.6435 0.2577 20.9);
+  --accent: oklch(0.61 0.133 35.5);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.6435 0.2577 20.9);
+  --ring: oklch(0.61 0.133 35.5);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -542,12 +577,12 @@ input:-webkit-autofill:focus {
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.6435 0.2577 20.9);
+  --sidebar-primary: oklch(0.61 0.133 35.5);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.6435 0.2577 20.9);
+  --sidebar-ring: oklch(0.61 0.133 35.5);
 }
 
 .dark {
@@ -557,18 +592,18 @@ input:-webkit-autofill:focus {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.72 0.22 20.9);
+  --primary: oklch(0.72 0.12 35.5);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.72 0.22 20.9);
+  --accent: oklch(0.72 0.12 35.5);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.72 0.22 20.9);
+  --ring: oklch(0.72 0.12 35.5);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -576,12 +611,12 @@ input:-webkit-autofill:focus {
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.72 0.22 20.9);
+  --sidebar-primary: oklch(0.72 0.12 35.5);
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.72 0.22 20.9);
+  --sidebar-ring: oklch(0.72 0.12 35.5);
 }
 
 @layer base {
