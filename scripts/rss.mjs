@@ -3,7 +3,14 @@ import path from 'path'
 import { slug } from 'github-slugger'
 import { escape } from 'pliny/utils/htmlEscaper.js'
 import siteMetadata from '../data/siteMetadata.js'
-import { source } from '../lib/source.ts'
+import { blog } from '../.source/index.ts'
+import { loader } from 'fumadocs-core/source'
+
+// Create source from blog data
+const source = loader({
+  baseUrl: '/blog',
+  source: blog.toFumadocsSource(),
+})
 
 // Read tag data from JSON file
 const tagData = JSON.parse(readFileSync('./app/tag-data.json', 'utf-8'))
