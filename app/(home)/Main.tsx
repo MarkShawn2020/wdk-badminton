@@ -19,10 +19,10 @@ export default function Home({ posts }) {
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
-                href="/enhance"
+                href="/publish"
                 className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
               >
-                Enhance Your Video
+                Get Started
               </Link>
               <Link href="#features" className="text-foreground text-base leading-7 font-semibold">
                 Learn more <span aria-hidden="true">→</span>

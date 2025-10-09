@@ -19,7 +19,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/enhance" className="text-muted-foreground hover:text-foreground">
+                <Link href="/publish" className="text-muted-foreground hover:text-foreground">
                   Features
                 </Link>
               </li>

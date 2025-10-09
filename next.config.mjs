@@ -104,6 +104,15 @@ export default () => {
         },
       ]
     },
+    async redirects() {
+      return [
+        {
+          source: '/enhance',
+          destination: '/publish',
+          permanent: true, // 301 redirect
+        },
+      ]
+    },
     webpack: (config, options) => {
       config.module.rules.push({
         test: /\.svg$/,

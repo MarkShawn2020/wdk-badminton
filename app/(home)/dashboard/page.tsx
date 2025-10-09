@@ -95,7 +95,7 @@ export default async function DashboardPage() {
             <h1 className="text-foreground text-3xl font-bold">Dashboard</h1>
             <p className="text-muted-foreground mt-1">Manage your videos and credits</p>
           </div>
-          <Link href="/enhance">
+          <Link href="/publish">
             <Button size="lg" className="gap-2">
               <Sparkles className="h-5 w-5" />
               New Video

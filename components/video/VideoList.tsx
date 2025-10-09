@@ -139,7 +139,7 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
         <FileVideo className="mx-auto h-12 w-12 text-gray-400" />
         <h3 className="text-foreground mt-4 text-lg font-semibold">No videos yet</h3>
         <p className="text-muted-foreground mt-2">Upload your first video to get started</p>
-        <Link href="/enhance">
+        <Link href="/publish">
           <Button className="mt-4">Upload Video</Button>
         </Link>
       </div>
