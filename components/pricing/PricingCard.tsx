@@ -104,17 +104,16 @@ export function PricingCard({ tier }: PricingCardProps) {
       <div className="flex-1">
         <h3 className={`text-lg font-semibold sm:text-xl ${textColor}`}>{tier.name}</h3>
 
-        <p className="mt-4 flex items-baseline">
-          <span className={`text-4xl font-bold tracking-tight sm:text-5xl ${textColor}`}>
+        <div className="mt-6">
+          <p className={`text-4xl font-bold tracking-tight sm:text-5xl ${textColor}`}>
             {tier.priceDisplay}
-          </span>
-        </p>
+          </p>
+          <p className={`mt-2 text-xs sm:text-sm ${subtextColor}`}>
+            {tier.credits.toLocaleString()} credits
+          </p>
+        </div>
 
-        <p className={`mt-2 text-xs sm:text-sm ${subtextColor}`}>
-          {tier.credits.toLocaleString()} credits
-        </p>
-
-        <p className={`mt-4 text-sm sm:mt-6 sm:text-base ${subtextColor}`}>{tier.description}</p>
+        <p className={`mt-6 text-sm sm:text-base ${subtextColor}`}>{tier.description}</p>
 
         <ul className="mt-6 space-y-2 sm:mt-8 sm:space-y-3">
           {tier.features.map((feature, idx) => (

@@ -22,7 +22,10 @@ export function PricingPreview() {
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-stretch gap-6 sm:mt-20 sm:max-w-xl sm:grid-cols-2 xl:max-w-7xl xl:grid-cols-4 xl:gap-8">
+        <div
+          className="mx-auto mt-16 grid grid-cols-1 items-stretch gap-6 sm:mt-20 sm:max-w-xl sm:grid-cols-2 xl:max-w-none xl:grid-cols-4 xl:gap-8"
+          style={{ width: '100%', maxWidth: '100%' }}
+        >
           {creditPackages.map((pkg) => (
             <PricingCard key={pkg.name} tier={pkg} />
           ))}

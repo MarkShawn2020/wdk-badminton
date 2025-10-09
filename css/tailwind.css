@@ -627,3 +627,18 @@ input:-webkit-autofill:focus {
     @apply bg-background text-foreground;
   }
 }
+
+/* Text layout fix - minimal and non-intrusive */
+@layer base {
+  /* Force horizontal text direction globally */
+  html {
+    writing-mode: horizontal-tb;
+    direction: ltr;
+  }
+
+  /* Prevent aggressive word breaking */
+  body {
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+}

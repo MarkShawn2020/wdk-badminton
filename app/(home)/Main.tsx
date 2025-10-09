@@ -49,11 +49,17 @@ export default function Home({ posts }) {
       {/* Features Section */}
       <section id="features" className="py-24 sm:py-32">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-primary-600 text-base leading-7 font-semibold">
+          <div className="mx-auto max-w-2xl lg:text-center" style={{ width: '100%' }}>
+            <h2
+              className="text-primary-600 text-base leading-7 font-semibold"
+              style={{ width: '100%', display: 'block' }}
+            >
               Everything You Need
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100">
+            <p
+              className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100"
+              style={{ width: '100%', display: 'block' }}
+            >
               ReelVan Transforms Your AI Videos
             </p>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
@@ -155,9 +161,17 @@ export default function Home({ posts }) {
       {/* How It Works Section */}
       <section className="bg-gray-50 py-24 sm:py-32 dark:bg-gray-900/50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center">
-            <h2 className="text-primary-600 text-base leading-7 font-semibold">Simple Process</h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100">
+          <div className="mx-auto max-w-2xl lg:text-center" style={{ width: '100%' }}>
+            <h2
+              className="text-primary-600 text-base leading-7 font-semibold"
+              style={{ width: '100%', display: 'block' }}
+            >
+              Simple Process
+            </h2>
+            <p
+              className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100"
+              style={{ width: '100%', display: 'block' }}
+            >
               From Upload to Download in Minutes
             </p>
           </div>
@@ -219,11 +233,17 @@ export default function Home({ posts }) {
       {/* Social Proof Section */}
       <section className="bg-gray-50 py-24 sm:py-32 dark:bg-gray-900/50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-primary-600 text-base leading-7 font-semibold tracking-tight sm:text-lg sm:leading-8">
+          <div className="mx-auto max-w-xl text-center" style={{ minWidth: '100%', width: '100%' }}>
+            <h2
+              className="text-primary-600 text-base leading-7 font-semibold tracking-tight sm:text-lg sm:leading-8"
+              style={{ width: '100%', display: 'block' }}
+            >
               Trusted by AI creators
             </h2>
-            <p className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl dark:text-gray-100">
+            <p
+              className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl dark:text-gray-100"
+              style={{ width: '100%', display: 'block' }}
+            >
               Join thousands enhancing their AI videos
             </p>
           </div>
@@ -296,7 +316,7 @@ export default function Home({ posts }) {
             <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100">
               Ready to transform your AI videos?
             </h2>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="mx-auto mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
               Start with our free tier. No credit card required. Process your first video in under 5
               minutes.
             </p>
