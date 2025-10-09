@@ -1,14 +1,13 @@
 'use client'
 
 /**
- * Complete video upload and processing flow component
+ * Complete video upload and processing dashboard
  *
- * Orchestrates:
- * 1. Video file selection
- * 2. Processing options configuration
- * 3. Upload to Supabase Storage
- * 4. Submit to processing API
- * 5. Redirect to processing page
+ * All-in-one view for:
+ * 1. Video file upload
+ * 2. Processing options selection
+ * 3. Cost preview
+ * 4. Processing submission
  */
 
 import { useState, useCallback } from 'react'
@@ -16,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { VideoUploader } from './VideoUploader'
 import { ProcessingOptionsPresets } from './ProcessingOptionsPresets'
 import { Button } from '@/components/components/ui/button'
-import { AlertCircle, Loader2, Sparkles } from 'lucide-react'
+import { AlertCircle, Loader2, Sparkles, Upload, Sliders, Zap } from 'lucide-react'
 import { ProcessingOptions as ProcessingOptionsType } from '@/lib/validations/video'
 import { calculateCreditsRequired, formatCredits, formatCreditsAsUSD } from '@/lib/video/cost'
 
@@ -210,126 +209,164 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   const hasVideo = selectedVideo !== null
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-foreground text-4xl font-bold tracking-tight">
-          Transform Your AI Videos
-        </h1>
-        <p className="text-muted-foreground mt-4 text-lg">
-          Remove watermarks, enhance quality, and optimize for any platform
-        </p>
-      </div>
-
-      {/* Step 1: Upload Video */}
-      <div className="space-y-4">
-        <div className="flex items-center gap-3">
-          <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white">
-            1
+    <>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-8 pb-12 sm:pt-12 sm:pb-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
+              Turn Your Video Instantly Shareable
+            </h1>
+            <p className="text-text-faded mt-6 text-lg leading-8">
+              Transform AI videos into ready-to-post social content. Remove watermarks, enhance
+              quality, add branding—all in minutes.
+            </p>
           </div>
-          <h2 className="text-foreground text-xl font-semibold">Upload Your Video</h2>
         </div>
-        <VideoUploader onVideoSelected={handleVideoSelected} onVideoRemoved={handleVideoRemoved} />
-      </div>
+      </section>
 
-      {/* Step 2: Configure Options */}
-      {hasVideo && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white">
-              2
-            </div>
-            <h2 className="text-foreground text-xl font-semibold">Configure Processing</h2>
-          </div>
-          <ProcessingOptionsPresets onChange={handleOptionsChange} disabled={isUploading} />
-        </div>
-      )}
-
-      {/* Step 3: Submit */}
-      {hasVideo && (
-        <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white">
-              3
-            </div>
-            <h2 className="text-foreground text-xl font-semibold">Start Processing</h2>
-          </div>
-
-          {/* Cost Summary */}
-          <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-950">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-muted-foreground text-sm">Estimated Cost</p>
-                <p className="text-foreground mt-1 text-2xl font-bold">
-                  {formatCredits(estimatedCost)}
-                </p>
-                <p className="text-sm text-gray-500">{formatCreditsAsUSD(estimatedCost)}</p>
-              </div>
-              {userCredits !== undefined && (
-                <div className="text-right">
-                  <p className="text-muted-foreground text-sm">Your Balance</p>
-                  <p className="text-foreground mt-1 text-lg font-semibold">
-                    {formatCredits(userCredits)}
+      {/* Main Processing Dashboard */}
+      <section className="pb-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-5xl space-y-8">
+            {/* Upload Section */}
+            <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                  <Upload className="text-primary-foreground h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-card-foreground text-xl font-semibold">Upload Video</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Drag and drop your AI-generated video
                   </p>
-                  {!canAfford && (
-                    <p className="text-destructive mt-1 text-sm">Insufficient credits</p>
+                </div>
+              </div>
+              <VideoUploader
+                onVideoSelected={handleVideoSelected}
+                onVideoRemoved={handleVideoRemoved}
+              />
+            </div>
+
+            {/* Processing Options Section */}
+            <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                  <Sliders className="text-primary-foreground h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-card-foreground text-xl font-semibold">Processing Options</h2>
+                  <p className="text-muted-foreground text-sm">
+                    Choose enhancements for your video
+                  </p>
+                </div>
+              </div>
+              <ProcessingOptionsPresets onChange={handleOptionsChange} disabled={isUploading} />
+            </div>
+
+            {/* Cost & Submit Section */}
+            <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                  <Zap className="text-primary-foreground h-5 w-5" />
+                </div>
+                <div>
+                  <h2 className="text-card-foreground text-xl font-semibold">Process & Download</h2>
+                  <p className="text-muted-foreground text-sm">Review cost and start processing</p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {/* Cost Summary */}
+                <div className="border-border bg-muted grid grid-cols-2 gap-4 rounded-lg border p-4">
+                  <div>
+                    <p className="text-muted-foreground text-sm">Estimated Cost</p>
+                    <p className="text-foreground mt-1 text-2xl font-bold">
+                      {formatCredits(estimatedCost)}
+                    </p>
+                    <p className="text-text-faded text-sm">{formatCreditsAsUSD(estimatedCost)}</p>
+                  </div>
+                  {userCredits !== undefined && (
+                    <div className="text-right">
+                      <p className="text-muted-foreground text-sm">Your Balance</p>
+                      <p className="text-foreground mt-1 text-2xl font-bold">
+                        {formatCredits(userCredits)}
+                      </p>
+                      {!canAfford && (
+                        <p className="text-destructive mt-1 text-sm font-semibold">
+                          Insufficient credits
+                        </p>
+                      )}
+                    </div>
                   )}
                 </div>
-              )}
+
+                {/* Error Message */}
+                {error && (
+                  <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground flex items-start gap-2 rounded-lg border p-4 text-sm">
+                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                    <p>{error}</p>
+                  </div>
+                )}
+
+                {/* Upload Progress */}
+                {isUploading && (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {uploadProgress < 100 ? 'Uploading video...' : 'Starting AI processing...'}
+                      </span>
+                      <span className="text-foreground font-semibold">{uploadProgress}%</span>
+                    </div>
+                    <div className="bg-secondary h-2 overflow-hidden rounded-full">
+                      <div
+                        className="bg-primary h-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!hasVideo || isUploading || (userCredits !== undefined && !canAfford)}
+                  size="lg"
+                  className="w-full text-lg"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                      Processing video...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="mr-2 h-6 w-6" />
+                      Start Processing ({formatCredits(estimatedCost)})
+                    </>
+                  )}
+                </Button>
+
+                {userCredits === undefined && (
+                  <p className="text-text-faded text-center text-sm">
+                    Please{' '}
+                    <a href="/signup" className="text-primary hover:text-primary/90 font-semibold">
+                      sign in
+                    </a>{' '}
+                    to continue
+                  </p>
+                )}
+
+                {!hasVideo && (
+                  <p className="text-muted-foreground text-center text-sm">
+                    Upload a video to get started
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground flex items-start gap-2 rounded-lg border p-4 text-sm">
-              <AlertCircle className="h-5 w-5 flex-shrink-0" />
-              <p>{error}</p>
-            </div>
-          )}
-
-          {/* Upload Progress */}
-          {isUploading && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">
-                  {uploadProgress < 100 ? 'Uploading...' : 'Processing...'}
-                </span>
-                <span className="text-foreground font-semibold">{uploadProgress}%</span>
-              </div>
-              <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
-                <div
-                  className="bg-primary h-full transition-all duration-300"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Submit Button */}
-          <Button
-            onClick={handleSubmit}
-            disabled={!hasVideo || isUploading || (userCredits !== undefined && !canAfford)}
-            size="lg"
-            className="w-full"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <Sparkles className="mr-2 h-5 w-5" />
-                Start Processing ({formatCredits(estimatedCost)})
-              </>
-            )}
-          </Button>
-
-          {userCredits === undefined && (
-            <p className="text-center text-sm text-gray-500">Please sign in to continue</p>
-          )}
         </div>
-      )}
-    </div>
+      </section>
+    </>
   )
 }

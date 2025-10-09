@@ -210,10 +210,10 @@ export function VideoUploader({
           }}
           role="button"
           tabIndex={0}
-          className={`relative flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors ${
+          className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-16 transition-all ${
             isDragging
-              ? 'border-primary bg-primary/5'
-              : 'hover:border-primary border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900'
+              ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/20 shadow-lg'
+              : 'hover:border-primary-400 dark:hover:border-primary-600 border-gray-300 bg-gradient-to-b from-gray-50 to-white hover:shadow-md dark:border-gray-700 dark:from-gray-900 dark:to-gray-950'
           } ${isAnalyzing ? 'pointer-events-none opacity-50' : ''} `}
         >
           <input
@@ -225,52 +225,78 @@ export function VideoUploader({
             disabled={isAnalyzing}
           />
 
-          <Upload className="mb-4 h-12 w-12 text-gray-400" />
+          <div
+            className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full transition-colors ${
+              isDragging
+                ? 'bg-primary-600 text-white'
+                : 'group-hover:bg-primary-100 group-hover:text-primary-600 dark:group-hover:bg-primary-900 bg-gray-100 text-gray-400 dark:bg-gray-800'
+            }`}
+          >
+            <Upload className="h-10 w-10" />
+          </div>
 
-          <p className="text-foreground mb-2 text-lg font-semibold">
+          <p className="text-foreground mb-3 text-xl font-bold">
             {isAnalyzing ? 'Analyzing video...' : 'Drop your video here'}
           </p>
 
-          <p className="mb-4 text-sm text-gray-500">or click to browse (MP4 only)</p>
-
-          <p className="text-xs text-gray-400">
-            Max size: {Math.round(maxSize / (1024 * 1024))}MB • Max duration: {maxDuration}s
+          <p className="text-muted-foreground mb-6 text-base">
+            or click to browse files (MP4, MOV, WebM)
           </p>
+
+          <div className="flex items-center gap-4 text-sm text-gray-500">
+            <span className="inline-flex items-center gap-1">
+              📦 Max: {Math.round(maxSize / (1024 * 1024))}MB
+            </span>
+            <span>•</span>
+            <span className="inline-flex items-center gap-1">⏱️ Max: {maxDuration}s</span>
+          </div>
         </div>
       )}
 
       {/* Selected Video Preview */}
       {selectedVideo && (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-950">
-          <div className="flex items-start justify-between">
-            <div className="flex items-start gap-4">
+        <div className="border-primary-200 from-primary-50 dark:border-primary-900 dark:from-primary-950/20 rounded-xl border-2 bg-gradient-to-br to-white p-6 shadow-md dark:to-gray-950">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-1 items-start gap-5">
               {/* Video Thumbnail */}
-              <div className="relative h-24 w-32 overflow-hidden rounded bg-gray-100 dark:bg-gray-900">
+              <div className="relative h-28 w-40 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 shadow-md dark:bg-gray-900">
                 <video
                   src={selectedVideo.url}
                   className="h-full w-full object-cover"
                   muted
                   playsInline
                 />
-                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-                  <FileVideo className="h-8 w-8 text-white" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg">
+                    <FileVideo className="text-primary-600 h-6 w-6" />
+                  </div>
                 </div>
               </div>
 
               {/* Video Info */}
-              <div className="flex-1">
-                <h3 className="text-foreground font-medium">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-foreground mb-3 text-lg leading-tight font-semibold">
                   {sanitizeFilename(selectedVideo.file.name)}
                 </h3>
-                <div className="mt-2 space-y-1 text-sm text-gray-500">
-                  <p>
-                    Size: {Math.round(selectedVideo.size / (1024 * 1024))}MB • Duration:{' '}
-                    {Math.round(selectedVideo.duration)}s
-                  </p>
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                    <span className="inline-flex items-center gap-1">
+                      📦 {Math.round(selectedVideo.size / (1024 * 1024))}MB
+                    </span>
+                    <span>•</span>
+                    <span className="inline-flex items-center gap-1">
+                      ⏱️ {Math.round(selectedVideo.duration)}s
+                    </span>
+                  </div>
                   {estimatedCost && (
-                    <p className="text-primary font-semibold">
-                      Estimated cost: {formatCredits(estimatedCost)}
-                    </p>
+                    <div className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 shadow-sm dark:bg-gray-900">
+                      <span className="text-sm text-gray-600 dark:text-gray-400">
+                        Estimated cost:
+                      </span>
+                      <span className="text-primary-700 dark:text-primary-400 text-base font-bold">
+                        {formatCredits(estimatedCost)}
+                      </span>
+                    </div>
                   )}
                 </div>
               </div>
@@ -279,7 +305,7 @@ export function VideoUploader({
             {/* Remove Button */}
             <button
               onClick={handleRemove}
-              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-full p-1"
+              className="flex-shrink-0 rounded-lg bg-gray-100 p-2 text-gray-600 transition-colors hover:bg-red-100 hover:text-red-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-red-900/30 dark:hover:text-red-400"
               aria-label="Remove video"
             >
               <X className="h-5 w-5" />
@@ -290,9 +316,11 @@ export function VideoUploader({
 
       {/* Error Message */}
       {error && (
-        <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground mt-4 flex items-start gap-2 rounded-lg border p-4 text-sm">
-          <AlertCircle className="h-5 w-5 flex-shrink-0" />
-          <p>{error}</p>
+        <div className="mt-4 flex items-start gap-3 rounded-xl border-2 border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900 dark:bg-red-950/20">
+          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
+            <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+          </div>
+          <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>
         </div>
       )}
     </div>

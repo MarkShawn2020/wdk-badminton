@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import { ProcessingStatus } from '@/components/video/ProcessingStatus'
 import { VideoComparison } from '@/components/video/VideoComparison'
+import { ShareToDiscoverButton } from '@/components/video/ShareToDiscoverButton'
 import type { Metadata } from 'next'
 import type { Database } from '@/types/database'
 
@@ -135,19 +136,22 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
           {/* Comparison */}
           <VideoComparison originalUrl={video.original_url!} processedUrl={video.processed_url!} />
 
-          {/* Download Section */}
-          <div className="flex gap-4">
+          {/* Action Buttons */}
+          <div className="grid gap-4 sm:grid-cols-3">
             <a
               href={`/api/videos/${video.id}/download`}
-              className="bg-primary hover:bg-primary/90 flex-1 rounded-lg px-6 py-3 text-center font-semibold text-white"
+              className="bg-primary hover:bg-primary/90 rounded-lg px-6 py-3 text-center font-semibold text-white"
             >
-              Download Processed Video
+              Download Video
             </a>
+
+            <ShareToDiscoverButton videoId={video.id} />
+
             <Link
-              href="/"
-              className="flex-1 rounded-lg border border-gray-300 bg-white px-6 py-3 text-center font-semibold text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:hover:bg-gray-900"
+              href="/publish"
+              className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-center font-semibold text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-950 dark:text-gray-100 dark:hover:bg-gray-900"
             >
-              Process Another Video
+              Process Another
             </Link>
           </div>
         </div>

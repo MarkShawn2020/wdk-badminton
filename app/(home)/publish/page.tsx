@@ -93,9 +93,5 @@ export default async function PublishPage() {
     }
   }
 
-  return (
-    <div className="container mx-auto px-4 py-12">
-      <VideoUploadFlow userCredits={userCredits} />
-    </div>
-  )
+  return <VideoUploadFlow userCredits={userCredits} />
 }

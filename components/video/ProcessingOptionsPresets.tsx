@@ -166,9 +166,9 @@ export function ProcessingOptionsPresets({
   )
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Presets Grid */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {PRESETS.map((preset) => {
           const isSelected = selectedPreset === preset.id
           return (
@@ -176,19 +176,19 @@ export function ProcessingOptionsPresets({
               key={preset.id}
               onClick={() => handlePresetSelect(preset.id)}
               disabled={disabled}
-              className={`relative flex flex-col items-center gap-2 rounded-lg border-2 p-3 transition-all ${
+              className={`group relative flex flex-col items-center gap-3 rounded-xl border-2 p-4 transition-all ${
                 isSelected
-                  ? 'border-primary bg-primary/5 shadow-sm'
-                  : 'border-gray-200 hover:border-gray-300 dark:border-gray-800 dark:hover:border-gray-700'
+                  ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/20 shadow-md'
+                  : 'hover:border-primary-300 dark:hover:border-primary-700 border-gray-200 bg-white hover:shadow-sm dark:border-gray-700 dark:bg-gray-950'
               } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
               {/* Badge */}
               {preset.badge && (
                 <div
-                  className={`absolute -top-2 -right-2 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                  className={`absolute -top-2 -right-2 rounded-full px-2.5 py-1 text-xs font-bold shadow-sm ${
                     preset.popular
-                      ? 'bg-primary text-white'
-                      : 'bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-100'
+                      ? 'bg-primary-600 text-white'
+                      : 'bg-amber-500 text-white dark:bg-amber-600'
                   }`}
                 >
                   {preset.badge}
@@ -197,20 +197,30 @@ export function ProcessingOptionsPresets({
 
               {/* Selected Indicator */}
               {isSelected && (
-                <div className="bg-primary absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full">
-                  <Check className="h-3 w-3 text-white" />
+                <div className="bg-primary-600 absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full shadow-md">
+                  <Check className="h-4 w-4 text-white" />
                 </div>
               )}
 
               {/* Icon */}
-              <div className={`${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-lg transition-colors ${
+                  isSelected
+                    ? 'bg-primary-600 text-white'
+                    : 'group-hover:bg-primary-100 group-hover:text-primary-600 dark:group-hover:bg-primary-900 dark:group-hover:text-primary-400 bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'
+                }`}
+              >
                 {preset.icon}
               </div>
 
               {/* Name */}
               <div className="text-center">
-                <div className="text-foreground text-sm font-semibold">{preset.name}</div>
-                <div className="text-muted-foreground mt-0.5 text-xs">{preset.description}</div>
+                <div className="text-foreground text-sm leading-tight font-semibold">
+                  {preset.name}
+                </div>
+                <div className="text-muted-foreground mt-1 text-xs leading-tight">
+                  {preset.description}
+                </div>
               </div>
             </button>
           )
@@ -219,13 +229,13 @@ export function ProcessingOptionsPresets({
 
       {/* Custom Options Panel (Expanded when Custom is selected) */}
       {showCustomOptions && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="text-foreground mb-4 text-sm font-semibold">Customize Your Processing</p>
+        <div className="rounded-xl border border-gray-200 bg-gradient-to-b from-gray-50 to-white p-6 shadow-sm dark:border-gray-700 dark:from-gray-900 dark:to-gray-950">
+          <p className="text-foreground mb-5 text-base font-semibold">Customize Your Processing</p>
 
           {/* Watermark & Quality Toggles */}
-          <div className="mb-4 space-y-3">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="custom-watermark" className="text-sm">
+          <div className="mb-5 space-y-4">
+            <div className="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-gray-900">
+              <Label htmlFor="custom-watermark" className="text-sm font-medium">
                 Remove Watermark
               </Label>
               <Switch
@@ -236,8 +246,8 @@ export function ProcessingOptionsPresets({
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <Label htmlFor="custom-quality" className="text-sm">
+            <div className="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-gray-900">
+              <Label htmlFor="custom-quality" className="text-sm font-medium">
                 Enhance Quality
               </Label>
               <Switch
@@ -250,9 +260,9 @@ export function ProcessingOptionsPresets({
           </div>
 
           {/* Resolution & Aspect Ratio Selects */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="custom-resolution" className="text-xs">
+              <Label htmlFor="custom-resolution" className="text-sm font-medium">
                 Resolution
               </Label>
               <Select
@@ -265,7 +275,7 @@ export function ProcessingOptionsPresets({
                 }
                 disabled={disabled}
               >
-                <SelectTrigger id="custom-resolution" className="h-9">
+                <SelectTrigger id="custom-resolution" className="h-10">
                   <SelectValue placeholder="Original" />
                 </SelectTrigger>
                 <SelectContent>
@@ -280,7 +290,7 @@ export function ProcessingOptionsPresets({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="custom-aspect" className="text-xs">
+              <Label htmlFor="custom-aspect" className="text-sm font-medium">
                 Aspect Ratio
               </Label>
               <Select
@@ -293,7 +303,7 @@ export function ProcessingOptionsPresets({
                 }
                 disabled={disabled}
               >
-                <SelectTrigger id="custom-aspect" className="h-9">
+                <SelectTrigger id="custom-aspect" className="h-10">
                   <SelectValue placeholder="Original" />
                 </SelectTrigger>
                 <SelectContent>
@@ -312,12 +322,10 @@ export function ProcessingOptionsPresets({
 
       {/* Selected Options Summary (Collapsed) */}
       {!showCustomOptions && selectedPreset !== 'custom' && (
-        <div className="text-muted-foreground text-xs">
-          <p className="text-center">
-            ✓ Selected:{' '}
-            <span className="text-foreground font-medium">
-              {PRESETS.find((p) => p.id === selectedPreset)?.name}
-            </span>
+        <div className="text-center">
+          <p className="bg-primary-50 text-primary-700 dark:bg-primary-950/30 dark:text-primary-400 inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium">
+            <Check className="h-4 w-4" />
+            Selected: {PRESETS.find((p) => p.id === selectedPreset)?.name}
           </p>
         </div>
       )}

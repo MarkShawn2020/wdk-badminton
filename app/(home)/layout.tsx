@@ -6,12 +6,12 @@ import siteMetadata from '@/data/siteMetadata'
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <SectionContainer>
-      <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
-        <Header />
+    <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
+      <Header />
+      <SectionContainer>
         <main className="mb-auto">{children}</main>
-      </SearchProvider>
+      </SectionContainer>
       <Footer />
-    </SectionContainer>
+    </SearchProvider>
   )
 }
