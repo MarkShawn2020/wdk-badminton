@@ -186,7 +186,7 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
                 </div>
 
                 {/* Progress Bar */}
-                {video.status === 'processing' && video.progress > 0 && (
+                {video.status === 'processing' && video.progress !== null && video.progress > 0 && (
                   <div className="absolute right-0 bottom-0 left-0 h-1 bg-gray-800">
                     <div
                       className="bg-primary h-full transition-all"
@@ -208,7 +208,9 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
                 </div>
 
                 <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">{formatDate(video.created_at)}</span>
+                  <span className="text-muted-foreground">
+                    {video.created_at ? formatDate(video.created_at) : 'Unknown'}
+                  </span>
                   <span className="text-foreground font-semibold">
                     {video.estimated_cost_credits} credits
                   </span>

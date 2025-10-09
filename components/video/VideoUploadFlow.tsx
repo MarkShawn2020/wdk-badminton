@@ -88,7 +88,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
    * Get active features summary
    */
   const getActiveFeatures = useCallback(() => {
-    const features = []
+    const features: Array<{ icon: React.ComponentType<{ className?: string }>; label: string }> = []
     if (removeWatermark) features.push({ icon: BadgeCheck, label: 'Remove Watermark' })
     if (enhanceQuality) {
       const resLabel = targetResolution ? ` (${targetResolution})` : ''

@@ -34,7 +34,9 @@ export async function POST(request: Request) {
     // 3. Verify video ownership
     const { data: video, error: videoError } = await supabase
       .from('videos')
-      .select('*')
+      .select(
+        'id, status, processed_url, remove_watermark, enhance_quality, target_resolution, target_aspect_ratio, original_url'
+      )
       .eq('id', validated.videoId)
       .eq('user_id', user.id)
       .single()
@@ -110,7 +112,7 @@ export async function POST(request: Request) {
     })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return Response.json({ error: 'Invalid input', details: error.errors }, { status: 400 })
+      return Response.json({ error: 'Invalid input', details: error.issues }, { status: 400 })
     }
 
     console.error('Share to showcase error:', error)
