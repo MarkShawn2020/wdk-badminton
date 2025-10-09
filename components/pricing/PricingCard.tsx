@@ -81,7 +81,7 @@ export function PricingCard({ tier }: PricingCardProps) {
 
   const cardClasses = tier.popular
     ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10'
-    : 'flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
+    : 'relative flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
 
   const textColor = tier.popular ? 'text-white' : 'text-gray-900 dark:text-gray-100'
   const subtextColor = tier.popular ? 'text-gray-100' : 'text-gray-500 dark:text-gray-400'
@@ -171,7 +171,7 @@ function PricingCardSkeleton({ popular }: { popular?: boolean }) {
       className={
         popular
           ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10'
-          : 'flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
+          : 'relative flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
       }
     >
       <div className="h-96 animate-pulse">
