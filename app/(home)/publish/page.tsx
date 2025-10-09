@@ -1,8 +1,8 @@
 /**
- * Video Enhancement Page
+ * Video Publishing Page
  *
- * Main page for uploading and processing videos
- * Route: /enhance
+ * Main page for uploading and preparing videos for social media
+ * Route: /publish
  */
 
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
@@ -14,16 +14,17 @@ type UserCreditsInsert = Database['public']['Tables']['user_credits']['Insert']
 type CreditTransactionInsert = Database['public']['Tables']['credit_transactions']['Insert']
 
 export const metadata: Metadata = {
-  title: 'Enhance Your Video | ReelVan',
+  title: 'Publish Your Video | ReelVan',
   description:
-    'Upload and enhance your AI-generated videos. Remove watermarks, upscale quality, and optimize for any platform.',
+    'Transform AI videos into ready-to-post social content. Remove watermarks, enhance quality, add branding, and get AI-generated captions for Instagram, TikTok, YouTube.',
   openGraph: {
-    title: 'Enhance Your Video | ReelVan',
-    description: 'Transform AI videos with professional enhancements',
+    title: 'Publish Your Video | ReelVan',
+    description:
+      'Turn your AI video instantly shareable with professional processing and AI captions',
   },
 }
 
-export default async function EnhancePage() {
+export default async function PublishPage() {
   const supabase = await createServerClient()
 
   // Get authenticated user

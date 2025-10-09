@@ -231,7 +231,7 @@ export function VideoUploader({
             {isAnalyzing ? 'Analyzing video...' : 'Drop your video here'}
           </p>
 
-          <p className="mb-4 text-sm text-gray-500">or click to browse (MP4, MOV, WebM, AVI)</p>
+          <p className="mb-4 text-sm text-gray-500">or click to browse (MP4 only)</p>
 
           <p className="text-xs text-gray-400">
             Max size: {Math.round(maxSize / (1024 * 1024))}MB • Max duration: {maxDuration}s

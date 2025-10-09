@@ -19,7 +19,7 @@ export const PRICING = {
 
   // Universal technical limits (same for all users)
   MAX_VIDEO_DURATION: 120, // 2 minutes max
-  MAX_FILE_SIZE: 500 * 1024 * 1024, // 500MB max
+  MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB max
   MIN_VIDEO_DURATION: 1, // 1 second minimum
 
   // Rate limits by tier (anti-abuse)

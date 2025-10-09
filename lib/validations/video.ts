@@ -10,12 +10,7 @@ import { PRICING } from '@/lib/video/cost'
 /**
  * Allowed video MIME types
  */
-export const ALLOWED_VIDEO_MIME_TYPES = [
-  'video/mp4',
-  'video/quicktime', // .mov
-  'video/webm',
-  'video/x-msvideo', // .avi
-] as const
+export const ALLOWED_VIDEO_MIME_TYPES = ['video/mp4'] as const
 
 /**
  * Video upload metadata schema
@@ -102,10 +97,10 @@ export const videoUrlSchema = z.object({
     .refine(
       (url) => {
         // Check if URL points to a video file
-        const videoExtensions = ['.mp4', '.mov', '.webm', '.avi']
+        const videoExtensions = ['.mp4']
         return videoExtensions.some((ext) => url.toLowerCase().includes(ext))
       },
-      { message: 'URL must point to a video file (.mp4, .mov, .webm, .avi)' }
+      { message: 'URL must point to a MP4 video file' }
     ),
 })
 
@@ -178,20 +173,17 @@ export function validateMimeTypeMatchesExtension(
   const extension = getFileExtension(filename)
   const mimeToExt: Record<string, string[]> = {
     'video/mp4': ['mp4', 'm4v'],
-    'video/quicktime': ['mov', 'qt'],
-    'video/webm': ['webm'],
-    'video/x-msvideo': ['avi'],
   }
 
   const expectedExtensions = mimeToExt[mimeType]
   if (!expectedExtensions) {
-    return { valid: false, reason: 'Unknown MIME type' }
+    return { valid: false, reason: 'Unknown MIME type. Only MP4 is supported.' }
   }
 
   if (!expectedExtensions.includes(extension)) {
     return {
       valid: false,
-      reason: `File extension .${extension} does not match MIME type ${mimeType}`,
+      reason: `File extension .${extension} does not match MIME type ${mimeType}. Only MP4 is supported.`,
     }
   }
 
