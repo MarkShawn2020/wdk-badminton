@@ -102,26 +102,32 @@ export function PricingCard({ tier }: PricingCardProps) {
       )}
 
       <div className="flex-1">
-        <h3 className={`text-xl font-semibold ${textColor}`}>{tier.name}</h3>
+        <h3 className={`text-lg font-semibold sm:text-xl ${textColor}`}>{tier.name}</h3>
 
         <p className="mt-4 flex items-baseline">
-          <span className={`text-5xl font-bold tracking-tight ${textColor}`}>
+          <span className={`text-4xl font-bold tracking-tight sm:text-5xl ${textColor}`}>
             {tier.priceDisplay}
           </span>
         </p>
 
-        <p className={`mt-2 text-sm ${subtextColor}`}>{tier.credits.toLocaleString()} credits</p>
+        <p className={`mt-2 text-xs sm:text-sm ${subtextColor}`}>
+          {tier.credits.toLocaleString()} credits
+        </p>
 
-        <p className={`mt-6 text-base ${subtextColor}`}>{tier.description}</p>
+        <p className={`mt-4 text-sm sm:mt-6 sm:text-base ${subtextColor}`}>{tier.description}</p>
 
-        <ul className="mt-8 space-y-3">
+        <ul className="mt-6 space-y-2 sm:mt-8 sm:space-y-3">
           {tier.features.map((feature, idx) => (
             <li key={idx} className="flex items-start">
-              <span className={tier.popular ? 'mr-3 text-white' : 'text-primary-600 mr-3'}>
+              <span
+                className={
+                  tier.popular ? 'mr-2 text-white sm:mr-3' : 'text-primary-600 mr-2 sm:mr-3'
+                }
+              >
                 {feature.included ? '✓' : '−'}
               </span>
               <span
-                className={`${feature.included ? featureColor : 'text-gray-500 dark:text-gray-400'} ${feature.highlight ? 'font-semibold' : ''}`}
+                className={`text-sm sm:text-base ${feature.included ? featureColor : 'text-gray-500 dark:text-gray-400'} ${feature.highlight ? 'font-semibold' : ''}`}
               >
                 {feature.text}
               </span>

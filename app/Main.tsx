@@ -220,57 +220,67 @@ export default function Home({ posts }) {
       <section className="bg-gray-50 py-24 sm:py-32 dark:bg-gray-900/50">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-xl text-center">
-            <h2 className="text-primary-600 text-lg leading-8 font-semibold tracking-tight">
+            <h2 className="text-primary-600 text-base leading-7 font-semibold tracking-tight sm:text-lg sm:leading-8">
               Trusted by AI creators
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-gray-100">
+            <p className="mt-2 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl dark:text-gray-100">
               Join thousands enhancing their AI videos
             </p>
           </div>
-          <div className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
-            <div className="flex flex-col rounded-2xl bg-white p-8 dark:bg-gray-900">
-              <div className="flex items-center gap-x-4">
-                <div className="bg-primary-600 flex h-12 w-12 items-center justify-center rounded-full font-bold text-white">
+          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:mt-16 sm:gap-8 xl:mx-0 xl:max-w-none xl:grid-cols-3">
+            <div className="flex flex-col rounded-2xl bg-white p-6 sm:p-8 dark:bg-gray-900">
+              <div className="flex items-center gap-x-3 sm:gap-x-4">
+                <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
                   JD
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">John Doe</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">AI Content Creator</div>
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 sm:text-base dark:text-gray-100">
+                    John Doe
+                  </div>
+                  <div className="text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+                    AI Content Creator
+                  </div>
                 </div>
               </div>
-              <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-400">
+              <p className="mt-4 text-sm leading-6 text-gray-600 sm:mt-6 sm:text-base sm:leading-7 dark:text-gray-400">
                 "ReelVan saved me hours of manual editing. The watermark removal is flawless and the
                 quality enhancement made my Sora videos look incredible. Highly recommend!"
               </p>
             </div>
-            <div className="flex flex-col rounded-2xl bg-white p-8 dark:bg-gray-900">
-              <div className="flex items-center gap-x-4">
-                <div className="bg-primary-600 flex h-12 w-12 items-center justify-center rounded-full font-bold text-white">
+            <div className="flex flex-col rounded-2xl bg-white p-6 sm:p-8 dark:bg-gray-900">
+              <div className="flex items-center gap-x-3 sm:gap-x-4">
+                <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
                   SM
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">Sarah Miller</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 sm:text-base dark:text-gray-100">
+                    Sarah Miller
+                  </div>
+                  <div className="text-xs text-gray-600 sm:text-sm dark:text-gray-400">
                     Marketing Professional
                   </div>
                 </div>
               </div>
-              <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-400">
+              <p className="mt-4 text-sm leading-6 text-gray-600 sm:mt-6 sm:text-base sm:leading-7 dark:text-gray-400">
                 "The aspect ratio converter is a game-changer. I can now repurpose AI videos for all
                 our social channels in minutes. The pricing is fair and transparent."
               </p>
             </div>
-            <div className="flex flex-col rounded-2xl bg-white p-8 dark:bg-gray-900">
-              <div className="flex items-center gap-x-4">
-                <div className="bg-primary-600 flex h-12 w-12 items-center justify-center rounded-full font-bold text-white">
+            <div className="flex flex-col rounded-2xl bg-white p-6 sm:p-8 dark:bg-gray-900">
+              <div className="flex items-center gap-x-3 sm:gap-x-4">
+                <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
                   MK
                 </div>
-                <div>
-                  <div className="font-semibold text-gray-900 dark:text-gray-100">Mike Kim</div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">Video Producer</div>
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold text-gray-900 sm:text-base dark:text-gray-100">
+                    Mike Kim
+                  </div>
+                  <div className="text-xs text-gray-600 sm:text-sm dark:text-gray-400">
+                    Video Producer
+                  </div>
                 </div>
               </div>
-              <p className="mt-6 text-base leading-7 text-gray-600 dark:text-gray-400">
+              <p className="mt-4 text-sm leading-6 text-gray-600 sm:mt-6 sm:text-base sm:leading-7 dark:text-gray-400">
                 "Finally, a tool built specifically for AI videos! The quality is top-notch and
                 processing is lightning fast. This is exactly what I needed for my workflow."
               </p>
