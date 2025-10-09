@@ -16,21 +16,24 @@
   @apply mt-0 rounded-t-none;
 }
 
-/* Code block styles */
+/* Enhanced code block styles for professional presentation */
 .code-highlight {
   @apply float-left min-w-full;
 }
 
 .code-line {
-  @apply -mx-4 block border-l-4 border-transparent pr-4 pl-4;
+  @apply -mx-4 block border-l-4 border-transparent pr-4 pl-4 transition-colors duration-150;
+  &:hover {
+    @apply bg-gray-800/30;
+  }
 }
 
 .code-line.inserted {
-  @apply bg-green-500/20;
+  @apply border-l-green-500 bg-green-500/20;
 }
 
 .code-line.deleted {
-  @apply bg-red-500/20;
+  @apply border-l-red-500 bg-red-500/20;
 }
 
 .highlight-line {
@@ -38,105 +41,168 @@
 }
 
 .line-number::before {
-  @apply mr-4 -ml-2 inline-block w-4 text-right text-gray-400;
+  @apply mr-4 -ml-2 inline-block w-8 text-right text-gray-500 select-none;
   content: attr(line);
+  font-size: 0.75rem;
 }
 
-/* Token styles */
+/* Enhanced code block container */
+pre[class*='language-'] {
+  @apply relative;
+  /* Language label */
+  &::before {
+    content: attr(data-language);
+    @apply absolute top-0 right-0 rounded-tr-md rounded-bl-md border-b border-l border-gray-700 bg-gray-800/90 px-3 py-1 text-xs font-semibold text-gray-400;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Better scrollbar for code blocks */
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    @apply rounded bg-gray-800;
+  }
+  &::-webkit-scrollbar-thumb {
+    @apply rounded bg-gray-600;
+    &:hover {
+      @apply bg-gray-500;
+    }
+  }
+}
+
+/* Token styles - Enhanced VS Code Dark+ theme */
 /**
- * MIT License
- * Copyright (c) 2018 Sarah Drasner
- * Sarah Drasner's[@sdras] Night Owl
- * Ported by Sara vieria [@SaraVieira]
- * Added by Souvik Mandal [@SimpleIndian]
+ * Optimized for maximum readability on dark backgrounds
+ * Based on VS Code Dark+ color scheme
  */
+
+/* Reset token backgrounds to ensure visibility */
+.token {
+  background: transparent !important;
+}
+
+/* Comments */
 .token.comment,
 .token.prolog,
 .token.cdata {
-  color: rgb(99, 119, 119);
+  color: #6a9955;
   font-style: italic;
 }
 
+/* Punctuation */
 .token.punctuation {
-  color: rgb(199, 146, 234);
+  color: #d4d4d4;
 }
 
+/* Namespace */
 .namespace {
-  color: rgb(178, 204, 214);
+  color: #4ec9b0;
 }
 
+/* Deletions (git diff) */
 .token.deleted {
-  color: rgba(239, 83, 80, 0.56);
+  color: #f48771;
   font-style: italic;
+  background-color: rgba(244, 135, 113, 0.1) !important;
 }
 
+/* Properties and symbols */
 .token.symbol,
 .token.property {
-  color: rgb(128, 203, 196);
+  color: #4fc1ff;
 }
 
+/* Keywords and operators */
 .token.tag,
 .token.operator,
 .token.keyword {
-  color: rgb(127, 219, 202);
+  color: #c586c0;
+  font-weight: 500;
 }
 
+/* Booleans */
 .token.boolean {
-  color: rgb(255, 88, 116);
+  color: #569cd6;
 }
 
+/* Numbers */
 .token.number {
-  color: rgb(247, 140, 108);
+  color: #b5cea8;
 }
 
+/* Functions and constants */
 .token.constant,
 .token.function,
 .token.builtin,
 .token.char {
-  color: rgb(130, 170, 255);
+  color: #dcdcaa;
 }
 
+/* Selectors */
 .token.selector,
 .token.doctype {
-  color: rgb(199, 146, 234);
+  color: #d7ba7d;
   font-style: italic;
 }
 
+/* Attributes and insertions */
 .token.attr-name,
 .token.inserted {
-  color: rgb(173, 219, 103);
-  font-style: italic;
+  color: #9cdcfe;
+  font-style: normal;
+  background-color: rgba(156, 220, 254, 0.1) !important;
 }
 
+/* Strings */
 .token.string,
 .token.url,
 .token.entity,
 .language-css .token.string,
 .style .token.string {
-  color: rgb(173, 219, 103);
+  color: #ce9178;
 }
 
+/* Class names and attribute values */
 .token.class-name,
 .token.atrule,
 .token.attr-value {
-  color: rgb(255, 203, 139);
+  color: #4ec9b0;
 }
 
+/* Regular expressions and variables */
 .token.regex,
 .token.important,
 .token.variable {
-  color: rgb(214, 222, 235);
+  color: #d16969;
 }
 
+/* Important tokens */
 .token.important,
 .token.bold {
-  font-weight: bold;
+  font-weight: 700;
 }
 
+/* Italic tokens */
 .token.italic {
   font-style: italic;
 }
 
+/* Tables */
 .token.table {
   display: inline;
+}
+
+/* Plain text in code blocks */
+code[class*='language-'],
+pre[class*='language-'] {
+  color: #d4d4d4;
+  background: #1e1e1e;
+  text-shadow: none;
+}
+
+/* Line highlighting */
+.code-line {
+  color: #d4d4d4;
 }
