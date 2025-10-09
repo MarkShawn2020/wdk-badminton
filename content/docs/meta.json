@@ -1,13 +1,43 @@
 {
   "title": "Documentation",
   "pages": [
-    "index",
-    "getting-started",
-    "---Features",
-    "watermark-removal",
-    "quality-enhancement",
-    "aspect-ratio",
-    "---Resources",
-    "pricing"
+    {
+      "type": "page",
+      "name": "Introduction",
+      "url": "/docs"
+    },
+    {
+      "type": "page",
+      "name": "Getting Started",
+      "url": "/docs/getting-started"
+    },
+    {
+      "type": "separator",
+      "name": "Features"
+    },
+    {
+      "type": "page",
+      "name": "Watermark Removal",
+      "url": "/docs/watermark-removal"
+    },
+    {
+      "type": "page",
+      "name": "Quality Enhancement",
+      "url": "/docs/quality-enhancement"
+    },
+    {
+      "type": "page",
+      "name": "Aspect Ratio",
+      "url": "/docs/aspect-ratio"
+    },
+    {
+      "type": "separator",
+      "name": "Resources"
+    },
+    {
+      "type": "page",
+      "name": "Pricing",
+      "url": "/docs/pricing"
+    }
   ]
 }
