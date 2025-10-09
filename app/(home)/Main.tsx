@@ -6,16 +6,16 @@ export default function Home({ posts }) {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-20 sm:pt-24 sm:pb-28">
+      <section className="relative overflow-hidden pt-16 pb-20 sm:pb-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-6xl">
-              Share Your AI Video
+              Remove Watermarks, Share Everywhere
             </h1>
             <p className="text-muted-foreground mt-6 text-lg leading-8">
-              Transform AI-generated videos into professional, share-ready content. Remove
-              watermarks from Sora, Veo, Kling & JiMeng. Enhance quality, change aspect ratios, add
-              custom branding.
+              Transform AI videos from Sora, Veo, Kling & JiMeng into professional content. Remove
+              watermarks, enhance quality, adjust aspect ratios, and add custom branding—all in
+              minutes.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Link
