@@ -30,12 +30,62 @@ export default function Home({ posts }) {
             </div>
           </div>
 
-          {/* Video Demo Placeholder */}
-          <div className="mt-16 flow-root sm:mt-24">
-            <div className="bg-muted ring-border -m-2 rounded-xl p-2 ring-1 ring-inset lg:-m-4 lg:rounded-2xl lg:p-4">
-              <div className="bg-card ring-border aspect-video overflow-hidden rounded-md shadow-2xl ring-1">
-                <div className="flex h-full items-center justify-center">
-                  <p className="text-muted-foreground">Video Demo Placeholder</p>
+          {/* How It Works - Visual Process */}
+          <div className="mt-16 sm:mt-24">
+            <div className="mx-auto max-w-5xl">
+              <div className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-12 lg:max-w-none lg:grid-cols-4">
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
+                      <span className="text-3xl font-bold text-white">1</span>
+                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
+                    </div>
+                    <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
+                  </div>
+                  <div>
+                    <p className="text-foreground text-lg font-semibold">Upload Video</p>
+                    <p className="text-muted-foreground mt-2 text-sm">
+                      Drag and drop your AI video
+                    </p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
+                      <span className="text-3xl font-bold text-white">2</span>
+                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
+                    </div>
+                    <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
+                  </div>
+                  <div>
+                    <p className="text-foreground text-lg font-semibold">Select Features</p>
+                    <p className="text-muted-foreground mt-2 text-sm">Choose enhancements</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
+                      <span className="text-3xl font-bold text-white">3</span>
+                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
+                    </div>
+                    <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
+                  </div>
+                  <div>
+                    <p className="text-foreground text-lg font-semibold">We Process</p>
+                    <p className="text-muted-foreground mt-2 text-sm">AI works in 2-5 minutes</p>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <div className="relative mb-6">
+                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
+                      <span className="text-3xl font-bold text-white">4</span>
+                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-foreground text-lg font-semibold">Download</p>
+                    <p className="text-muted-foreground mt-2 text-sm">Get enhanced video</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -175,7 +225,16 @@ export default function Home({ posts }) {
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
             <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
               <div className="flex flex-col items-center text-center">
-                <dt className="text-primary-600 text-5xl font-bold">1</dt>
+                <dt className="relative mb-8">
+                  {/* Circular badge with gradient */}
+                  <div className="bg-primary-600 relative flex h-16 w-16 items-center justify-center rounded-full shadow-lg ring-4 ring-white/10">
+                    <span className="text-2xl font-bold text-white">1</span>
+                    {/* Subtle glow effect */}
+                    <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-md"></div>
+                  </div>
+                  {/* Connector line (hidden on mobile, shown on desktop) */}
+                  <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
+                </dt>
                 <dd className="mt-4">
                   <p className="text-foreground text-lg font-semibold">Upload Video</p>
                   <p className="text-muted-foreground mt-2 text-base">
@@ -185,7 +244,13 @@ export default function Home({ posts }) {
                 </dd>
               </div>
               <div className="flex flex-col items-center text-center">
-                <dt className="text-primary-600 text-5xl font-bold">2</dt>
+                <dt className="relative mb-8">
+                  <div className="bg-primary-600 relative flex h-16 w-16 items-center justify-center rounded-full shadow-lg ring-4 ring-white/10">
+                    <span className="text-2xl font-bold text-white">2</span>
+                    <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-md"></div>
+                  </div>
+                  <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
+                </dt>
                 <dd className="mt-4">
                   <p className="text-foreground text-lg font-semibold">Select Features</p>
                   <p className="text-muted-foreground mt-2 text-base">
@@ -195,7 +260,13 @@ export default function Home({ posts }) {
                 </dd>
               </div>
               <div className="flex flex-col items-center text-center">
-                <dt className="text-primary-600 text-5xl font-bold">3</dt>
+                <dt className="relative mb-8">
+                  <div className="bg-primary-600 relative flex h-16 w-16 items-center justify-center rounded-full shadow-lg ring-4 ring-white/10">
+                    <span className="text-2xl font-bold text-white">3</span>
+                    <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-md"></div>
+                  </div>
+                  <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
+                </dt>
                 <dd className="mt-4">
                   <p className="text-foreground text-lg font-semibold">We Process</p>
                   <p className="text-muted-foreground mt-2 text-base">
@@ -205,7 +276,12 @@ export default function Home({ posts }) {
                 </dd>
               </div>
               <div className="flex flex-col items-center text-center">
-                <dt className="text-primary-600 text-5xl font-bold">4</dt>
+                <dt className="relative mb-8">
+                  <div className="bg-primary-600 relative flex h-16 w-16 items-center justify-center rounded-full shadow-lg ring-4 ring-white/10">
+                    <span className="text-2xl font-bold text-white">4</span>
+                    <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-md"></div>
+                  </div>
+                </dt>
                 <dd className="mt-4">
                   <p className="text-foreground text-lg font-semibold">Download</p>
                   <p className="text-muted-foreground mt-2 text-base">
