@@ -18,75 +18,77 @@ export interface PricingTier {
   features: Array<{ text: string; included: boolean; highlight?: boolean }>
   ctaText: string
   popular?: boolean
+  isContactSales?: boolean
 }
 
 export const creditPackages: PricingTier[] = [
   {
-    name: 'Trial Pack',
-    credits: 100,
-    price: 100, // cents
-    priceDisplay: '$1.00',
+    name: 'Starter',
+    credits: 500,
+    price: 500, // cents ($5)
+    priceDisplay: '$5',
     discount: 0,
-    description: 'Perfect for trying out ReelVan',
+    description: 'Perfect for getting started',
     features: [
-      { text: 'Process ~1 short video (10-30s)', included: true },
+      { text: 'Process ~2-5 videos', included: true },
       { text: 'All features included', included: true },
       { text: 'Watermark removal', included: true },
       { text: 'Up to 4K quality', included: true },
       { text: 'Credits never expire', included: true },
     ],
-    ctaText: 'Buy Now',
+    ctaText: 'Get Started',
     popular: false,
   },
   {
-    name: 'Casual Pack',
-    credits: 500,
-    price: 450, // cents
-    priceDisplay: '$4.50',
-    discount: 10,
-    description: 'Great for casual users',
-    features: [
-      { text: 'Process ~5 videos', included: true },
-      { text: 'Save 10% ($0.50)', included: true, highlight: true },
-      { text: 'All features included', included: true },
-      { text: 'Unlock 50 videos/day limit', included: true, highlight: true },
-      { text: 'Credits never expire', included: true },
-    ],
-    ctaText: 'Buy Now',
-    popular: false,
-  },
-  {
-    name: 'Regular Pack',
+    name: 'Pro',
     credits: 2000,
-    price: 1600, // cents
-    priceDisplay: '$16.00',
-    discount: 20,
-    description: 'Best for regular creators',
+    price: 1800, // cents ($18, 10% discount)
+    priceDisplay: '$18',
+    discount: 10,
+    description: 'Best for content creators',
     features: [
       { text: 'Process ~20 videos', included: true },
-      { text: 'Save 20% ($4.00)', included: true, highlight: true },
+      { text: 'Save 10% ($2.00)', included: true, highlight: true },
       { text: 'All features included', included: true },
       { text: 'Unlock 50 videos/day limit', included: true, highlight: true },
       { text: 'Credits never expire', included: true },
     ],
-    ctaText: 'Buy Now',
+    ctaText: 'Get Started',
     popular: true,
   },
   {
-    name: 'Business Pack',
+    name: 'Max',
     credits: 10000,
-    price: 7000, // cents
-    priceDisplay: '$70.00',
-    discount: 30,
-    description: 'For professionals & teams',
+    price: 8000, // cents ($80, 20% discount)
+    priceDisplay: '$80',
+    discount: 20,
+    description: 'For power users',
     features: [
       { text: 'Process ~100 videos', included: true },
-      { text: 'Save 30% ($30.00)', included: true, highlight: true },
+      { text: 'Save 20% ($20.00)', included: true, highlight: true },
       { text: 'All features included', included: true },
-      { text: 'Unlock 200 videos/day (Pro tier)', included: true, highlight: true },
+      { text: 'Unlock 100 videos/day limit', included: true, highlight: true },
       { text: 'Credits never expire', included: true },
     ],
-    ctaText: 'Buy Now',
+    ctaText: 'Get Started',
     popular: false,
+  },
+  {
+    name: 'Business',
+    credits: 0, // Custom amount
+    price: 0, // Custom pricing
+    priceDisplay: 'Custom',
+    discount: 30,
+    description: 'For teams & enterprises',
+    features: [
+      { text: 'Custom credit packages', included: true },
+      { text: 'Save up to 30%', included: true, highlight: true },
+      { text: 'Priority support', included: true },
+      { text: 'Dedicated account manager', included: true, highlight: true },
+      { text: 'Custom rate limits', included: true },
+    ],
+    ctaText: 'Contact Sales',
+    popular: false,
+    isContactSales: true,
   },
 ]

@@ -23,6 +23,7 @@ interface PricingCardProps {
     features: Array<{ text: string; included: boolean; highlight?: boolean }>
     popular?: boolean
     ctaText: string
+    isContactSales?: boolean
   }
 }
 
@@ -79,9 +80,11 @@ export function PricingCard({ tier }: PricingCardProps) {
     return <PricingCardSkeleton popular={tier.popular} />
   }
 
-  const cardClasses = tier.popular
-    ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-border/10'
-    : 'relative flex flex-col rounded-3xl bg-card p-8 ring-1 ring-border'
+  const cardClasses = tier.isContactSales
+    ? 'bg-muted/30 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-lg'
+    : tier.popular
+      ? 'bg-primary-600 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 shadow-2xl ring-1 ring-border/10 transition-all duration-300 hover:shadow-3xl'
+      : 'relative flex flex-col h-full rounded-2xl bg-card p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-xl'
 
   const textColor = tier.popular ? 'text-primary-foreground' : 'text-foreground'
   const subtextColor = tier.popular ? 'text-primary-foreground/90' : 'text-muted-foreground'
@@ -89,46 +92,61 @@ export function PricingCard({ tier }: PricingCardProps) {
 
   return (
     <div className={cardClasses}>
-      {tier.popular && (
-        <div className="bg-primary-700 text-primary-foreground absolute -top-5 right-0 left-0 mx-auto w-32 rounded-full px-3 py-2 text-center text-sm font-semibold">
-          Most Popular
-        </div>
-      )}
-
-      {tier.discount > 0 && (
-        <div className="bg-primary-700/90 text-primary-foreground absolute -top-3 -right-3 rounded-full px-3 py-2 text-xs font-semibold shadow-md backdrop-blur-sm">
-          Save {tier.discount}%
-        </div>
-      )}
+      {/* Badges Section - contained within card */}
+      <div className="mb-3 flex min-h-[1.75rem] items-center justify-between gap-2">
+        {tier.popular && (
+          <div className="bg-primary-700 text-primary-foreground inline-block rounded-full px-2.5 py-0.5 text-[10px] leading-tight font-semibold">
+            Most Popular
+          </div>
+        )}
+        {tier.discount > 0 && (
+          <div
+            className={`${tier.popular ? 'bg-primary-800' : tier.isContactSales ? 'bg-muted text-muted-foreground' : 'bg-primary-600'} ml-auto inline-block rounded-full px-2.5 py-0.5 text-[10px] leading-tight font-semibold ${tier.isContactSales ? '' : 'text-white'}`}
+          >
+            {tier.isContactSales ? 'Up to 30%' : `Save ${tier.discount}%`}
+          </div>
+        )}
+      </div>
 
       <div className="flex-1">
-        <h3 className={`text-lg font-semibold sm:text-xl ${textColor}`}>{tier.name}</h3>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <h3 className={`text-sm font-semibold xl:text-base ${textColor}`}>{tier.name}</h3>
+          {tier.isContactSales && (
+            <span className="border-border bg-background text-muted-foreground rounded border px-1.5 py-0.5 text-[9px] font-semibold">
+              Enterprise
+            </span>
+          )}
+        </div>
 
-        <div className="mt-6">
-          <p className={`text-4xl font-bold tracking-tight sm:text-5xl ${textColor}`}>
+        <div className="mt-3 flex h-20 flex-col justify-center xl:mt-4 xl:h-24">
+          <p className={`text-2xl font-bold tracking-tight xl:text-3xl ${textColor}`}>
             {tier.priceDisplay}
           </p>
-          <p className={`mt-2 text-xs sm:text-sm ${subtextColor}`}>
-            {tier.credits.toLocaleString()} credits
+          <p className={`mt-1 text-[11px] xl:text-xs ${subtextColor}`}>
+            {tier.isContactSales
+              ? 'Tailored to your needs'
+              : `${tier.credits.toLocaleString()} credits`}
           </p>
         </div>
 
-        <p className={`mt-6 text-sm sm:text-base ${subtextColor}`}>{tier.description}</p>
+        <p className={`mt-3 text-[11px] leading-tight xl:mt-4 xl:text-xs ${subtextColor}`}>
+          {tier.description}
+        </p>
 
-        <ul className="mt-6 space-y-2 sm:mt-8 sm:space-y-3">
+        <ul className="mt-3 space-y-1 xl:mt-4 xl:space-y-1.5">
           {tier.features.map((feature, idx) => (
             <li key={idx} className="flex items-start">
               <span
                 className={
                   tier.popular
-                    ? 'text-primary-foreground mr-2 sm:mr-3'
-                    : 'text-primary-600 mr-2 sm:mr-3'
+                    ? 'text-primary-foreground mr-1.5 flex-shrink-0 text-xs'
+                    : 'text-primary-600 mr-1.5 flex-shrink-0 text-xs'
                 }
               >
                 {feature.included ? '✓' : '−'}
               </span>
               <span
-                className={`text-sm sm:text-base ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
+                className={`text-[11px] leading-tight xl:text-xs ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
               >
                 {feature.text}
               </span>
@@ -138,14 +156,21 @@ export function PricingCard({ tier }: PricingCardProps) {
       </div>
 
       {/* CTA Button */}
-      {isLoggedIn ? (
+      {tier.isContactSales ? (
+        <Link
+          href="mailto:sales@reelvan.com?subject=Business%20Plan%20Inquiry"
+          className="bg-secondary text-foreground hover:bg-muted mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-base"
+        >
+          {tier.ctaText}
+        </Link>
+      ) : isLoggedIn ? (
         <button
           onClick={handleBuyCredits}
           disabled={isLoading}
           className={`${
             tier.popular
-              ? 'text-primary-600 bg-background hover:bg-secondary mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold disabled:opacity-50'
-              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold disabled:opacity-50'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-base'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-base'
           }`}
         >
           {isLoading ? 'Loading...' : tier.ctaText}
@@ -155,8 +180,8 @@ export function PricingCard({ tier }: PricingCardProps) {
           href="/signup"
           className={
             tier.popular
-              ? 'text-primary-600 bg-background hover:bg-secondary mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold'
-              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-base'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-base'
           }
         >
           Get started

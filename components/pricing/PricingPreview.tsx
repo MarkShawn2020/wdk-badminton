@@ -17,23 +17,20 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Buy credits when you need them. No subscriptions, no monthly fees. Volume discounts up
-            to 30% off.
+            Pay as you go with credits. No subscriptions, no monthly fees. Save up to 30% with
+            larger packages.
           </p>
         </div>
 
-        <div
-          className="mx-auto mt-16 grid grid-cols-1 items-stretch gap-6 space-y-6 sm:mt-20 sm:max-w-xl sm:grid-cols-2 xl:max-w-none xl:grid-cols-4 xl:gap-8"
-          style={{ width: '100%', maxWidth: '100%' }}
-        >
+        <div className="mx-auto mt-16 grid grid-cols-1 gap-5 pt-6 sm:mt-20 sm:max-w-2xl sm:grid-cols-2 lg:max-w-none lg:grid-cols-4 lg:gap-6">
           {creditPackages.map((pkg) => (
             <PricingCard key={pkg.name} tier={pkg} />
           ))}
         </div>
 
         <p className="text-muted-foreground mx-auto mt-10 max-w-2xl text-center text-sm">
-          All users get the same features. Start with 100 free credits on signup. 1 credit = $0.01 •
-          Typical 30s video ≈ 240 credits ($2.40)
+          All packages include the same features. Start with 100 free credits on signup. 1 credit =
+          $0.01 • Typical 30s video ≈ 240 credits ($2.40)
         </p>
       </div>
     </section>

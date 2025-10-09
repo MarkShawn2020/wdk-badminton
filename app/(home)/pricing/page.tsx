@@ -6,7 +6,7 @@ import { creditPackages } from '@/data/pricingData'
 export const metadata = genPageMetadata({
   title: 'Pricing - ReelVan',
   description:
-    'Buy credits when you need them. No subscriptions, no monthly fees. Volume discounts up to 30% off. Start with 100 free credits.',
+    'Pay as you go with credits. No subscriptions, no monthly fees. Save up to 30% with larger packages. Starter package from $5.',
 })
 
 export default function Pricing() {
@@ -19,7 +19,7 @@ export default function Pricing() {
             Simple, Transparent Pricing
           </h1>
           <p className="text-muted-foreground text-xl leading-8">
-            Buy credits when you need them. No subscriptions, no monthly fees.
+            Pay as you go with credits. No subscriptions, no monthly fees.
           </p>
           <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
             <div className="flex items-center gap-2">
@@ -83,7 +83,7 @@ export default function Pricing() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4 xl:gap-6">
+            <div className="mx-auto grid grid-cols-1 gap-5 pt-6 sm:max-w-2xl sm:grid-cols-2 lg:max-w-none lg:grid-cols-4 lg:gap-6">
               {creditPackages.map((pkg) => (
                 <PricingCard key={pkg.name} tier={pkg} />
               ))}
@@ -160,19 +160,21 @@ export default function Pricing() {
                   </tr>
                   <tr className="bg-primary-50 dark:bg-primary-950">
                     <td className="text-primary-700 dark:text-primary-300 px-6 py-4 text-sm font-medium">
-                      Paid User ✨
+                      Starter/Pro ✨
                     </td>
-                    <td className="text-muted-foreground px-6 py-4 text-sm">Make any purchase</td>
+                    <td className="text-muted-foreground px-6 py-4 text-sm">
+                      Purchase Starter or Pro package
+                    </td>
                     <td className="text-primary-600 dark:text-primary-400 px-6 py-4 text-sm font-bold">
                       50 videos/day
                     </td>
                   </tr>
                   <tr className="bg-chart-4/10">
-                    <td className="text-chart-4 px-6 py-4 text-sm font-medium">Pro User 🚀</td>
+                    <td className="text-chart-4 px-6 py-4 text-sm font-medium">Max/Business 🚀</td>
                     <td className="text-muted-foreground px-6 py-4 text-sm">
-                      $50+ lifetime purchases
+                      Purchase Max package or higher
                     </td>
-                    <td className="text-chart-4 px-6 py-4 text-sm font-bold">200 videos/day</td>
+                    <td className="text-chart-4 px-6 py-4 text-sm font-bold">100 videos/day</td>
                   </tr>
                 </tbody>
               </table>
@@ -225,9 +227,9 @@ export default function Pricing() {
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
                   All users get the same features (watermark removal, 4K quality, etc.). The only
-                  difference is daily processing limits: Free (3 videos/day), Paid (50/day after any
-                  purchase), Pro (200/day after $50+ lifetime purchases). These limits are permanent
-                  - once unlocked, they never reset.
+                  difference is daily processing limits: Free (3 videos/day), Starter/Pro (50/day),
+                  Max/Business (100/day). These limits are permanent - once unlocked, they never
+                  reset.
                 </dd>
               </div>
               <div>
@@ -262,9 +264,10 @@ export default function Pricing() {
                   Can I get bulk discounts for teams or enterprises?
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
-                  Yes! The Business Pack ($70 for 10,000 credits) offers 30% savings. For even
-                  larger volumes or custom solutions, contact us at enterprise@reelvan.com for
-                  tailored pricing and dedicated support.
+                  Yes! Our Max package ($80 for 10,000 credits) offers 20% savings. For teams and
+                  enterprises needing larger volumes, dedicated support, and custom solutions,
+                  contact our sales team at sales@reelvan.com for tailored pricing with up to 30%
+                  savings.
                 </dd>
               </div>
             </dl>
