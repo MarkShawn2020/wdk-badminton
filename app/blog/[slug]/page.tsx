@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { source, authorsSource } from '@/lib/source'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -13,7 +14,7 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
   const MDX = page.data.body
 
   // Get author details
-  const authorList = page.data.authors || ['default']
+  const authorList = (page.data as any).authors || ['default']
   const authorDetails = authorList
     .map((author) => {
       const authorData = authorsSource.getPage([author])
@@ -25,21 +26,24 @@ export default async function BlogPostPage(props: { params: Promise<{ slug: stri
 
   // Transform page data to match PostLayout expectations
   const content: CoreContent<Blog> = {
-    filePath: page.file.path,
     path: page.url,
     slug: params.slug,
-    date: page.data.date || new Date().toISOString(),
+    date: (page.data as any).date || new Date().toISOString(),
     title: page.data.title,
-    tags: page.data.tags || [],
+    tags: (page.data as any).tags || [],
     summary: page.data.description || '',
-    images: page.data.images || [],
-    draft: page.data.draft || false,
+    images: (page.data as any).images || [],
+    draft: (page.data as any).draft || false,
   }
 
   // Get all posts for prev/next navigation
   const allPosts = source
     .getPages()
-    .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
+    .sort(
+      (a, b) =>
+        new Date((b.data as any).date || 0).getTime() -
+        new Date((a.data as any).date || 0).getTime()
+    )
 
   const postIndex = allPosts.findIndex((p) => p.url === page.url)
   const prev =

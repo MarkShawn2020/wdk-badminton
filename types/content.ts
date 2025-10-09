@@ -24,8 +24,9 @@ export interface Authors {
   twitter?: string
   linkedin?: string
   github?: string
+  bluesky?: string
   layout?: string
 }
 
 // CoreContent type helper
-export type CoreContent<T> = Omit<T, 'body' | '_raw' | '_id'>
+export type CoreContent<T> = Omit<T, 'body' | '_raw' | '_id' | 'filePath'>

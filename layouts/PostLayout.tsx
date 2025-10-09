@@ -29,8 +29,9 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
-  const { filePath, path, slug, date, title, tags } = content
+  const { path, slug, date, title, tags } = content
   const basePath = path.split('/')[1] || 'blog' // Get 'blog' from '/blog/slug'
+  const filePath = `content${path}.mdx` // Reconstruct filePath from path
 
   return (
     <SectionContainer>
