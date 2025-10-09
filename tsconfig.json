@@ -45,16 +45,5 @@
     ".source/**/*",
     ".next/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "eslint.config.mjs",
-    "app/about/page.tsx",
-    "app/blog/page.tsx",
-    "app/blog/page/[page]/page.tsx",
-    "app/page.tsx",
-    "app/sitemap.ts",
-    "app/tags/[tag]/page.tsx",
-    "app/tags/[tag]/page/[page]/page.tsx",
-    ".next"
-  ]
+  "exclude": ["node_modules", "eslint.config.mjs", ".next"]
 }

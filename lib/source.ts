@@ -3,10 +3,10 @@ import { loader } from 'fumadocs-core/source'
 
 export const source = loader({
   baseUrl: '/blog',
-  source: blog.toFumadocsSource(),
+  source: blog,
 })
 
 export const authorsSource = loader({
   baseUrl: '/authors',
-  source: authors.toFumadocsSource(),
+  source: authors,
 })
