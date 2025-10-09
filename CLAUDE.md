@@ -12,6 +12,10 @@ This document provides project-specific development guidelines for AI assistants
 
 1. [Project Context](#1-project-context)
 2. [Critical Principles](#2-critical-principles)
+   - 2.1 [Cost-First Mindset](#21-cost-first-mindset)
+   - 2.2 [SEO-First Development](#22-seo-first-development)
+   - 2.3 [User Experience = Conversion](#23-user-experience--conversion)
+   - 2.4 [Keep Root Directory Clean](#24-keep-root-directory-clean)
 3. [Tech Stack Guidelines](#3-tech-stack-guidelines)
 4. [Architecture Patterns](#4-architecture-patterns)
 5. [Cost Optimization](#5-cost-optimization)
@@ -91,6 +95,26 @@ ReelVan is a **video enhancement SaaS platform** specializing in AI-generated vi
 - ✅ Support drag-and-drop for all uploads
 - ❌ NEVER make users wait without feedback
 - ❌ NEVER hide costs until after processing
+
+### 2.4 Keep Root Directory Clean
+
+**CRITICAL:** Project root must remain minimal and organized. Code MUST:
+
+- ✅ Only essential files in root (package.json, tsconfig.json, next.config.mjs, README.md, etc.)
+- ✅ Documentation belongs in dedicated directories (docs/, .github/, etc.)
+- ✅ Configuration files should be minimal and necessary
+- ✅ Inline comments in code > separate documentation files (when possible)
+- ✅ Use existing READMEs instead of creating new doc files
+- ❌ NEVER create random documentation files in root (BUILD.md, SETUP.md, etc.)
+- ❌ NEVER pollute root with temporary or auxiliary files
+- ❌ NEVER create single-purpose documentation when comments suffice
+
+**Rationale:** A clean root directory improves:
+
+- Project navigation and discoverability
+- Mental clarity when switching between projects
+- Onboarding speed for new developers
+- Version control clarity (fewer noise in git status)
 
 ---
 

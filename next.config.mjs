@@ -64,7 +64,9 @@ const output = process.env.EXPORT ? 'export' : undefined
 const basePath = process.env.BASE_PATH || undefined
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
-// 如果设置了 BUILD_DIR 环境变量，则使用它，否则使用默认的 '.next'
+// Dynamic build directory: use BUILD_DIR env var to isolate test builds from dev
+// Usage: BUILD_DIR=build pnpm build (for test builds that don't affect .next)
+// Default: .next (used by pnpm dev and pnpm build)
 const distDir = process.env.BUILD_DIR || '.next'
 
 /**
