@@ -1,8 +1,8 @@
 // @ts-nocheck -- skip type checking
-import * as docs_5 from '../content/docs/resources/pricing.mdx?collection=docs&hash=1759999677267'
-import * as docs_4 from '../content/docs/features/watermark-removal.mdx?collection=docs&hash=1759999677267'
-import * as docs_3 from '../content/docs/features/quality-enhancement.mdx?collection=docs&hash=1759999677267'
-import * as docs_2 from '../content/docs/features/aspect-ratio.mdx?collection=docs&hash=1759999677267'
+import * as docs_5 from '../content/docs/features/watermark-removal.mdx?collection=docs&hash=1759999677267'
+import * as docs_4 from '../content/docs/features/quality-enhancement.mdx?collection=docs&hash=1759999677267'
+import * as docs_3 from '../content/docs/features/aspect-ratio.mdx?collection=docs&hash=1759999677267'
+import * as docs_2 from '../content/docs/resources/pricing.mdx?collection=docs&hash=1759999677267'
 import * as docs_1 from '../content/docs/index.mdx?collection=docs&hash=1759999677267'
 import * as docs_0 from '../content/docs/getting-started.mdx?collection=docs&hash=1759999677267'
 import * as blog_3 from '../content/blog/remove-veo-watermark.mdx?collection=blog&hash=1759999677267'
@@ -61,28 +61,28 @@ export const docs = _runtime.docs<typeof _source.docs>(
     },
     { info: { path: 'index.mdx', fullPath: 'content/docs/index.mdx' }, data: docs_1 },
     {
+      info: { path: 'resources/pricing.mdx', fullPath: 'content/docs/resources/pricing.mdx' },
+      data: docs_2,
+    },
+    {
       info: {
         path: 'features/aspect-ratio.mdx',
         fullPath: 'content/docs/features/aspect-ratio.mdx',
       },
-      data: docs_2,
+      data: docs_3,
     },
     {
       info: {
         path: 'features/quality-enhancement.mdx',
         fullPath: 'content/docs/features/quality-enhancement.mdx',
       },
-      data: docs_3,
+      data: docs_4,
     },
     {
       info: {
         path: 'features/watermark-removal.mdx',
         fullPath: 'content/docs/features/watermark-removal.mdx',
       },
-      data: docs_4,
-    },
-    {
-      info: { path: 'resources/pricing.mdx', fullPath: 'content/docs/resources/pricing.mdx' },
       data: docs_5,
     },
   ],
@@ -95,15 +95,15 @@ export const docs = _runtime.docs<typeof _source.docs>(
       },
     },
     {
+      info: { path: 'resources/meta.json', fullPath: 'content/docs/resources/meta.json' },
+      data: { title: 'Resources', pages: ['pricing'] },
+    },
+    {
       info: { path: 'features/meta.json', fullPath: 'content/docs/features/meta.json' },
       data: {
         title: 'Features',
         pages: ['watermark-removal', 'quality-enhancement', 'aspect-ratio'],
       },
-    },
-    {
-      info: { path: 'resources/meta.json', fullPath: 'content/docs/resources/meta.json' },
-      data: { title: 'Resources', pages: ['pricing'] },
     },
   ]
 )
