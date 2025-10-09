@@ -23,7 +23,7 @@ export default async function Page(props: { params: Promise<{ page: string }> })
       slug: post.url.replace('/blog/', ''),
       date: post.data.date || new Date().toISOString(),
       title: post.data.title,
-      summary: post.data.description,
+      summary: post.data.description || '',
       tags: post.data.tags || [],
       images: [],
       draft: false,

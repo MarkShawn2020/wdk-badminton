@@ -33,7 +33,7 @@ export default async function TagPage(props: { params: Promise<{ tag: string; pa
       slug: post.url.replace('/blog/', ''),
       date: post.data.date || new Date().toISOString(),
       title: post.data.title,
-      summary: post.data.description,
+      summary: post.data.description || '',
       tags: post.data.tags || [],
       images: [],
       draft: false,
