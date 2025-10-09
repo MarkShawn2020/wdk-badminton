@@ -1,11 +1,12 @@
-import { writeFileSync, mkdirSync } from 'fs'
+import { writeFileSync, mkdirSync, readFileSync } from 'fs'
 import path from 'path'
 import { slug } from 'github-slugger'
 import { escape } from 'pliny/utils/htmlEscaper.js'
 import siteMetadata from '../data/siteMetadata.js'
-import tagData from '../app/tag-data.json' with { type: 'json' }
-import { allBlogs } from '../.contentlayer/generated/index.mjs'
-import { sortPosts } from 'pliny/utils/contentlayer.js'
+import { source } from '../lib/source.ts'
+
+// Read tag data from JSON file
+const tagData = JSON.parse(readFileSync('./app/tag-data.json', 'utf-8'))
 
 const outputFolder = process.env.EXPORT ? 'out' : 'public'
 
@@ -37,17 +38,31 @@ const generateRss = (config, posts, page = 'feed.xml') => `
   </rss>
 `
 
-async function generateRSS(config, allBlogs, page = 'feed.xml') {
-  const publishPosts = allBlogs.filter((post) => post.draft !== true)
+async function generateRSS(config, page = 'feed.xml') {
+  // Get all blog posts from Fumadocs source
+  const allPosts = source
+    .getPages()
+    .map((post) => ({
+      slug: post.url.replace('/blog/', ''),
+      date: post.data.date || new Date().toISOString(),
+      title: post.data.title,
+      summary: post.data.description,
+      tags: post.data.tags || [],
+      draft: false,
+    }))
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+
+  const publishPosts = allPosts.filter((post) => post.draft !== true)
+
   // RSS for blog post
   if (publishPosts.length > 0) {
-    const rss = generateRss(config, sortPosts(publishPosts))
+    const rss = generateRss(config, publishPosts)
     writeFileSync(`./${outputFolder}/${page}`, rss)
   }
 
   if (publishPosts.length > 0) {
     for (const tag of Object.keys(tagData)) {
-      const filteredPosts = allBlogs.filter((post) => post.tags.map((t) => slug(t)).includes(tag))
+      const filteredPosts = allPosts.filter((post) => post.tags.map((t) => slug(t)).includes(tag))
       const rss = generateRss(config, filteredPosts, `tags/${tag}/${page}`)
       const rssPath = path.join(outputFolder, 'tags', tag)
       mkdirSync(rssPath, { recursive: true })
@@ -57,7 +72,7 @@ async function generateRSS(config, allBlogs, page = 'feed.xml') {
 }
 
 const rss = () => {
-  generateRSS(siteMetadata, allBlogs)
+  generateRSS(siteMetadata)
   console.log('RSS feed generated...')
 }
 export default rss

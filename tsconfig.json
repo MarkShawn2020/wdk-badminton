@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "target": "ES6",
+    "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -24,7 +24,7 @@
       "@/lib/*": ["lib/*"],
       "@/types/*": ["types/*"],
       "@/app/*": ["app/*"],
-      "contentlayer/generated": ["./.contentlayer/generated"],
+      "@/*": ["./*"],
       "pliny/*": ["node_modules/pliny/*"]
     },
     "plugins": [
@@ -41,8 +41,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.json",
-    ".contentlayer/generated",
-    ".contentlayer/generated/**/*.json",
+    ".source",
+    ".source/**/*",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules", "eslint.config.mjs"]

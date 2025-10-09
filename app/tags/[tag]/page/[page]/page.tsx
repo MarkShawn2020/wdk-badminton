@@ -1,7 +1,6 @@
 import { slug } from 'github-slugger'
-import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
 import ListLayout from '@/layouts/ListLayoutWithTags'
-import { allBlogs } from 'contentlayer/generated'
+import { source } from '@/lib/source'
 import tagData from 'app/tag-data.json'
 import { notFound } from 'next/navigation'
 
@@ -24,9 +23,23 @@ export default async function TagPage(props: { params: Promise<{ tag: string; pa
   const tag = decodeURI(params.tag)
   const title = tag[0].toUpperCase() + tag.split(' ').join('-').slice(1)
   const pageNumber = parseInt(params.page)
-  const filteredPosts = allCoreContent(
-    sortPosts(allBlogs.filter((post) => post.tags && post.tags.map((t) => slug(t)).includes(tag)))
-  )
+
+  // Get all posts filtered by tag and sort by date
+  const filteredPosts = source
+    .getPages()
+    .filter((post) => post.data.tags && post.data.tags.map((t) => slug(t)).includes(tag))
+    .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
+    .map((post) => ({
+      slug: post.url.replace('/blog/', ''),
+      date: post.data.date || new Date().toISOString(),
+      title: post.data.title,
+      summary: post.data.description,
+      tags: post.data.tags || [],
+      images: [],
+      draft: false,
+      path: post.url,
+    }))
+
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
 
   // Return 404 for invalid page numbers or empty pages

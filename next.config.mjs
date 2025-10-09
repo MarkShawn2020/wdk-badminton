@@ -1,10 +1,12 @@
-import { withContentlayer } from 'next-contentlayer2'
 import bundleAnalyzer from '@next/bundle-analyzer'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
+import { createMDX } from 'fumadocs-mdx/next'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
+
+const withMDX = createMDX()
 
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
@@ -61,10 +63,10 @@ const basePath = process.env.BASE_PATH || undefined
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
 /**
- * @type {import('next/dist/next-server/server/config').NextConfig}
+ * @type {import('next').NextConfig}
  **/
 export default () => {
-  const plugins = [withContentlayer, withBundleAnalyzer]
+  const plugins = [withMDX, withBundleAnalyzer]
   return plugins.reduce((acc, next) => next(acc), {
     output,
     basePath,
@@ -73,6 +75,9 @@ export default () => {
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
+    },
+    experimental: {
+      swcPlugins: [],
     },
     images: {
       remotePatterns: [
@@ -97,8 +102,9 @@ export default () => {
         use: ['@svgr/webpack'],
       })
 
-      // Add code inspector plugin (development only)
-      if (options.dev && !options.isServer) {
+      // Add code inspector plugin in development mode
+      if (options.dev) {
+        config.plugins.push(codeInspectorPlugin({ bundler: 'webpack' }))
       }
 
       return config
