@@ -1,6 +1,6 @@
 import { withContentlayer } from 'next-contentlayer2'
 import bundleAnalyzer from '@next/bundle-analyzer'
-import { codeInspectorPlugin } from '@neurora/code-inspector-plugin'
+import { codeInspectorPlugin } from 'code-inspector-plugin'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
