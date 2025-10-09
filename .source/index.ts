@@ -95,15 +95,15 @@ export const docs = _runtime.docs<typeof _source.docs>(
       },
     },
     {
-      info: { path: 'resources/meta.json', fullPath: 'content/docs/resources/meta.json' },
-      data: { title: 'Resources', pages: ['pricing'] },
-    },
-    {
       info: { path: 'features/meta.json', fullPath: 'content/docs/features/meta.json' },
       data: {
         title: 'Features',
         pages: ['watermark-removal', 'quality-enhancement', 'aspect-ratio'],
       },
+    },
+    {
+      info: { path: 'resources/meta.json', fullPath: 'content/docs/resources/meta.json' },
+      data: { title: 'Resources', pages: ['pricing'] },
     },
   ]
 )

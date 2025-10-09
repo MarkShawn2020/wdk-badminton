@@ -15,7 +15,6 @@ const siteMetadata = {
   x: 'https://twitter.com/reelvan',
   github: '',
   youtube: 'https://youtube.com/@reelvan',
-  linkedin: 'https://www.linkedin.com/company/reelvan',
   locale: 'en-US',
   // set to true if you want a navbar fixed to the top
   stickyNav: false,
