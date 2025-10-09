@@ -74,7 +74,14 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
     setLoading(true)
 
     try {
-      const response = await fetch(`/api/videos?page=${page + 1}&limit=20`)
+      const response = await fetch(`/api/videos?page=${page + 1}&limit=20`, {
+        credentials: 'same-origin',
+      })
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+
       const data = await response.json()
 
       if (data.success) {
@@ -84,6 +91,13 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
       }
     } catch (error) {
       console.error('Failed to load more videos:', error)
+
+      // Show user-friendly error message
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        alert('Network error: Cannot connect to server. Please check your connection.')
+      } else {
+        alert('Failed to load more videos. Please try again.')
+      }
     } finally {
       setLoading(false)
     }

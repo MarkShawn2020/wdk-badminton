@@ -84,10 +84,23 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
    */
   const fetchStatus = useCallback(async () => {
     try {
-      const response = await fetch(`/api/videos/${videoId}/status`)
+      const response = await fetch(`/api/videos/${videoId}/status`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'same-origin', // Include cookies for auth
+      })
 
       if (!response.ok) {
-        console.error('❌ Failed to fetch video status:', response.status)
+        console.error('❌ Failed to fetch video status:', response.status, response.statusText)
+
+        // Handle auth errors specifically
+        if (response.status === 401) {
+          setErrorMessage('Authentication required. Please sign in again.')
+          setStatus('failed')
+          setIsPolling(false)
+        }
         return
       }
 
@@ -95,6 +108,7 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
 
       if (!result.success) {
         console.error('❌ API returned error:', result.error)
+        setErrorMessage(result.error || 'Unknown error')
         return
       }
 
@@ -119,6 +133,18 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
       }
     } catch (error) {
       console.error('❌ Error fetching status:', error)
+
+      // Handle network errors specifically
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('🌐 Network error: Cannot connect to API server')
+        setErrorMessage(
+          'Network connection lost. Please check your internet connection and refresh the page.'
+        )
+        setStatus('failed')
+        setIsPolling(false)
+      } else {
+        setErrorMessage('An unexpected error occurred. Please try again.')
+      }
     }
   }, [videoId, onComplete])
 
