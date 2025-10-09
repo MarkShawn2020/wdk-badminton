@@ -10,7 +10,7 @@ export default function Home({ posts }) {
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-6xl">
-              Remove Watermarks, Share Everywhere
+              Turn Your Video Instantly Shareable
             </h1>
             <p className="text-muted-foreground mt-6 text-lg leading-8">
               Transform AI videos from Sora, Veo, Kling & JiMeng into professional content. Remove
