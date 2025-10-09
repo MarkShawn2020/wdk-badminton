@@ -23,7 +23,7 @@ export function PricingPreview() {
         </div>
 
         <div
-          className="mx-auto mt-16 grid grid-cols-1 items-stretch gap-6 sm:mt-20 sm:max-w-xl sm:grid-cols-2 xl:max-w-none xl:grid-cols-4 xl:gap-8"
+          className="mx-auto mt-16 grid grid-cols-1 items-stretch gap-6 space-y-6 sm:mt-20 sm:max-w-xl sm:grid-cols-2 xl:max-w-none xl:grid-cols-4 xl:gap-8"
           style={{ width: '100%', maxWidth: '100%' }}
         >
           {creditPackages.map((pkg) => (

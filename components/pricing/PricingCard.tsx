@@ -96,7 +96,7 @@ export function PricingCard({ tier }: PricingCardProps) {
       )}
 
       {tier.discount > 0 && (
-        <div className="bg-success text-success-foreground absolute -top-3 -right-3 rounded-full px-3 py-1 text-xs font-bold">
+        <div className="bg-primary-700/90 text-primary-foreground absolute -top-3 -right-3 rounded-full px-3 py-2 text-xs font-semibold shadow-md backdrop-blur-sm">
           Save {tier.discount}%
         </div>
       )}

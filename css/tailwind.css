@@ -678,4 +678,12 @@ input:-webkit-autofill:focus {
     word-break: normal;
     overflow-wrap: break-word;
   }
+
+  /* Fix dl/dt/dd layout constraints from typography plugin */
+  dl,
+  dt,
+  dd {
+    max-width: none !important;
+    width: auto !important;
+  }
 }

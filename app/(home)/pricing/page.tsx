@@ -75,15 +75,15 @@ export default function Pricing() {
 
         <div className="py-16">
           {/* Credit Packages */}
-          <div className="mx-auto max-w-7xl">
-            <div className="mb-12 text-center">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-16 text-center">
               <h2 className="text-foreground text-3xl font-bold">Choose Your Credit Package</h2>
               <p className="text-muted-foreground mt-4 text-lg">
                 1 credit = $0.01 • Typical 30s video ≈ 240 credits ($2.40)
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3 lg:gap-8 xl:grid-cols-4 xl:gap-6">
               {creditPackages.map((pkg) => (
                 <PricingCard key={pkg.name} tier={pkg} />
               ))}
