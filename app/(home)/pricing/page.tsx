@@ -90,10 +90,13 @@ export default function Pricing() {
               </p>
             </div>
 
-            <div className="mx-auto grid grid-cols-1 gap-5 pt-6 sm:max-w-2xl sm:grid-cols-2 lg:max-w-none lg:grid-cols-4 lg:gap-6">
-              {pricingPlans.map((plan) => (
-                <PricingCard key={plan.name} tier={plan} />
-              ))}
+            {/* Negative margin to expand cards beyond max-w-7xl */}
+            <div className="-mx-4 sm:-mx-6 lg:-mx-16 xl:-mx-24">
+              <div className="mx-auto grid grid-cols-1 gap-5 px-4 pt-6 sm:max-w-2xl sm:grid-cols-2 sm:px-6 lg:max-w-none lg:grid-cols-4 lg:gap-6 lg:px-16 xl:px-24">
+                {pricingPlans.map((plan) => (
+                  <PricingCard key={plan.name} tier={plan} />
+                ))}
+              </div>
             </div>
           </div>
 

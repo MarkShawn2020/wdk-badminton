@@ -1,10 +1,11 @@
-import { creditPackages } from '@/data/pricingData'
+import { pricingPlans } from '@/data/pricingData'
 import { PricingCard } from './PricingCard'
 
 /**
  * Pricing Preview Component for Homepage
  *
- * Reuses PricingCard component to display all credit packages.
+ * Reuses PricingCard component to display all pricing plans.
+ * Uses negative margins to expand beyond container for better visibility.
  * Maintains consistency with /pricing page.
  */
 export function PricingPreview() {
@@ -17,20 +18,22 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Pay as you go with credits. No subscriptions, no monthly fees. Save up to 30% with
-            larger packages.
+            Pay once or subscribe. Save up to 43% with Pro plan. First subscription gets 2x credits.
           </p>
         </div>
 
-        <div className="mx-auto mt-16 grid grid-cols-1 gap-5 pt-6 sm:mt-20 sm:max-w-2xl sm:grid-cols-2 lg:max-w-none lg:grid-cols-4 lg:gap-6">
-          {creditPackages.map((pkg) => (
-            <PricingCard key={pkg.name} tier={pkg} />
-          ))}
+        {/* Negative margin to expand pricing cards beyond container */}
+        <div className="-mx-4 sm:-mx-6 lg:-mx-16 xl:-mx-24">
+          <div className="mx-auto mt-16 grid grid-cols-1 gap-5 px-4 pt-6 sm:mt-20 sm:max-w-2xl sm:grid-cols-2 sm:px-6 lg:max-w-none lg:grid-cols-4 lg:gap-6 lg:px-16 xl:px-24">
+            {pricingPlans.map((plan) => (
+              <PricingCard key={plan.name} tier={plan} />
+            ))}
+          </div>
         </div>
 
         <p className="text-muted-foreground mx-auto mt-10 max-w-2xl text-center text-sm">
-          All packages include the same features. Start with 100 free credits on signup. 1 credit =
-          $0.01 • Typical 30s video ≈ 240 credits ($2.40)
+          All plans include the same features. Start with 100 free credits on signup. 1 credit =
+          $0.01 • 10s video ≈ 80 credits ($0.80)
         </p>
       </div>
     </section>
