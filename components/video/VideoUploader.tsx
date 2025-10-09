@@ -210,10 +210,10 @@ export function VideoUploader({
           }}
           role="button"
           tabIndex={0}
-          className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-16 transition-all ${
+          className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-16 transition-all ${
             isDragging
-              ? 'border-primary-600 bg-primary-50 dark:bg-primary-950/20 shadow-lg'
-              : 'hover:border-primary-400 dark:hover:border-primary-600 border-gray-300 bg-gradient-to-b from-gray-50 to-white hover:shadow-md dark:border-gray-700 dark:from-gray-900 dark:to-gray-950'
+              ? 'border-primary bg-primary/10 shadow-lg'
+              : 'border-border bg-card hover:border-primary/60 hover:shadow-md'
           } ${isAnalyzing ? 'pointer-events-none opacity-50' : ''} `}
         >
           <input
@@ -228,8 +228,8 @@ export function VideoUploader({
           <div
             className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full transition-colors ${
               isDragging
-                ? 'bg-primary-600 text-white'
-                : 'group-hover:bg-primary-100 group-hover:text-primary-600 dark:group-hover:bg-primary-900 bg-gray-100 text-gray-400 dark:bg-gray-800'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
             }`}
           >
             <Upload className="h-10 w-10" />
@@ -243,7 +243,7 @@ export function VideoUploader({
             or click to browse files (MP4, MOV, WebM)
           </p>
 
-          <div className="flex items-center gap-4 text-sm text-gray-500">
+          <div className="text-muted-foreground flex items-center gap-4 text-sm">
             <span className="inline-flex items-center gap-1">
               📦 Max: {Math.round(maxSize / (1024 * 1024))}MB
             </span>
@@ -255,11 +255,11 @@ export function VideoUploader({
 
       {/* Selected Video Preview */}
       {selectedVideo && (
-        <div className="border-primary-200 from-primary-50 dark:border-primary-900 dark:from-primary-950/20 rounded-xl border-2 bg-gradient-to-br to-white p-6 shadow-md dark:to-gray-950">
+        <div className="border-primary/20 bg-card rounded-2xl border-2 p-6 shadow-md">
           <div className="flex items-start justify-between gap-4">
             <div className="flex flex-1 items-start gap-5">
               {/* Video Thumbnail */}
-              <div className="relative h-28 w-40 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100 shadow-md dark:bg-gray-900">
+              <div className="bg-muted relative h-28 w-40 flex-shrink-0 overflow-hidden rounded-lg shadow-md">
                 <video
                   src={selectedVideo.url}
                   className="h-full w-full object-cover"
@@ -267,8 +267,8 @@ export function VideoUploader({
                   playsInline
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/90 shadow-lg">
-                    <FileVideo className="text-primary-600 h-6 w-6" />
+                  <div className="bg-card flex h-12 w-12 items-center justify-center rounded-full shadow-lg">
+                    <FileVideo className="text-primary h-6 w-6" />
                   </div>
                 </div>
               </div>
@@ -279,7 +279,7 @@ export function VideoUploader({
                   {sanitizeFilename(selectedVideo.file.name)}
                 </h3>
                 <div className="space-y-2">
-                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
+                  <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
                     <span className="inline-flex items-center gap-1">
                       📦 {Math.round(selectedVideo.size / (1024 * 1024))}MB
                     </span>
@@ -289,11 +289,9 @@ export function VideoUploader({
                     </span>
                   </div>
                   {estimatedCost && (
-                    <div className="inline-flex items-center gap-2 rounded-lg bg-white px-3 py-1.5 shadow-sm dark:bg-gray-900">
-                      <span className="text-sm text-gray-600 dark:text-gray-400">
-                        Estimated cost:
-                      </span>
-                      <span className="text-primary-700 dark:text-primary-400 text-base font-bold">
+                    <div className="bg-muted inline-flex items-center gap-2 rounded-lg px-3 py-1.5 shadow-sm">
+                      <span className="text-muted-foreground text-sm">Estimated cost:</span>
+                      <span className="text-primary text-base font-bold">
                         {formatCredits(estimatedCost)}
                       </span>
                     </div>
@@ -305,7 +303,7 @@ export function VideoUploader({
             {/* Remove Button */}
             <button
               onClick={handleRemove}
-              className="flex-shrink-0 rounded-lg bg-gray-100 p-2 text-gray-600 transition-colors hover:bg-red-100 hover:text-red-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-red-900/30 dark:hover:text-red-400"
+              className="bg-muted text-muted-foreground hover:bg-destructive/10 hover:text-destructive flex-shrink-0 rounded-lg p-2 transition-colors"
               aria-label="Remove video"
             >
               <X className="h-5 w-5" />
@@ -316,11 +314,11 @@ export function VideoUploader({
 
       {/* Error Message */}
       {error && (
-        <div className="mt-4 flex items-start gap-3 rounded-xl border-2 border-red-200 bg-red-50 p-4 shadow-sm dark:border-red-900 dark:bg-red-950/20">
-          <div className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-            <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+        <div className="border-destructive/30 bg-destructive/10 mt-4 flex items-start gap-3 rounded-2xl border-2 p-4 shadow-sm">
+          <div className="bg-destructive/20 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full">
+            <AlertCircle className="text-destructive h-4 w-4" />
           </div>
-          <p className="text-sm font-medium text-red-700 dark:text-red-300">{error}</p>
+          <p className="text-destructive-foreground text-sm font-medium">{error}</p>
         </div>
       )}
     </div>
