@@ -203,20 +203,14 @@ export function ProcessingOptionsPresets({
               )}
 
               {/* Icon */}
-              <div
-                className={`${isSelected ? 'text-primary' : 'text-gray-600 dark:text-gray-400'}`}
-              >
+              <div className={`${isSelected ? 'text-primary' : 'text-muted-foreground'}`}>
                 {preset.icon}
               </div>
 
               {/* Name */}
               <div className="text-center">
-                <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                  {preset.name}
-                </div>
-                <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                  {preset.description}
-                </div>
+                <div className="text-foreground text-sm font-semibold">{preset.name}</div>
+                <div className="text-muted-foreground mt-0.5 text-xs">{preset.description}</div>
               </div>
             </button>
           )
@@ -226,9 +220,7 @@ export function ProcessingOptionsPresets({
       {/* Custom Options Panel (Expanded when Custom is selected) */}
       {showCustomOptions && (
         <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900">
-          <p className="mb-4 text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Customize Your Processing
-          </p>
+          <p className="text-foreground mb-4 text-sm font-semibold">Customize Your Processing</p>
 
           {/* Watermark & Quality Toggles */}
           <div className="mb-4 space-y-3">
@@ -320,10 +312,10 @@ export function ProcessingOptionsPresets({
 
       {/* Selected Options Summary (Collapsed) */}
       {!showCustomOptions && selectedPreset !== 'custom' && (
-        <div className="text-xs text-gray-500 dark:text-gray-400">
+        <div className="text-muted-foreground text-xs">
           <p className="text-center">
             ✓ Selected:{' '}
-            <span className="font-medium text-gray-700 dark:text-gray-300">
+            <span className="text-foreground font-medium">
               {PRESETS.find((p) => p.id === selectedPreset)?.name}
             </span>
           </p>

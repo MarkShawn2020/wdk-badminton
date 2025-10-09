@@ -96,7 +96,7 @@ export function UserAvatar() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button className="focus-visible:ring-primary-500 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2">
-          <Avatar className="h-8 w-8 cursor-pointer border-2 border-gray-200 transition-all hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600">
+          <Avatar className="hover:border-border h-8 w-8 cursor-pointer border-2 border-gray-200 transition-all dark:hover:border-gray-600">
             <AvatarImage src={avatarUrl} alt={displayName} />
             <AvatarFallback className="bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300">
               {getInitials(displayName)}
@@ -143,7 +143,7 @@ export function UserAvatar() {
         {/* Sign Out */}
         <DropdownMenuItem
           onClick={handleSignOut}
-          className="cursor-pointer text-red-600 focus:text-red-600 dark:text-red-400"
+          className="text-destructive focus:text-destructive cursor-pointer"
         >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Sign Out</span>

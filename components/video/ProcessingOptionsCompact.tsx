@@ -94,7 +94,7 @@ export function ProcessingOptionsCompact({ onChange, disabled = false }: Process
         </div>
 
         {/* Divider */}
-        <div className="my-3 border-t border-gray-200 dark:border-gray-800" />
+        <div className="border-border my-3 border-t" />
 
         {/* Quality Enhancement - Secondary Upsell */}
         <div className="flex items-center justify-between">
@@ -122,7 +122,7 @@ export function ProcessingOptionsCompact({ onChange, disabled = false }: Process
           variant="ghost"
           size="sm"
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="w-full justify-between text-sm text-gray-600 dark:text-gray-400"
+          className="text-muted-foreground w-full justify-between text-sm"
         >
           <span>Advanced Options (Resolution, Aspect Ratio)</span>
           {showAdvanced ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

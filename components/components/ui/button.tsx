@@ -12,16 +12,15 @@ const buttonVariants = cva(
         default:
           'bg-primary text-primary-foreground hover:bg-primary/90 hover:scale-105 active:scale-100',
         destructive:
-          'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline:
-          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+          'bg-destructive text-primary-foreground hover:bg-destructive/90 focus-visible:ring-destructive/20',
+        outline: 'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground',
         secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         // ✨ Claude-inspired variants
         'claude-secondary':
-          'bg-transparent border border-border-subtle text-text-main hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-text-main transition-all',
-        soft: 'bg-primary/10 text-primary hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30',
+          'bg-transparent border border-border-subtle text-text-main hover:bg-secondary hover:border-text-main transition-all',
+        soft: 'bg-primary/10 text-primary hover:bg-primary/20',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

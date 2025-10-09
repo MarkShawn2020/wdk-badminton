@@ -28,10 +28,10 @@ export default function SignUp() {
               />
             </svg>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          <h2 className="text-foreground mt-6 text-center text-3xl font-bold tracking-tight">
             Create Your Account
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground mt-2 text-center text-sm">
             Start enhancing your AI videos today. No credit card required.
           </p>
         </div>
@@ -45,19 +45,19 @@ export default function SignUp() {
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+                  <div className="border-border w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-2 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+                  <span className="bg-background text-muted-foreground px-2">
                     Email coming soon
                   </span>
                 </div>
               </div>
 
-              <div className="rounded-md bg-blue-50 p-4 dark:bg-blue-900/20">
+              <div className="bg-info/10 rounded-md p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-blue-400" viewBox="0 0 20 20" fill="currentColor">
+                    <svg className="text-info h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                       <path
                         fillRule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
@@ -67,10 +67,10 @@ export default function SignUp() {
                   </div>
                   <div className="ml-3 flex-1">
                     <div>
-                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                      <p className="text-info-foreground text-sm">
                         <strong>What you get with your free account:</strong>
                       </p>
-                      <ul className="mt-2 list-inside list-disc space-y-1 text-sm text-blue-700 dark:text-blue-300">
+                      <ul className="text-info-foreground mt-2 list-inside list-disc space-y-1 text-sm">
                         <li>1 free video enhancement per day</li>
                         <li>Instant access to all features</li>
                         <li>Secure authentication with Google</li>
@@ -82,10 +82,10 @@ export default function SignUp() {
               </div>
 
               <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-800">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <h3 className="text-foreground text-sm font-medium">
                   Want to be notified when we launch?
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-muted-foreground mt-2 text-sm">
                   Follow our development progress on GitHub or check back soon.
                 </p>
                 <div className="mt-4 flex gap-4">
@@ -108,9 +108,7 @@ export default function SignUp() {
               </div>
 
               <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  In the meantime, explore:
-                </h3>
+                <h3 className="text-foreground text-sm font-medium">In the meantime, explore:</h3>
                 <div className="mt-4 grid grid-cols-2 gap-4">
                   <Link
                     href="/pricing"
@@ -129,9 +127,7 @@ export default function SignUp() {
                         d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <span className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Pricing
-                    </span>
+                    <span className="text-foreground mt-2 text-sm font-medium">Pricing</span>
                   </Link>
                   <Link
                     href="/docs"
@@ -150,9 +146,7 @@ export default function SignUp() {
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    <span className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Documentation
-                    </span>
+                    <span className="text-foreground mt-2 text-sm font-medium">Documentation</span>
                   </Link>
                   <Link
                     href="/blog"
@@ -171,9 +165,7 @@ export default function SignUp() {
                         d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
                       />
                     </svg>
-                    <span className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      Blog
-                    </span>
+                    <span className="text-foreground mt-2 text-sm font-medium">Blog</span>
                   </Link>
                   <Link
                     href="/about"
@@ -192,9 +184,7 @@ export default function SignUp() {
                         d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <span className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-                      About
-                    </span>
+                    <span className="text-foreground mt-2 text-sm font-medium">About</span>
                   </Link>
                 </div>
               </div>
@@ -203,7 +193,7 @@ export default function SignUp() {
         </div>
 
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-muted-foreground text-sm">
             Building a product takes time, but we're moving fast.
             <br />
             Expected launch: Q2 2025

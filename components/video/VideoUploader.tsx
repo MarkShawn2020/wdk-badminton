@@ -227,7 +227,7 @@ export function VideoUploader({
 
           <Upload className="mb-4 h-12 w-12 text-gray-400" />
 
-          <p className="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">
+          <p className="text-foreground mb-2 text-lg font-semibold">
             {isAnalyzing ? 'Analyzing video...' : 'Drop your video here'}
           </p>
 
@@ -259,7 +259,7 @@ export function VideoUploader({
 
               {/* Video Info */}
               <div className="flex-1">
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                <h3 className="text-foreground font-medium">
                   {sanitizeFilename(selectedVideo.file.name)}
                 </h3>
                 <div className="mt-2 space-y-1 text-sm text-gray-500">
@@ -279,7 +279,7 @@ export function VideoUploader({
             {/* Remove Button */}
             <button
               onClick={handleRemove}
-              className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+              className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-full p-1"
               aria-label="Remove video"
             >
               <X className="h-5 w-5" />
@@ -290,7 +290,7 @@ export function VideoUploader({
 
       {/* Error Message */}
       {error && (
-        <div className="mt-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground mt-4 flex items-start gap-2 rounded-lg border p-4 text-sm">
           <AlertCircle className="h-5 w-5 flex-shrink-0" />
           <p>{error}</p>
         </div>

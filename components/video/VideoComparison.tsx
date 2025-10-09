@@ -240,7 +240,7 @@ export function VideoComparison({
             disabled={!isReady}
             className="w-full"
           />
-          <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+          <div className="text-muted-foreground flex items-center justify-between text-sm">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>

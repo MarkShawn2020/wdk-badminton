@@ -213,10 +213,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
     <div className="mx-auto w-full max-w-4xl space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+        <h1 className="text-foreground text-4xl font-bold tracking-tight">
           Transform Your AI Videos
         </h1>
-        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground mt-4 text-lg">
           Remove watermarks, enhance quality, and optimize for any platform
         </p>
       </div>
@@ -227,9 +227,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
           <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white">
             1
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            Upload Your Video
-          </h2>
+          <h2 className="text-foreground text-xl font-semibold">Upload Your Video</h2>
         </div>
         <VideoUploader onVideoSelected={handleVideoSelected} onVideoRemoved={handleVideoRemoved} />
       </div>
@@ -241,9 +239,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
             <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white">
               2
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Configure Processing
-            </h2>
+            <h2 className="text-foreground text-xl font-semibold">Configure Processing</h2>
           </div>
           <ProcessingOptionsPresets onChange={handleOptionsChange} disabled={isUploading} />
         </div>
@@ -256,28 +252,28 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
             <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white">
               3
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Start Processing
-            </h2>
+            <h2 className="text-foreground text-xl font-semibold">Start Processing</h2>
           </div>
 
           {/* Cost Summary */}
           <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-950">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">Estimated Cost</p>
-                <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100">
+                <p className="text-muted-foreground text-sm">Estimated Cost</p>
+                <p className="text-foreground mt-1 text-2xl font-bold">
                   {formatCredits(estimatedCost)}
                 </p>
                 <p className="text-sm text-gray-500">{formatCreditsAsUSD(estimatedCost)}</p>
               </div>
               {userCredits !== undefined && (
                 <div className="text-right">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Your Balance</p>
-                  <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  <p className="text-muted-foreground text-sm">Your Balance</p>
+                  <p className="text-foreground mt-1 text-lg font-semibold">
                     {formatCredits(userCredits)}
                   </p>
-                  {!canAfford && <p className="mt-1 text-sm text-red-600">Insufficient credits</p>}
+                  {!canAfford && (
+                    <p className="text-destructive mt-1 text-sm">Insufficient credits</p>
+                  )}
                 </div>
               )}
             </div>
@@ -285,7 +281,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
           {/* Error Message */}
           {error && (
-            <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+            <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground flex items-start gap-2 rounded-lg border p-4 text-sm">
               <AlertCircle className="h-5 w-5 flex-shrink-0" />
               <p>{error}</p>
             </div>
@@ -295,12 +291,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
           {isUploading && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="text-muted-foreground">
                   {uploadProgress < 100 ? 'Uploading...' : 'Processing...'}
                 </span>
-                <span className="font-semibold text-gray-900 dark:text-gray-100">
-                  {uploadProgress}%
-                </span>
+                <span className="text-foreground font-semibold">{uploadProgress}%</span>
               </div>
               <div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-800">
                 <div

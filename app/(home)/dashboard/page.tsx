@@ -92,8 +92,8 @@ export default async function DashboardPage() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-            <p className="mt-1 text-gray-600 dark:text-gray-400">Manage your videos and credits</p>
+            <h1 className="text-foreground text-3xl font-bold">Dashboard</h1>
+            <p className="text-muted-foreground mt-1">Manage your videos and credits</p>
           </div>
           <Link href="/enhance">
             <Button size="lg" className="gap-2">
@@ -118,13 +118,13 @@ export default async function DashboardPage() {
         {/* Total Videos */}
         <Card className="p-6 transition-shadow hover:shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="rounded-xl bg-blue-100 p-3 dark:bg-blue-900">
-              <VideoIcon className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            <div className="bg-info/20 rounded-xl p-3">
+              <VideoIcon className="text-info h-6 w-6" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Total Videos</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalVideos}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{completedCount} completed</p>
+              <p className="text-muted-foreground text-sm font-medium">Total Videos</p>
+              <p className="text-foreground text-2xl font-bold">{totalVideos}</p>
+              <p className="text-muted-foreground text-xs">{completedCount} completed</p>
             </div>
           </div>
         </Card>
@@ -132,15 +132,13 @@ export default async function DashboardPage() {
         {/* Processing */}
         <Card className="p-6 transition-shadow hover:shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="rounded-xl bg-yellow-100 p-3 dark:bg-yellow-900">
-              <Clock className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+            <div className="bg-warning/20 rounded-xl p-3">
+              <Clock className="text-warning h-6 w-6" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Processing</p>
-              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                {processingCount}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Active jobs</p>
+              <p className="text-muted-foreground text-sm font-medium">Processing</p>
+              <p className="text-foreground text-2xl font-bold">{processingCount}</p>
+              <p className="text-muted-foreground text-xs">Active jobs</p>
             </div>
           </div>
         </Card>
@@ -148,11 +146,11 @@ export default async function DashboardPage() {
         {/* Tier Badge */}
         <Card className="p-6 transition-shadow hover:shadow-lg">
           <div className="flex items-center gap-4">
-            <div className="rounded-xl bg-purple-100 p-3 dark:bg-purple-900">
-              <Sparkles className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+            <div className="bg-chart-4/20 rounded-xl p-3">
+              <Sparkles className="text-chart-4 h-6 w-6" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Plan</p>
+              <p className="text-muted-foreground text-sm font-medium">Plan</p>
               <p className="text-2xl font-bold text-gray-900 capitalize dark:text-gray-100">
                 {credits?.tier || 'Free'}
               </p>
@@ -170,10 +168,8 @@ export default async function DashboardPage() {
       {/* Video List */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">Your Videos</h2>
-          {totalVideos > 0 && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{totalVideos} total</p>
-          )}
+          <h2 className="text-foreground text-xl font-bold">Your Videos</h2>
+          {totalVideos > 0 && <p className="text-muted-foreground text-sm">{totalVideos} total</p>}
         </div>
         <VideoList initialVideos={videos || []} initialTotal={totalVideos} />
       </div>

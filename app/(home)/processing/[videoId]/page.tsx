@@ -58,10 +58,8 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
     // Redirect to login if not authenticated
     return (
       <div className="mx-auto max-w-md py-12 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Authentication Required
-        </h1>
-        <p className="mt-4 text-gray-600 dark:text-gray-400">
+        <h1 className="text-foreground text-2xl font-bold">Authentication Required</h1>
+        <p className="text-muted-foreground mt-4">
           Please sign in to view your video processing status
         </p>
       </div>
@@ -94,10 +92,8 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
         <div className="mx-auto max-w-6xl space-y-8">
           {/* Success Header */}
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">
-              Your Video is Ready!
-            </h1>
-            <p className="mt-4 text-lg text-gray-600 dark:text-gray-400">
+            <h1 className="text-foreground text-4xl font-bold">Your Video is Ready!</h1>
+            <p className="text-muted-foreground mt-4 text-lg">
               Compare the original and processed versions below
             </p>
           </div>
@@ -106,26 +102,24 @@ export default async function ProcessingPage({ params }: ProcessingPageProps) {
           <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-950">
             <dl className="grid grid-cols-2 gap-4 text-sm md:grid-cols-4">
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Filename</dt>
-                <dd className="mt-1 font-semibold text-gray-900 dark:text-gray-100">
-                  {video.original_filename}
-                </dd>
+                <dt className="text-muted-foreground">Filename</dt>
+                <dd className="text-foreground mt-1 font-semibold">{video.original_filename}</dd>
               </div>
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Duration</dt>
-                <dd className="mt-1 font-semibold text-gray-900 dark:text-gray-100">
+                <dt className="text-muted-foreground">Duration</dt>
+                <dd className="text-foreground mt-1 font-semibold">
                   {Math.round(video.duration_seconds)}s
                 </dd>
               </div>
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Credits Used</dt>
-                <dd className="mt-1 font-semibold text-gray-900 dark:text-gray-100">
+                <dt className="text-muted-foreground">Credits Used</dt>
+                <dd className="text-foreground mt-1 font-semibold">
                   {video.actual_cost_credits || video.estimated_cost_credits}
                 </dd>
               </div>
               <div>
-                <dt className="text-gray-500 dark:text-gray-400">Processing Time</dt>
-                <dd className="mt-1 font-semibold text-gray-900 dark:text-gray-100">
+                <dt className="text-muted-foreground">Processing Time</dt>
+                <dd className="text-foreground mt-1 font-semibold">
                   {video.started_processing_at && video.completed_at
                     ? Math.round(
                         (new Date(video.completed_at).getTime() -

@@ -24,37 +24,37 @@ const STATUS_CONFIG = {
   pending: {
     icon: Clock,
     label: 'Queued',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    color: 'bg-info/20 text-info',
     spin: false,
   },
   uploading: {
     icon: Loader2,
     label: 'Uploading',
-    color: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
+    color: 'bg-info/20 text-info',
     spin: true,
   },
   processing: {
     icon: Loader2,
     label: 'Processing',
-    color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+    color: 'bg-warning/20 text-warning',
     spin: true,
   },
   completed: {
     icon: CheckCircle2,
     label: 'Completed',
-    color: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+    color: 'bg-success/20 text-success',
     spin: false,
   },
   failed: {
     icon: XCircle,
     label: 'Failed',
-    color: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+    color: 'bg-destructive/20 text-destructive',
     spin: false,
   },
   cancelled: {
     icon: XCircle,
     label: 'Cancelled',
-    color: 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200',
+    color: 'bg-muted text-muted-foreground',
     spin: false,
   },
 }
@@ -135,14 +135,10 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
 
   if (videos.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-white p-12 text-center dark:border-gray-800 dark:bg-gray-950">
+      <div className="border-border bg-card rounded-lg border p-12 text-center">
         <FileVideo className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-4 text-lg font-semibold text-gray-900 dark:text-gray-100">
-          No videos yet
-        </h3>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
-          Upload your first video to get started
-        </p>
+        <h3 className="text-foreground mt-4 text-lg font-semibold">No videos yet</h3>
+        <p className="text-muted-foreground mt-2">Upload your first video to get started</p>
         <Link href="/enhance">
           <Button className="mt-4">Upload Video</Button>
         </Link>
@@ -162,7 +158,7 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
             <Link
               key={video.id}
               href={`/processing/${video.id}`}
-              className="group hover:border-primary relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-all hover:shadow-lg dark:border-gray-800 dark:bg-gray-950"
+              className="group hover:border-primary border-border bg-card relative overflow-hidden rounded-lg border transition-all hover:shadow-lg"
             >
               {/* Thumbnail */}
               <div className="aspect-video bg-gray-900">
@@ -202,20 +198,18 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
 
               {/* Info */}
               <div className="p-4">
-                <h3 className="truncate font-semibold text-gray-900 dark:text-gray-100">
+                <h3 className="text-foreground truncate font-semibold">
                   {video.original_filename}
                 </h3>
 
-                <div className="mt-2 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                <div className="text-muted-foreground mt-2 flex items-center justify-between text-sm">
                   <span>{formatFileSize(video.file_size_bytes)}</span>
                   <span>{Math.round(video.duration_seconds)}s</span>
                 </div>
 
                 <div className="mt-2 flex items-center justify-between text-sm">
-                  <span className="text-gray-500 dark:text-gray-400">
-                    {formatDate(video.created_at)}
-                  </span>
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
+                  <span className="text-muted-foreground">{formatDate(video.created_at)}</span>
+                  <span className="text-foreground font-semibold">
                     {video.estimated_cost_credits} credits
                   </span>
                 </div>
@@ -238,9 +232,7 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
 
                 {/* Error Message */}
                 {video.status === 'failed' && video.error_message && (
-                  <p className="mt-2 text-xs text-red-600 dark:text-red-400">
-                    {video.error_message}
-                  </p>
+                  <p className="text-destructive mt-2 text-xs">{video.error_message}</p>
                 )}
               </div>
             </Link>

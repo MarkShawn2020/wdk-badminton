@@ -36,13 +36,13 @@ const STATUS_INFO: Record<VideoStatus, StatusInfo> = {
     icon: <Clock className="h-12 w-12" />,
     title: 'Queued for Processing',
     description: 'Your video is in the queue and will start processing shortly',
-    color: 'text-blue-500',
+    color: 'text-info',
   },
   uploading: {
     icon: <Loader2 className="h-12 w-12 animate-spin" />,
     title: 'Uploading Video',
     description: 'Uploading your video to our servers',
-    color: 'text-blue-500',
+    color: 'text-info',
   },
   processing: {
     icon: <Loader2 className="h-12 w-12 animate-spin" />,
@@ -54,19 +54,19 @@ const STATUS_INFO: Record<VideoStatus, StatusInfo> = {
     icon: <CheckCircle2 className="h-12 w-12" />,
     title: 'Processing Complete!',
     description: 'Your video has been successfully processed',
-    color: 'text-green-500',
+    color: 'text-success',
   },
   failed: {
     icon: <XCircle className="h-12 w-12" />,
     title: 'Processing Failed',
     description: 'An error occurred while processing your video',
-    color: 'text-red-500',
+    color: 'text-destructive',
   },
   cancelled: {
     icon: <AlertCircle className="h-12 w-12" />,
     title: 'Processing Cancelled',
     description: 'The processing job was cancelled',
-    color: 'text-gray-500',
+    color: 'text-muted-foreground',
   },
 }
 
@@ -213,16 +213,16 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
       {/* Status Icon */}
       <div className="flex flex-col items-center text-center">
         <div className={`mb-4 ${statusInfo.color}`}>{statusInfo.icon}</div>
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-gray-100">{statusInfo.title}</h2>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">{statusInfo.description}</p>
+        <h2 className="text-foreground text-3xl font-bold">{statusInfo.title}</h2>
+        <p className="text-muted-foreground mt-2">{statusInfo.description}</p>
       </div>
 
       {/* Progress Bar */}
       {isProcessing && (
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600 dark:text-gray-400">Progress</span>
-            <span className="font-semibold text-gray-900 dark:text-gray-100">{progress}%</span>
+            <span className="text-muted-foreground">Progress</span>
+            <span className="text-foreground font-semibold">{progress}%</span>
           </div>
           <Progress value={progress} className="h-3" />
         </div>
@@ -230,16 +230,16 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
 
       {/* Processing Info */}
       {isProcessing && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 dark:border-gray-800 dark:bg-gray-900">
-          <h3 className="mb-3 font-semibold text-gray-900 dark:text-gray-100">What's happening?</h3>
-          <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+        <div className="border-border bg-muted rounded-lg border p-6">
+          <h3 className="text-foreground mb-3 font-semibold">What's happening?</h3>
+          <ul className="text-muted-foreground space-y-2 text-sm">
             <li className="flex items-start gap-2">
-              <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-500" />
+              <CheckCircle2 className="text-success h-5 w-5 flex-shrink-0" />
               <span>Analyzing video content</span>
             </li>
             {progress > 20 && (
               <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-green-500" />
+                <CheckCircle2 className="text-success h-5 w-5 flex-shrink-0" />
                 <span>Applying AI enhancements</span>
               </li>
             )}
@@ -255,7 +255,7 @@ export function ProcessingStatus({ videoId, onComplete }: ProcessingStatusProps)
 
       {/* Error Message */}
       {isFailed && errorMessage && (
-        <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-200">
+        <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground rounded-lg border p-4 text-sm">
           <div className="flex items-start gap-2">
             <AlertCircle className="h-5 w-5 flex-shrink-0" />
             <div>

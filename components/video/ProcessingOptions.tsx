@@ -70,7 +70,7 @@ export function ProcessingOptions({ onChange, disabled = false }: ProcessingOpti
             <Label htmlFor="watermark" className="text-base font-semibold">
               Remove Watermark
             </Label>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-muted-foreground text-sm">
               Automatically detect and remove watermarks from your video
             </p>
           </div>
@@ -90,7 +90,7 @@ export function ProcessingOptions({ onChange, disabled = false }: ProcessingOpti
             <Label htmlFor="enhance" className="text-base font-semibold">
               Enhance Quality
             </Label>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-muted-foreground text-sm">
               AI-powered denoising and sharpening for better video quality
             </p>
           </div>
@@ -110,7 +110,7 @@ export function ProcessingOptions({ onChange, disabled = false }: ProcessingOpti
             <Label htmlFor="resolution" className="text-base font-semibold">
               Target Resolution
             </Label>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-muted-foreground mt-1 text-sm">
               Upscale your video to higher resolution (optional)
             </p>
           </div>
@@ -147,7 +147,7 @@ export function ProcessingOptions({ onChange, disabled = false }: ProcessingOpti
             <Label htmlFor="aspect-ratio" className="text-base font-semibold">
               Aspect Ratio
             </Label>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-muted-foreground mt-1 text-sm">
               Change video aspect ratio for different platforms (optional)
             </p>
           </div>
@@ -182,8 +182,8 @@ export function ProcessingOptions({ onChange, disabled = false }: ProcessingOpti
 
       {/* Summary */}
       <div className="rounded-lg bg-gray-50 p-4 text-sm dark:bg-gray-900">
-        <p className="font-semibold text-gray-900 dark:text-gray-100">Selected Options:</p>
-        <ul className="mt-2 space-y-1 text-gray-600 dark:text-gray-400">
+        <p className="text-foreground font-semibold">Selected Options:</p>
+        <ul className="text-muted-foreground mt-2 space-y-1">
           {options.removeWatermark && <li>• Remove watermark</li>}
           {options.enhanceQuality && <li>• Enhance quality</li>}
           {options.targetResolution && <li>• Upscale to {options.targetResolution}</li>}

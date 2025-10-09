@@ -34,10 +34,10 @@ export function Section({
   id,
 }: SectionProps) {
   const themes = {
-    light: 'bg-white dark:bg-gray-950',
+    light: 'bg-background',
     dark: 'bg-bg-dark text-text-inverse',
-    ivory: 'bg-bg-ivory dark:bg-gray-900',
-    oat: 'bg-bg-oat dark:bg-gray-900',
+    ivory: 'bg-bg-ivory',
+    oat: 'bg-bg-oat',
   }
 
   const spacings = {

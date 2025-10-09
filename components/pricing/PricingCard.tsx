@@ -80,23 +80,23 @@ export function PricingCard({ tier }: PricingCardProps) {
   }
 
   const cardClasses = tier.popular
-    ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10'
-    : 'relative flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
+    ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-border/10'
+    : 'relative flex flex-col rounded-3xl bg-card p-8 ring-1 ring-border'
 
-  const textColor = tier.popular ? 'text-white' : 'text-gray-900 dark:text-gray-100'
-  const subtextColor = tier.popular ? 'text-gray-100' : 'text-gray-500 dark:text-gray-400'
-  const featureColor = tier.popular ? 'text-white' : 'text-gray-700 dark:text-gray-300'
+  const textColor = tier.popular ? 'text-primary-foreground' : 'text-foreground'
+  const subtextColor = tier.popular ? 'text-primary-foreground/90' : 'text-muted-foreground'
+  const featureColor = tier.popular ? 'text-primary-foreground' : 'text-foreground'
 
   return (
     <div className={cardClasses}>
       {tier.popular && (
-        <div className="bg-primary-700 absolute -top-5 right-0 left-0 mx-auto w-32 rounded-full px-3 py-2 text-center text-sm font-semibold text-white">
+        <div className="bg-primary-700 text-primary-foreground absolute -top-5 right-0 left-0 mx-auto w-32 rounded-full px-3 py-2 text-center text-sm font-semibold">
           Most Popular
         </div>
       )}
 
       {tier.discount > 0 && (
-        <div className="absolute -top-3 -right-3 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white">
+        <div className="bg-success text-success-foreground absolute -top-3 -right-3 rounded-full px-3 py-1 text-xs font-bold">
           Save {tier.discount}%
         </div>
       )}
@@ -120,13 +120,15 @@ export function PricingCard({ tier }: PricingCardProps) {
             <li key={idx} className="flex items-start">
               <span
                 className={
-                  tier.popular ? 'mr-2 text-white sm:mr-3' : 'text-primary-600 mr-2 sm:mr-3'
+                  tier.popular
+                    ? 'text-primary-foreground mr-2 sm:mr-3'
+                    : 'text-primary-600 mr-2 sm:mr-3'
                 }
               >
                 {feature.included ? '✓' : '−'}
               </span>
               <span
-                className={`text-sm sm:text-base ${feature.included ? featureColor : 'text-gray-500 dark:text-gray-400'} ${feature.highlight ? 'font-semibold' : ''}`}
+                className={`text-sm sm:text-base ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
               >
                 {feature.text}
               </span>
@@ -142,8 +144,8 @@ export function PricingCard({ tier }: PricingCardProps) {
           disabled={isLoading}
           className={`${
             tier.popular
-              ? 'text-primary-600 mt-8 block w-full rounded-lg bg-white px-4 py-3 text-center text-base font-semibold hover:bg-gray-50 disabled:opacity-50'
-              : 'bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold text-white disabled:opacity-50'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold disabled:opacity-50'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-8 block w-full rounded-lg px-4 py-3 text-center text-base font-semibold disabled:opacity-50'
           }`}
         >
           {isLoading ? 'Loading...' : tier.ctaText}
@@ -153,8 +155,8 @@ export function PricingCard({ tier }: PricingCardProps) {
           href="/signup"
           className={
             tier.popular
-              ? 'text-primary-600 mt-8 block rounded-lg bg-white px-4 py-3 text-center text-base font-semibold hover:bg-gray-50'
-              : 'bg-primary-600 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600 mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold text-white'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-8 block rounded-lg px-4 py-3 text-center text-base font-semibold'
           }
         >
           Get started
@@ -170,14 +172,14 @@ function PricingCardSkeleton({ popular }: { popular?: boolean }) {
     <div
       className={
         popular
-          ? 'bg-primary-600 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1 ring-gray-900/10'
-          : 'relative flex flex-col rounded-3xl bg-white p-8 ring-1 ring-gray-200 dark:bg-gray-900 dark:ring-gray-800'
+          ? 'bg-primary-600 ring-border/10 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1'
+          : 'bg-card ring-border relative flex flex-col rounded-3xl p-8 ring-1'
       }
     >
       <div className="h-96 animate-pulse">
-        <div className="h-6 w-32 rounded bg-gray-200 dark:bg-gray-700" />
-        <div className="mt-4 h-12 w-24 rounded bg-gray-200 dark:bg-gray-700" />
-        <div className="mt-6 h-4 w-48 rounded bg-gray-200 dark:bg-gray-700" />
+        <div className="bg-muted h-6 w-32 rounded" />
+        <div className="bg-muted mt-4 h-12 w-24 rounded" />
+        <div className="bg-muted mt-6 h-4 w-48 rounded" />
       </div>
     </div>
   )

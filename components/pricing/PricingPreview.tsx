@@ -13,10 +13,10 @@ export function PricingPreview() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <h2 className="text-primary-600 text-base leading-7 font-semibold">Pricing</h2>
-          <p className="mt-2 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl dark:text-gray-100">
+          <p className="text-foreground mt-2 text-4xl font-bold tracking-tight sm:text-5xl">
             Simple, Transparent Pricing
           </p>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
             Buy credits when you need them. No subscriptions, no monthly fees. Volume discounts up
             to 30% off.
           </p>
@@ -31,7 +31,7 @@ export function PricingPreview() {
           ))}
         </div>
 
-        <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-muted-foreground mx-auto mt-10 max-w-2xl text-center text-sm">
           All users get the same features. Start with 100 free credits on signup. 1 credit = $0.01 •
           Typical 30s video ≈ 240 credits ($2.40)
         </p>

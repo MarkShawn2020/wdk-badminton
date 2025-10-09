@@ -118,8 +118,8 @@ export function CouponInput({ onSuccess, className }: CouponInputProps) {
         <div
           className={`mt-3 flex items-start gap-2 rounded-lg p-3 text-sm ${
             message.type === 'success'
-              ? 'bg-green-50 text-green-800 dark:bg-green-950 dark:text-green-200'
-              : 'bg-red-50 text-red-800 dark:bg-red-950 dark:text-red-200'
+              ? 'bg-success/10 text-success-foreground'
+              : 'bg-destructive/10 text-destructive-foreground'
           }`}
         >
           {message.type === 'success' ? (

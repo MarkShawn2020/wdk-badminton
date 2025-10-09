@@ -27,10 +27,10 @@ export default function Login() {
               />
             </svg>
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          <h2 className="text-foreground mt-6 text-center text-3xl font-bold tracking-tight">
             Welcome Back
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-muted-foreground mt-2 text-center text-sm">
             Sign in to continue enhancing your AI videos
           </p>
         </div>
@@ -44,10 +44,10 @@ export default function Login() {
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300 dark:border-gray-700" />
+                  <div className="border-border w-full border-t" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="bg-white px-2 text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+                  <span className="bg-background text-muted-foreground px-2">
                     Email coming soon
                   </span>
                 </div>
@@ -55,7 +55,7 @@ export default function Login() {
 
               {/* Sign Up Link */}
               <div className="text-center">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
+                <p className="text-muted-foreground text-sm">
                   Don't have an account?{' '}
                   <Link
                     href="/signup"
@@ -70,10 +70,8 @@ export default function Login() {
 
           {/* Feature Highlights */}
           <div className="mt-6 text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              By signing in, you get access to:
-            </p>
-            <div className="mt-3 flex justify-center gap-6 text-xs text-gray-600 dark:text-gray-400">
+            <p className="text-muted-foreground text-xs">By signing in, you get access to:</p>
+            <div className="text-muted-foreground mt-3 flex justify-center gap-6 text-xs">
               <div className="flex items-center">
                 <svg
                   className="text-primary-500 mr-1 h-4 w-4"

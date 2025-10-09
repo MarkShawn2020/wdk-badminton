@@ -4,44 +4,32 @@ import SocialIcon from '@/components/social-icons'
 
 export default function Footer() {
   return (
-    <footer className="border-t border-gray-200 bg-gray-50 dark:border-gray-800 dark:bg-gray-900">
+    <footer className="border-border bg-secondary border-t">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Product Column */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase dark:text-gray-100">
+            <h3 className="text-foreground mb-4 text-sm font-semibold tracking-wider uppercase">
               Product
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link
-                  href="/pricing"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/pricing" className="text-muted-foreground hover:text-foreground">
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/enhance"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/enhance" className="text-muted-foreground hover:text-foreground">
                   Features
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/blog"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/blog" className="text-muted-foreground hover:text-foreground">
                   Blog
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/docs"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/docs" className="text-muted-foreground hover:text-foreground">
                   Documentation
                 </Link>
               </li>
@@ -50,14 +38,14 @@ export default function Footer() {
 
           {/* Platforms Column */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase dark:text-gray-100">
+            <h3 className="text-foreground mb-4 text-sm font-semibold tracking-wider uppercase">
               AI Platforms
             </h3>
             <ul className="space-y-3">
               <li>
                 <Link
                   href="/blog/remove-sora-watermark"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Sora Videos
                 </Link>
@@ -65,7 +53,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/blog/remove-veo-watermark"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Veo Videos
                 </Link>
@@ -73,7 +61,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/blog/remove-kling-watermark"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Kling Videos
                 </Link>
@@ -81,7 +69,7 @@ export default function Footer() {
               <li>
                 <Link
                   href="/blog/enhance-ai-video-quality"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Enhance Quality
                 </Link>
@@ -91,39 +79,27 @@ export default function Footer() {
 
           {/* Company Column */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase dark:text-gray-100">
+            <h3 className="text-foreground mb-4 text-sm font-semibold tracking-wider uppercase">
               Company
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link
-                  href="/about"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/about" className="text-muted-foreground hover:text-foreground">
                   About
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/terms"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/terms" className="text-muted-foreground hover:text-foreground">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/privacy"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/privacy" className="text-muted-foreground hover:text-foreground">
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/refund"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/refund" className="text-muted-foreground hover:text-foreground">
                   Refund Policy
                 </Link>
               </li>
@@ -132,22 +108,19 @@ export default function Footer() {
 
           {/* Support Column */}
           <div>
-            <h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-900 uppercase dark:text-gray-100">
+            <h3 className="text-foreground mb-4 text-sm font-semibold tracking-wider uppercase">
               Support
             </h3>
             <ul className="space-y-3">
               <li>
-                <Link
-                  href="/pricing#faq"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                >
+                <Link href="/pricing#faq" className="text-muted-foreground hover:text-foreground">
                   FAQ
                 </Link>
               </li>
               <li>
                 <a
                   href={`mailto:${siteMetadata.email}`}
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Contact Us
                 </a>
@@ -155,7 +128,7 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:enterprise@reelvan.com"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Enterprise
                 </a>
@@ -165,7 +138,7 @@ export default function Footer() {
                   href="https://twitter.com/reelvan"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   Twitter
                 </a>
@@ -175,10 +148,10 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 border-t border-gray-200 pt-8 dark:border-gray-800">
+        <div className="border-border mt-12 border-t pt-8">
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
             {/* Copyright */}
-            <div className="text-sm text-gray-500 dark:text-gray-400">
+            <div className="text-muted-foreground text-sm">
               © {new Date().getFullYear()} {siteMetadata.author}. All rights reserved.
             </div>
 

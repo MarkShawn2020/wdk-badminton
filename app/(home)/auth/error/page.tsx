@@ -19,39 +19,35 @@ export default async function AuthError({
     <>
       <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-            <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+          <div className="bg-destructive/20 mx-auto flex h-12 w-12 items-center justify-center rounded-full">
+            <AlertCircle className="text-destructive h-6 w-6" />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">
+          <h2 className="text-foreground mt-6 text-center text-3xl font-bold tracking-tight">
             Authentication Failed
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            We couldn't sign you in
-          </p>
+          <p className="text-muted-foreground mt-2 text-center text-sm">We couldn't sign you in</p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 dark:bg-gray-900">
             <div className="space-y-6">
               {/* Error Message */}
-              <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950">
+              <div className="border-destructive/30 bg-destructive/10 rounded-lg border p-4">
                 <div className="flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400" />
+                  <AlertCircle className="text-destructive h-5 w-5 flex-shrink-0" />
                   <div className="flex-1">
-                    <h3 className="text-sm font-medium text-red-800 dark:text-red-200">
+                    <h3 className="text-destructive-foreground text-sm font-medium">
                       Error Details
                     </h3>
-                    <p className="mt-1 text-sm text-red-700 dark:text-red-300">{errorMessage}</p>
+                    <p className="text-destructive-foreground mt-1 text-sm">{errorMessage}</p>
                   </div>
                 </div>
               </div>
 
               {/* Troubleshooting Steps */}
               <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
-                <h3 className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                  What you can try:
-                </h3>
-                <ul className="mt-3 space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                <h3 className="text-foreground text-sm font-medium">What you can try:</h3>
+                <ul className="text-muted-foreground mt-3 space-y-2 text-sm">
                   <li className="flex items-start">
                     <span className="mr-2">•</span>
                     <span>Make sure pop-ups are not blocked in your browser</span>
@@ -89,7 +85,7 @@ export default async function AuthError({
 
               {/* Contact Support */}
               <div className="text-center">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-muted-foreground text-xs">
                   Still having trouble?{' '}
                   <Link
                     href="https://github.com/markshawn2020/reelvan-web/issues"

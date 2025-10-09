@@ -82,12 +82,12 @@ export function CreditsCard({ balance, totalEarned, totalSpent }: CreditsCardPro
           className="w-full justify-start text-left"
           onClick={() => setShowCoupon(!showCoupon)}
         >
-          <Gift className="mr-2 h-4 w-4 text-purple-500" />
+          <Gift className="text-chart-4 mr-2 h-4 w-4" />
           <span className="flex-1">Have a coupon code?</span>
           {showCoupon ? (
-            <ChevronUp className="h-4 w-4 text-gray-400" />
+            <ChevronUp className="text-muted-foreground h-4 w-4" />
           ) : (
-            <ChevronDown className="h-4 w-4 text-gray-400" />
+            <ChevronDown className="text-muted-foreground h-4 w-4" />
           )}
         </Button>
 
