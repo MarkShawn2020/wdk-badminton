@@ -13,27 +13,19 @@
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { VideoUploader } from './VideoUploader'
-import { FeatureToggleCard } from './FeatureToggleCard'
+import { ProcessingOptionsDialog } from './ProcessingOptionsDialog'
 import { Button } from '@/components/components/ui/button'
-import { Label } from '@/components/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/components/ui/select'
 import {
   AlertCircle,
   Loader2,
   Sparkles,
   Upload,
-  Sliders,
+  Settings2,
+  Check,
+  BadgeCheck,
   Zap,
   ImagePlus,
-  BadgeCheck,
 } from 'lucide-react'
-import { ProcessingOptions as ProcessingOptionsType } from '@/lib/validations/video'
 import { calculateCreditsRequired, formatCredits, formatCreditsAsUSD } from '@/lib/video/cost'
 
 interface VideoFile {
@@ -65,6 +57,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [optionsDialogOpen, setOptionsDialogOpen] = useState(false)
 
   /**
    * Handle video selection
@@ -90,6 +83,32 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
       prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
     )
   }, [])
+
+  /**
+   * Get active features summary
+   */
+  const getActiveFeatures = useCallback(() => {
+    const features = []
+    if (removeWatermark) features.push({ icon: BadgeCheck, label: 'Remove Watermark' })
+    if (enhanceQuality) {
+      const resLabel = targetResolution ? ` (${targetResolution})` : ''
+      features.push({ icon: Zap, label: `Enhance Quality${resLabel}` })
+    }
+    if (addCustomWatermark) features.push({ icon: ImagePlus, label: 'Custom Watermark' })
+    if (generateCaptions)
+      features.push({
+        icon: Sparkles,
+        label: `AI Captions (${selectedPlatforms.length} platforms)`,
+      })
+    return features
+  }, [
+    removeWatermark,
+    enhanceQuality,
+    targetResolution,
+    addCustomWatermark,
+    generateCaptions,
+    selectedPlatforms.length,
+  ])
 
   /**
    * Upload video to Supabase Storage
@@ -240,6 +259,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   const estimatedCost = selectedVideo ? calculateCreditsRequired(selectedVideo.duration) : 0
   const canAfford = userCredits !== undefined && userCredits >= estimatedCost
   const hasVideo = selectedVideo !== null
+  const activeFeatures = getActiveFeatures()
 
   return (
     <>
@@ -258,280 +278,188 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
         </div>
       </section>
 
-      {/* Main Processing Dashboard */}
+      {/* Main Upload Section */}
       <section className="pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-5xl space-y-8">
-            {/* Upload Section */}
+          <div className="mx-auto max-w-5xl">
             <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                  <Upload className="text-primary-foreground h-5 w-5" />
+              {/* Header with Settings Button */}
+              <div className="mb-6 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
+                    <Upload className="text-primary-foreground h-5 w-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-card-foreground text-xl font-semibold">Upload & Process</h2>
+                    <p className="text-muted-foreground text-sm">
+                      Drop your video and configure options
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-card-foreground text-xl font-semibold">Upload Video</h2>
-                  <p className="text-muted-foreground text-sm">
-                    Drag and drop your AI-generated video
-                  </p>
-                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOptionsDialogOpen(true)}
+                  className="gap-2"
+                >
+                  <Settings2 className="h-4 w-4" />
+                  Options
+                </Button>
               </div>
+
+              {/* Active Options Summary */}
+              {activeFeatures.length > 0 && (
+                <div className="border-border bg-muted mb-6 rounded-lg border p-4">
+                  <div className="text-foreground mb-2 flex items-center gap-2 text-sm font-medium">
+                    <Check className="h-4 w-4" />
+                    Active Features
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {activeFeatures.map((feature, index) => {
+                      const Icon = feature.icon
+                      return (
+                        <div
+                          key={index}
+                          className="bg-background text-foreground inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-sm"
+                        >
+                          <Icon className="h-3.5 w-3.5" />
+                          {feature.label}
+                        </div>
+                      )
+                    })}
+                  </div>
+                  {selectedVideo && (
+                    <div className="border-border mt-3 flex items-center justify-between border-t pt-3">
+                      <div className="text-muted-foreground text-sm">Estimated Cost</div>
+                      <div className="text-right">
+                        <div className="text-primary font-bold">{formatCredits(estimatedCost)}</div>
+                        <div className="text-muted-foreground text-xs">
+                          {formatCreditsAsUSD(estimatedCost)}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Video Uploader */}
               <VideoUploader
                 onVideoSelected={handleVideoSelected}
                 onVideoRemoved={handleVideoRemoved}
               />
-            </div>
 
-            {/* Processing Options Section */}
-            <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                  <Sliders className="text-primary-foreground h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-card-foreground text-xl font-semibold">Processing Options</h2>
-                  <p className="text-muted-foreground text-sm">
-                    Choose enhancements for your video
-                  </p>
-                </div>
-              </div>
-
-              {/* Feature-Based Processing Options */}
-              <div className="space-y-4">
-                {/* F2: Watermark Removal */}
-                <FeatureToggleCard
-                  icon={BadgeCheck}
-                  title="Remove Watermark"
-                  description="Remove AI platform watermarks from your video"
-                  enabled={removeWatermark}
-                  onToggle={setRemoveWatermark}
-                  disabled={isUploading}
-                />
-
-                {/* F3: Quality Enhancement */}
-                <FeatureToggleCard
-                  icon={Zap}
-                  title="Enhance Quality"
-                  description="Upscale, denoise, and improve video quality"
-                  badge="Popular"
-                  badgeVariant="popular"
-                  enabled={enhanceQuality}
-                  onToggle={setEnhanceQuality}
-                  disabled={isUploading}
-                >
-                  <div className="space-y-2">
-                    <Label htmlFor="target-resolution" className="text-sm font-medium">
-                      Target Resolution
-                    </Label>
-                    <Select
-                      value={targetResolution || 'original'}
-                      onValueChange={(value) =>
-                        setTargetResolution(
-                          value === 'original' ? undefined : (value as '1080p' | '1440p' | '4K')
-                        )
-                      }
-                      disabled={isUploading}
-                    >
-                      <SelectTrigger id="target-resolution">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="original">Original Quality</SelectItem>
-                        <SelectItem value="1080p">1080p (Full HD)</SelectItem>
-                        <SelectItem value="1440p">1440p (2K)</SelectItem>
-                        <SelectItem value="4K">4K (Ultra HD)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-muted-foreground text-xs">
-                      Higher resolutions may increase processing time and cost
-                    </p>
-                  </div>
-                </FeatureToggleCard>
-
-                {/* F4: Custom Watermark Addition */}
-                <FeatureToggleCard
-                  icon={ImagePlus}
-                  title="Add Custom Watermark"
-                  description="Add your logo or branding to the video"
-                  badge="Coming Soon"
-                  badgeVariant="coming-soon"
-                  enabled={addCustomWatermark}
-                  onToggle={setAddCustomWatermark}
-                  disabled={true}
-                >
-                  <div className="text-muted-foreground text-sm">
-                    Watermark customization will be available soon. You'll be able to upload your
-                    logo, adjust position, opacity, and size.
-                  </div>
-                </FeatureToggleCard>
-
-                {/* F5: AI Caption Generation */}
-                <FeatureToggleCard
-                  icon={Sparkles}
-                  title="AI Caption Generation"
-                  description="Get platform-optimized captions for your video"
-                  badge="NEW"
-                  badgeVariant="new"
-                  enabled={generateCaptions}
-                  onToggle={setGenerateCaptions}
-                  disabled={isUploading}
-                >
-                  <div className="space-y-4">
-                    {/* Platform Selection */}
-                    <div>
-                      <Label className="mb-2 text-sm font-medium">Target Platforms</Label>
-                      <div className="flex flex-wrap gap-2">
-                        {['Instagram', 'TikTok', 'YouTube', 'Twitter', 'LinkedIn'].map(
-                          (platform) => (
-                            <button
-                              key={platform}
-                              onClick={() => togglePlatform(platform)}
-                              disabled={isUploading}
-                              className={`rounded-lg border px-3 py-2 text-sm transition-all ${
-                                selectedPlatforms.includes(platform)
-                                  ? 'border-primary bg-primary/10 text-primary'
-                                  : 'border-border bg-muted text-muted-foreground hover:border-primary/60'
-                              } ${isUploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                            >
-                              {platform}
-                            </button>
-                          )
-                        )}
-                      </div>
-                      <p className="text-muted-foreground mt-2 text-xs">
-                        Get 3-5 caption variants per platform
-                      </p>
-                    </div>
-
-                    {/* Tone Selection */}
-                    <div>
-                      <Label htmlFor="caption-tone" className="mb-2 text-sm font-medium">
-                        Tone & Style
-                      </Label>
-                      <Select
-                        value={captionTone}
-                        onValueChange={setCaptionTone}
-                        disabled={isUploading}
-                      >
-                        <SelectTrigger id="caption-tone">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="professional">Professional</SelectItem>
-                          <SelectItem value="casual">Casual</SelectItem>
-                          <SelectItem value="humorous">Humorous</SelectItem>
-                          <SelectItem value="inspirational">Inspirational</SelectItem>
-                          <SelectItem value="educational">Educational</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </FeatureToggleCard>
-              </div>
-            </div>
-
-            {/* Cost & Submit Section */}
-            <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                  <Zap className="text-primary-foreground h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-card-foreground text-xl font-semibold">Process & Download</h2>
-                  <p className="text-muted-foreground text-sm">Review cost and start processing</p>
-                </div>
-              </div>
-
-              <div className="space-y-6">
-                {/* Cost Summary */}
-                <div className="border-border bg-muted grid grid-cols-2 gap-4 rounded-lg border p-4">
-                  <div>
-                    <p className="text-muted-foreground text-sm">Estimated Cost</p>
-                    <p className="text-foreground mt-1 text-2xl font-bold">
-                      {formatCredits(estimatedCost)}
-                    </p>
-                    <p className="text-text-faded text-sm">{formatCreditsAsUSD(estimatedCost)}</p>
-                  </div>
+              {/* Submit Section (Shown only when video is uploaded) */}
+              {selectedVideo && (
+                <div className="mt-6 space-y-4">
+                  {/* Credits Check */}
                   {userCredits !== undefined && (
-                    <div className="text-right">
-                      <p className="text-muted-foreground text-sm">Your Balance</p>
-                      <p className="text-foreground mt-1 text-2xl font-bold">
-                        {formatCredits(userCredits)}
-                      </p>
+                    <div className="border-border bg-muted flex items-center justify-between rounded-lg border p-4">
+                      <div>
+                        <div className="text-muted-foreground text-sm">Your Balance</div>
+                        <div className="text-foreground text-2xl font-bold">
+                          {formatCredits(userCredits)}
+                        </div>
+                      </div>
                       {!canAfford && (
-                        <p className="text-destructive mt-1 text-sm font-semibold">
-                          Insufficient credits
-                        </p>
+                        <div className="text-right">
+                          <div className="text-destructive text-sm font-semibold">
+                            Insufficient credits
+                          </div>
+                          <div className="text-muted-foreground text-xs">
+                            Need {formatCredits(estimatedCost - userCredits)} more
+                          </div>
+                        </div>
                       )}
                     </div>
                   )}
-                </div>
 
-                {/* Error Message */}
-                {error && (
-                  <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground flex items-start gap-2 rounded-lg border p-4 text-sm">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
-                    <p>{error}</p>
-                  </div>
-                )}
-
-                {/* Upload Progress */}
-                {isUploading && (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">
-                        {uploadProgress < 100 ? 'Uploading video...' : 'Starting AI processing...'}
-                      </span>
-                      <span className="text-foreground font-semibold">{uploadProgress}%</span>
+                  {/* Error Message */}
+                  {error && (
+                    <div className="border-destructive/30 bg-destructive/10 text-destructive-foreground flex items-start gap-2 rounded-lg border p-4 text-sm">
+                      <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                      <p>{error}</p>
                     </div>
-                    <div className="bg-secondary h-2 overflow-hidden rounded-full">
-                      <div
-                        className="bg-primary h-full transition-all duration-300"
-                        style={{ width: `${uploadProgress}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* Submit Button */}
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!hasVideo || isUploading || (userCredits !== undefined && !canAfford)}
-                  size="lg"
-                  className="w-full text-lg"
-                >
-                  {isUploading ? (
-                    <>
-                      <Loader2 className="mr-2 h-6 w-6 animate-spin" />
-                      Processing video...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-6 w-6" />
-                      Start Processing ({formatCredits(estimatedCost)})
-                    </>
                   )}
-                </Button>
 
-                {userCredits === undefined && (
-                  <p className="text-text-faded text-center text-sm">
-                    Please{' '}
-                    <a href="/signup" className="text-primary hover:text-primary/90 font-semibold">
-                      sign in
-                    </a>{' '}
-                    to continue
-                  </p>
-                )}
+                  {/* Upload Progress */}
+                  {isUploading && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">
+                          {uploadProgress < 100
+                            ? 'Uploading video...'
+                            : 'Starting AI processing...'}
+                        </span>
+                        <span className="text-foreground font-semibold">{uploadProgress}%</span>
+                      </div>
+                      <div className="bg-secondary h-2 overflow-hidden rounded-full">
+                        <div
+                          className="bg-primary h-full transition-all duration-300"
+                          style={{ width: `${uploadProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
 
-                {!hasVideo && (
-                  <p className="text-muted-foreground text-center text-sm">
-                    Upload a video to get started
-                  </p>
-                )}
-              </div>
+                  {/* Submit Button */}
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isUploading || (userCredits !== undefined && !canAfford)}
+                    size="lg"
+                    className="w-full text-lg"
+                  >
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="mr-2 h-6 w-6 animate-spin" />
+                        Processing video...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-6 w-6" />
+                        Start Processing ({formatCredits(estimatedCost)})
+                      </>
+                    )}
+                  </Button>
+
+                  {userCredits === undefined && (
+                    <p className="text-text-faded text-center text-sm">
+                      Please{' '}
+                      <a
+                        href="/signup"
+                        className="text-primary hover:text-primary/90 font-semibold"
+                      >
+                        sign in
+                      </a>{' '}
+                      to continue
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </section>
+
+      {/* Processing Options Dialog */}
+      <ProcessingOptionsDialog
+        open={optionsDialogOpen}
+        onOpenChange={setOptionsDialogOpen}
+        removeWatermark={removeWatermark}
+        setRemoveWatermark={setRemoveWatermark}
+        enhanceQuality={enhanceQuality}
+        setEnhanceQuality={setEnhanceQuality}
+        targetResolution={targetResolution}
+        setTargetResolution={setTargetResolution}
+        addCustomWatermark={addCustomWatermark}
+        setAddCustomWatermark={setAddCustomWatermark}
+        generateCaptions={generateCaptions}
+        setGenerateCaptions={setGenerateCaptions}
+        selectedPlatforms={selectedPlatforms}
+        togglePlatform={togglePlatform}
+        captionTone={captionTone}
+        setCaptionTone={setCaptionTone}
+        disabled={isUploading}
+      />
     </>
   )
 }
