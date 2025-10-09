@@ -1,4 +1,4 @@
-import { blog, authors } from '@/.source'
+import { blog, authors, docs as docsSource } from '@/.source'
 import { loader } from 'fumadocs-core/source'
 
 export const source = loader({
@@ -9,4 +9,9 @@ export const source = loader({
 export const authorsSource = loader({
   baseUrl: '/authors',
   source: authors.toFumadocsSource(),
+})
+
+export const docs = loader({
+  baseUrl: '/docs',
+  source: docsSource.toFumadocsSource(),
 })

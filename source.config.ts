@@ -41,3 +41,16 @@ export const authors = defineDocs({
     }),
   },
 })
+
+export const docs = defineDocs({
+  dir: 'content/docs',
+  docs: {
+    schema: frontmatterSchema.extend({
+      date: z.string().optional(),
+      lastmod: z.string().optional(),
+      draft: z.boolean().optional(),
+      toc: z.boolean().default(true),
+      sidebarOrder: z.number().optional(),
+    }),
+  },
+})

@@ -1,0 +1,13 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "getting-started",
+    "---Features",
+    "watermark-removal",
+    "quality-enhancement",
+    "aspect-ratio",
+    "---Resources",
+    "pricing"
+  ]
+}

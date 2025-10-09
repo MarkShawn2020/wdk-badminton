@@ -6,7 +6,9 @@ const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
 
-const withMDX = createMDX()
+const withMDX = createMDX({
+  configPath: './source.config.ts',
+})
 
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
