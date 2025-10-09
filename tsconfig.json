@@ -35,15 +35,16 @@
     "strictNullChecks": true
   },
   "include": [
-    "next-env.d.ts",
     "**/*.js",
+    "**/*.json",
     "**/*.mjs",
     "**/*.ts",
     "**/*.tsx",
-    "**/*.json",
+    ".next/types/**/*.ts",
     ".source",
     ".source/**/*",
-    ".next/types/**/*.ts"
+    "next-env.d.ts",
+    "build/types/**/*.ts"
   ],
   "exclude": ["node_modules", "eslint.config.mjs", ".next"]
 }
