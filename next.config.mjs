@@ -64,12 +64,16 @@ const output = process.env.EXPORT ? 'export' : undefined
 const basePath = process.env.BASE_PATH || undefined
 const unoptimized = process.env.UNOPTIMIZED ? true : undefined
 
+// 如果设置了 BUILD_DIR 环境变量，则使用它，否则使用默认的 '.next'
+const distDir = process.env.BUILD_DIR || '.next'
+
 /**
  * @type {import('next').NextConfig}
  **/
 export default () => {
   const plugins = [withMDX, withBundleAnalyzer]
   return plugins.reduce((acc, next) => next(acc), {
+    distDir,
     output,
     basePath,
     reactStrictMode: true,
