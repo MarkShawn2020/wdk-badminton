@@ -23,8 +23,8 @@ export function PricingPreview() {
         </div>
 
         {/* Negative margin to expand pricing cards beyond container */}
-        <div className="-mx-4 sm:-mx-6 lg:-mx-16 xl:-mx-24">
-          <div className="mx-auto mt-16 grid grid-cols-1 gap-5 px-4 pt-6 sm:mt-20 sm:max-w-2xl sm:grid-cols-2 sm:px-6 lg:max-w-none lg:grid-cols-4 lg:gap-6 lg:px-16 xl:px-24">
+        <div className="-mx-4 mt-16 sm:-mx-6 sm:mt-20 xl:-mx-64">
+          <div className="mx-auto grid grid-cols-1 gap-5 px-4 pt-6 sm:max-w-2xl sm:grid-cols-2 sm:px-6 lg:max-w-none xl:grid-cols-4 xl:px-24">
             {pricingPlans.map((plan) => (
               <PricingCard key={plan.name} tier={plan} />
             ))}

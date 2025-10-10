@@ -88,10 +88,10 @@ export function PricingCard({ tier }: PricingCardProps) {
   }
 
   const cardClasses = tier.isContactSales
-    ? 'bg-muted/30 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-lg'
+    ? 'bg-muted/30 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-lg min-w-[320px]'
     : tier.popular
-      ? 'bg-primary-600 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 shadow-2xl ring-1 ring-border/10 transition-all duration-300 hover:shadow-3xl'
-      : 'relative flex flex-col h-full rounded-2xl bg-card p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-xl'
+      ? 'bg-primary-600 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 shadow-2xl ring-1 ring-border/10 transition-all duration-300 hover:shadow-3xl min-w-[320px]'
+      : 'relative flex flex-col h-full rounded-2xl bg-card p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-xl min-w-[320px]'
 
   const textColor = tier.popular ? 'text-primary-foreground' : 'text-foreground'
   const subtextColor = tier.popular ? 'text-primary-foreground/90' : 'text-muted-foreground'
@@ -223,8 +223,8 @@ function PricingCardSkeleton({ popular }: { popular?: boolean }) {
     <div
       className={
         popular
-          ? 'bg-primary-600 ring-border/10 relative flex flex-col rounded-3xl p-8 shadow-2xl ring-1'
-          : 'bg-card ring-border relative flex flex-col rounded-3xl p-8 ring-1'
+          ? 'bg-primary-600 ring-border/10 relative flex min-w-[320px] flex-col rounded-3xl p-8 shadow-2xl ring-1'
+          : 'bg-card ring-border relative flex min-w-[320px] flex-col rounded-3xl p-8 ring-1'
       }
     >
       <div className="h-96 animate-pulse">
