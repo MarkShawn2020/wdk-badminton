@@ -18,7 +18,7 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Pay once or subscribe. Save up to 43% with Pro plan. First subscription gets 2x credits.
+            Pay once or subscribe. Save up to 30% with Pro plan. First subscription gets 2x credits.
           </p>
         </div>
 

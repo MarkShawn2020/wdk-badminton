@@ -40,7 +40,7 @@ export const pricingPlans: PricingTier[] = [
       { text: '1,000 credits (one-time)', included: true },
       { text: '~12 videos (10s each)', included: true },
       { text: 'Credits never expire', included: true, highlight: true },
-      { text: 'All features (watermark removal, 4K)', included: true },
+      { text: 'All features included', included: true },
       { text: 'Commercial use', included: true },
       { text: '3 videos/day limit', included: true },
     ],
@@ -55,7 +55,7 @@ export const pricingPlans: PricingTier[] = [
     monthlyCredits: 2500,
     price: 1900, // $19/month
     priceDisplay: '$19',
-    discount: 24, // 24% off vs one-time
+    discount: 24, // 24% off vs one-time ($0.0076/credit vs $0.01/credit)
     description: 'Best for regular creators',
     videoExamples: '~31 videos/month',
     features: [
@@ -68,9 +68,9 @@ export const pricingPlans: PricingTier[] = [
       },
       { text: '~31 videos/month (10s each)', included: true },
       { text: 'Save 24% vs pay-as-you-go', included: true, highlight: true },
-      { text: 'All features (watermark removal, 4K)', included: true },
+      { text: 'All features included', included: true },
       { text: 'Commercial use', included: true },
-      { text: '3 videos/day limit', included: true },
+      { text: '10 videos/day limit', included: true },
     ],
     ctaText: 'Subscribe',
     popular: false,
@@ -82,7 +82,7 @@ export const pricingPlans: PricingTier[] = [
     monthlyCredits: 7000,
     price: 4900, // $49/month
     priceDisplay: '$49',
-    discount: 43, // 43% off vs one-time
+    discount: 30, // 30% off vs one-time ($0.007/credit vs $0.01/credit)
     description: 'For professional creators',
     videoExamples: '~87 videos/month',
     features: [
@@ -94,8 +94,8 @@ export const pricingPlans: PricingTier[] = [
         badge: 'Limited',
       },
       { text: '~87 videos/month (10s each)', included: true },
-      { text: 'Save 43% vs pay-as-you-go', included: true, highlight: true },
-      { text: 'All features (watermark removal, 4K)', included: true },
+      { text: 'Save 30% vs pay-as-you-go', included: true, highlight: true },
+      { text: 'All features included', included: true },
       { text: 'Commercial use', included: true },
       { text: '50 videos/day limit', included: true, highlight: true },
       { text: 'Priority processing', included: true },
@@ -110,12 +110,12 @@ export const pricingPlans: PricingTier[] = [
     type: 'contact',
     price: 0,
     priceDisplay: 'Custom',
-    discount: 50,
+    discount: 30, // Up to 30% - consistent with badge
     description: 'For teams & enterprises',
     videoExamples: 'Unlimited',
     features: [
       { text: 'Custom credit quota', included: true },
-      { text: 'Save up to 50%', included: true, highlight: true },
+      { text: 'Save up to 30%', included: true, highlight: true },
       { text: 'Dedicated account manager', included: true },
       { text: 'Priority support', included: true },
       { text: 'Custom API integration', included: true, highlight: true },

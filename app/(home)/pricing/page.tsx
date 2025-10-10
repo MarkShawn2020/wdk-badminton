@@ -16,7 +16,7 @@ export default function Pricing() {
         <div className="from-primary-600 to-primary-700 bg-gradient-to-r py-3 text-center">
           <div className="flex items-center justify-center gap-2 text-sm font-semibold text-white md:text-base">
             <span className="text-xl">🎉</span>
-            <span>First subscription gets 2x credits! Save up to 43%</span>
+            <span>First subscription gets 2x credits! Save up to 30%</span>
             <span className="hidden sm:inline">· Cancel anytime, no commitment</span>
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function Pricing() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span>Subscriptions: Save up to 43%</span>
+              <span>Subscriptions: Save up to 30%</span>
             </div>
             <div className="flex items-center gap-2">
               <svg
@@ -218,7 +218,7 @@ export default function Pricing() {
                   <br />
                   <br />
                   <strong>Subscription:</strong> Monthly plans with more credits at better prices -
-                  save up to 43%! First purchase gets 2x credits. Credits reset monthly
+                  save up to 30%! First purchase gets 2x credits. Credits reset monthly
                   (use-it-or-lose-it). Ideal for regular creators.
                 </dd>
               </div>
@@ -237,13 +237,12 @@ export default function Pricing() {
                   What's included in each plan?
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
-                  All plans include the same core features (watermark removal, 4K quality, etc.).
-                  The differences:
+                  All plans include the same core features. The differences:
                   <br />• <strong>Pay-as-you-go</strong>: 1,000 credits (lifetime), 3 videos/day
-                  <br />• <strong>Starter</strong>: 2,500 credits/month, save 24%, 3 videos/day
-                  <br />• <strong>Pro</strong>: 7,000 credits/month, save 43%, 50 videos/day +
+                  <br />• <strong>Starter</strong>: 2,500 credits/month, save 24%, 10 videos/day
+                  <br />• <strong>Pro</strong>: 7,000 credits/month, save 30%, 50 videos/day +
                   priority
-                  <br />• <strong>Business</strong>: Custom, save up to 50%
+                  <br />• <strong>Business</strong>: Custom, save up to 30%
                 </dd>
               </div>
               <div>
