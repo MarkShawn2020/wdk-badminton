@@ -132,27 +132,239 @@
     outline-color: var(--color-primary-500);
   }
 
-  /* Force Shiki code blocks to use our colors */
+  /* Force Shiki code blocks to use Claude design colors */
   pre.shiki,
   pre.shiki-themes {
-    background-color: #1e1e1e !important;
-    color: #d4d4d4 !important;
+    /* Light mode: 温暖中性灰 */
+    background-color: oklch(0.92 0.005 85) !important;
+    color: oklch(0.25 0.005 85) !important;
   }
 
   pre.shiki code,
   pre.shiki-themes code {
-    color: #d4d4d4 !important;
+    color: oklch(0.25 0.005 85) !important;
     background: transparent !important;
   }
 
   pre.shiki .line,
   pre.shiki-themes .line {
-    color: #d4d4d4 !important;
+    color: oklch(0.25 0.005 85) !important;
   }
 
   pre.shiki span,
   pre.shiki-themes span {
-    color: #d4d4d4 !important;
+    color: oklch(0.25 0.005 85) !important;
+  }
+
+  /* Dark mode Shiki overrides */
+  .dark pre.shiki,
+  .dark pre.shiki-themes {
+    background-color: oklch(0.25 0 0 / 0.8) !important;
+    color: oklch(0.9 0 0) !important;
+  }
+
+  .dark pre.shiki code,
+  .dark pre.shiki-themes code {
+    color: oklch(0.9 0 0) !important;
+  }
+
+  .dark pre.shiki .line,
+  .dark pre.shiki-themes .line {
+    color: oklch(0.9 0 0) !important;
+  }
+
+  .dark pre.shiki span,
+  .dark pre.shiki-themes span {
+    color: oklch(0.9 0 0) !important;
+  }
+
+  /* ===== Fumadocs Code Block Multi-Layer Layout ===== */
+  /* 为 Fumadocs 的 figure.shiki 容器添加多层级的呼吸感设计 */
+
+  /* Light mode - 外层容器（figure） */
+  figure.shiki,
+  figure.shiki-themes {
+    /* === Layer 1: Outer Shell (呼吸空间) === */
+    position: relative;
+    margin: 2em 0 !important; /* 与段落的垂直节奏 */
+    padding: 14px !important; /* 外层呼吸层 - Claude spacing 接近 gutter (1.5rem) */
+
+    /* 外层背景 - 渐变深度感 */
+    background: linear-gradient(
+      135deg,
+      oklch(0.95 0.008 85) 0%,
+      oklch(0.93 0.006 85) 100%
+    ) !important;
+
+    /* 外层圆角 - 14px */
+    border-radius: 14px !important;
+
+    /* 外层边框 - 微妙可见 */
+    border: 1px solid oklch(0.925 0.01 85 / 0.5) !important;
+
+    /* 外层阴影 - 轻微提升 */
+    box-shadow:
+      0 2px 8px -2px rgb(0 0 0 / 0.08),
+      0 1px 4px -1px rgb(0 0 0 / 0.04) !important;
+
+    /* 过渡动画 */
+    transition: all 0.3s ease;
+
+    &:hover {
+      box-shadow:
+        0 4px 12px -2px rgb(0 0 0 / 0.1),
+        0 2px 6px -1px rgb(0 0 0 / 0.06) !important;
+    }
+  }
+
+  /* 内层代码容器 - 嵌入式深度 */
+  figure.shiki > div.code-container,
+  figure.shiki-themes > div.code-container {
+    /* === Layer 2: Inner Container (嵌入感) === */
+    position: relative;
+    padding: 0 !important; /* 内层不需要额外 padding，由 pre 控制 */
+    margin: 0 !important;
+
+    /* 内层背景 - 比外层略深 */
+    background-color: oklch(0.92 0.005 85) !important;
+
+    /* 内层圆角 - 10px (略小于外层) */
+    border-radius: 10px !important;
+
+    /* 内嵌阴影 - 创造凹陷感 */
+    box-shadow:
+      inset 0 2px 4px 0 rgb(0 0 0 / 0.04),
+      inset 0 0 0 1px oklch(0.88 0.005 85 / 0.6) !important;
+
+    /* 内层边框 - 精致边界 */
+    border: 1px solid oklch(0.88 0.005 85) !important;
+
+    overflow: hidden; /* 确保内容不溢出圆角 */
+  }
+
+  /* pre 元素 - 实际代码区域 */
+  figure.shiki pre,
+  figure.shiki-themes pre {
+    /* === Layer 3: Code Content === */
+    margin: 0 !important; /* 取消默认 margin */
+    padding: 1.5rem 2rem !important; /* Claude spacing - m & gutter */
+    background: transparent !important; /* 使用容器背景 */
+    border: none !important;
+    border-radius: 0 !important; /* 由容器控制圆角 */
+    box-shadow: none !important; /* 由容器控制阴影 */
+  }
+
+  /* Copy button - 悬浮按钮舱 */
+  figure.shiki > div.copy-button,
+  figure.shiki-themes > div.copy-button {
+    /* === Layer 4: Floating Button Pod === */
+    position: absolute;
+    top: 18px !important; /* 从外层容器边缘 18px (Claude: 接近 spacing-m) */
+    right: 18px !important;
+    z-index: 10;
+
+    /* 按钮容器背景 - 毛玻璃效果 */
+    background: oklch(0.95 0.008 85 / 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+
+    /* 按钮圆角 - 小圆角 */
+    border-radius: 6px !important;
+
+    /* 按钮阴影 - 悬浮提升感 */
+    box-shadow:
+      0 2px 8px -1px rgb(0 0 0 / 0.12),
+      0 1px 4px -1px rgb(0 0 0 / 0.08),
+      0 0 0 1px oklch(0.88 0.005 85 / 0.4) !important;
+
+    /* 过渡动画 */
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: oklch(0.97 0.008 85 / 0.9) !important;
+      box-shadow:
+        0 4px 12px -2px rgb(0 0 0 / 0.15),
+        0 2px 6px -1px rgb(0 0 0 / 0.1),
+        0 0 0 1px oklch(0.88 0.005 85 / 0.6) !important;
+      transform: translateY(-1px);
+    }
+
+    /* 按钮本身 */
+    & button {
+      padding: 0.5rem 0.75rem !important;
+      color: oklch(0.25 0.005 85) !important;
+      font-size: 0.8125rem !important;
+      font-weight: 500 !important;
+      border: none !important;
+      background: transparent !important;
+      cursor: pointer;
+      transition: color 0.2s ease;
+
+      &:hover {
+        color: oklch(0.145 0 0) !important;
+      }
+    }
+  }
+
+  /* Dark mode - 暗色多层级设计 */
+  .dark figure.shiki,
+  .dark figure.shiki-themes {
+    /* === Dark Layer 1: Outer Shell === */
+    background: linear-gradient(
+      135deg,
+      oklch(0.15 0 0 / 0.5) 0%,
+      oklch(0.12 0 0 / 0.5) 100%
+    ) !important;
+
+    border-color: oklch(0.556 0.012 80 / 0.15) !important;
+
+    box-shadow:
+      0 4px 12px -2px rgb(0 0 0 / 0.4),
+      0 2px 6px -1px rgb(0 0 0 / 0.2) !important;
+
+    &:hover {
+      box-shadow:
+        0 6px 16px -2px rgb(0 0 0 / 0.5),
+        0 4px 8px -1px rgb(0 0 0 / 0.3) !important;
+    }
+  }
+
+  .dark figure.shiki > div.code-container,
+  .dark figure.shiki-themes > div.code-container {
+    /* === Dark Layer 2: Inner Container === */
+    background-color: oklch(0.18 0 0 / 0.9) !important;
+    border-color: oklch(0.556 0.012 80 / 0.12) !important;
+
+    box-shadow:
+      inset 0 2px 4px 0 rgb(0 0 0 / 0.3),
+      inset 0 0 0 1px oklch(0.25 0 0 / 0.6) !important;
+  }
+
+  .dark figure.shiki > div.copy-button,
+  .dark figure.shiki-themes > div.copy-button {
+    /* === Dark Layer 4: Button Pod === */
+    background: oklch(0.25 0 0 / 0.8) !important;
+    backdrop-filter: blur(12px) !important;
+
+    box-shadow:
+      0 2px 8px -1px rgb(0 0 0 / 0.5),
+      0 1px 4px -1px rgb(0 0 0 / 0.3),
+      0 0 0 1px oklch(0.556 0.012 80 / 0.2) !important;
+
+    &:hover {
+      background: oklch(0.28 0 0 / 0.9) !important;
+      box-shadow:
+        0 4px 12px -2px rgb(0 0 0 / 0.6),
+        0 2px 6px -1px rgb(0 0 0 / 0.4),
+        0 0 0 1px oklch(0.556 0.012 80 / 0.3) !important;
+    }
+
+    & button {
+      color: oklch(0.88 0 0) !important;
+
+      &:hover {
+        color: oklch(0.985 0 0) !important;
+      }
+    }
   }
 }
 
@@ -267,46 +479,103 @@
       border: 1px solid var(--color-gray-200);
     }
 
-    /* Code blocks - modern styling with Shiki support */
+    /* Code blocks - Claude Design System 精致布局 */
     & pre {
-      background-color: #1e1e1e !important;
-      border-radius: 0.5rem;
-      padding: 1rem 1.25rem;
+      /* === 布局与尺寸 === */
+      position: relative; /* 为复制按钮定位 */
+      width: 100%;
       overflow-x: auto;
-      margin-top: 1.75em;
-      margin-bottom: 1.75em;
-      border: 1px solid #3e3e3e;
-      box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 
-      /* Override Shiki CSS variables */
-      --shiki-light: #d4d4d4 !important;
-      --shiki-dark: #d4d4d4 !important;
-      --shiki-light-bg: #1e1e1e !important;
-      --shiki-dark-bg: #1e1e1e !important;
+      /* === 外部间距 - 与段落保持节奏 === */
+      margin-top: 2em; /* 比段落略大，视觉分离 */
+      margin-bottom: 2em;
 
+      /* === 内部间距 - Claude spacing system === */
+      /* 上下使用 m (1.5rem)，左右使用 gutter (2rem) - 更宽敞 */
+      padding: 1.5rem 2rem !important;
+
+      /* === 背景与颜色 - 温暖中性灰 === */
+      background-color: oklch(0.92 0.005 85) !important; /* 比 ivory 稍深 */
+
+      /* === 边框 - 精致定义 === */
+      border: 1px solid oklch(0.925 0.01 85 / 0.35) !important; /* 微妙可见 */
+
+      /* === 圆角 - Claude 标准 === */
+      border-radius: 0.75rem !important; /* 12px，温和不失现代感 */
+
+      /* === 阴影 - 轻微提升 === */
+      box-shadow:
+        0 1px 3px 0 rgb(0 0 0 / 0.05),
+        0 1px 2px -1px rgb(0 0 0 / 0.03) !important; /* 极轻微，barely there */
+
+      /* === 滚动条样式 === */
+      scrollbar-width: thin; /* Firefox */
+      scrollbar-color: oklch(0.8 0.005 85) transparent; /* 温暖灰色滚动条 */
+
+      &::-webkit-scrollbar {
+        height: 8px; /* 细滚动条 */
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: oklch(0.8 0.005 85); /* 温暖灰色 */
+        border-radius: 4px;
+        &:hover {
+          background: oklch(0.7 0.005 85); /* 悬停时略深 */
+        }
+      }
+
+      /* === Shiki 变量覆盖 === */
+      --shiki-light: oklch(0.25 0.005 85) !important; /* 暖深灰 */
+      --shiki-dark: oklch(0.25 0.005 85) !important;
+      --shiki-light-bg: oklch(0.92 0.005 85) !important;
+      --shiki-dark-bg: oklch(0.92 0.005 85) !important;
+
+      /* === 代码文本样式 === */
       & code {
-        font-size: 0.875rem;
-        line-height: 1.7;
-        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-        color: #d4d4d4 !important;
+        display: block; /* 确保正确布局 */
+
+        /* 字体 */
+        font-family: 'SF Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+        font-size: 0.875rem; /* 14px - 舒适阅读 */
+        font-weight: 400; /* 正常字重 */
+        line-height: 1.8; /* 宽松行高，适合代码 */
+
+        /* 颜色 */
+        color: oklch(0.25 0.005 85) !important; /* 温暖深灰 */
+
+        /* 重置 */
         background: transparent !important;
         border: none;
         padding: 0;
+        margin: 0;
+
+        /* 文本渲染 */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
       }
 
-      /* Override all Shiki spans */
+      /* === 行样式 === */
+      & .line {
+        display: block;
+        min-height: 1.8em; /* 防止空行塌陷 */
+      }
+
+      /* === Token 覆盖 === */
       & span {
         color: inherit !important;
       }
 
-      /* Override Prism token colors to ensure visibility */
       & .token {
         background: transparent !important;
       }
 
-      /* Ensure line spans are visible */
       & .line span {
-        color: #d4d4d4 !important;
+        color: oklch(0.25 0.005 85) !important;
       }
     }
 
@@ -427,17 +696,37 @@
     }
 
     & pre {
-      background-color: #1e1e1e !important;
-      border-color: oklch(1 0 0 / 15%);
+      /* === 背景 - Claude background-faded，半透明融合 === */
+      background-color: oklch(0.18 0 0 / 0.9) !important; /* 比 faded 略深，更好对比 */
 
-      /* Override Shiki CSS variables for dark mode */
-      --shiki-light: #d4d4d4 !important;
-      --shiki-dark: #d4d4d4 !important;
-      --shiki-light-bg: #1e1e1e !important;
-      --shiki-dark-bg: #1e1e1e !important;
+      /* === 边框 - 暗色下更明显 === */
+      border-color: oklch(0.556 0.012 80 / 0.2) !important; /* slate 色，可见但不突兀 */
 
+      /* === 阴影 - 暗色模式更明显，提供深度 === */
+      box-shadow:
+        0 4px 6px -1px rgb(0 0 0 / 0.3),
+        0 2px 4px -2px rgb(0 0 0 / 0.15) !important; /* 较强阴影，提升感 */
+
+      /* === 滚动条 - 暗色版本 === */
+      scrollbar-color: oklch(0.35 0 0) transparent;
+
+      &::-webkit-scrollbar-thumb {
+        background: oklch(0.35 0 0);
+        &:hover {
+          background: oklch(0.45 0 0);
+        }
+      }
+
+      /* === Shiki 变量 - 暗色模式 === */
+      --shiki-light: oklch(0.88 0 0) !important; /* 柔和白，不刺眼 */
+      --shiki-dark: oklch(0.88 0 0) !important;
+      --shiki-light-bg: oklch(0.18 0 0 / 0.9) !important;
+      --shiki-dark-bg: oklch(0.18 0 0 / 0.9) !important;
+
+      /* === 代码文本 - 暗色模式 === */
       & code {
-        color: #d4d4d4 !important;
+        color: oklch(0.88 0 0) !important; /* 柔和白色，舒适阅读 */
+        line-height: 1.8; /* 保持一致的行高 */
       }
 
       & span {
@@ -445,7 +734,7 @@
       }
 
       & .line span {
-        color: #d4d4d4 !important;
+        color: oklch(0.88 0 0) !important; /* 一致的柔和白 */
       }
     }
 
