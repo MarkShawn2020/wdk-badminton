@@ -917,14 +917,10 @@
     padding: 1.25rem 1.5rem !important;
   }
 
-  /* Icon - 使用 text-faded (slate) 色调 #87867F - 低调和谐 */
+  /* Icon - 隐藏 SVG 图标，保持简洁和谐 */
   .prose div[class*='rounded-xl'] svg.lucide,
   .prose-slate div[class*='rounded-xl'] svg.lucide {
-    /* Override stroke and fill to match Claude design */
-    stroke: oklch(0.556 0.012 80) !important; /* Claude text-faded/slate */
-    fill: oklch(0.952 0.008 85) !important; /* Match background, subtle fill */
-    color: oklch(0.556 0.012 80) !important;
-    opacity: 0.8; /* 略微降低不透明度，更柔和 */
+    display: none !important;
   }
 
   /* 文本：使用 Claude text-main #181818 */
@@ -952,15 +948,10 @@
     box-shadow: none !important;
   }
 
-  /* Dark mode icon - 使用更明亮的 slate，保持和谐 */
+  /* Dark mode icon - 隐藏 SVG 图标，保持简洁和谐 */
   .dark .prose div[class*='rounded-xl'] svg.lucide,
   .dark .prose-slate div[class*='rounded-xl'] svg.lucide {
-    /* Stroke - brighter for visibility */
-    stroke: oklch(0.708 0.015 80) !important; /* 更亮的 slate */
-    /* Fill - semi-transparent to blend with dark background */
-    fill: oklch(0.25 0 0 / 0.3) !important; /* Subtle dark fill */
-    color: oklch(0.708 0.015 80) !important;
-    opacity: 0.85; /* 暗色下稍微提高可见度 */
+    display: none !important;
   }
 
   /* Dark mode text - 使用与正文相同的浅色 */
