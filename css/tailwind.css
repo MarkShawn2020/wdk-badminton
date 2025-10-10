@@ -610,6 +610,94 @@
   .dark .prose-slate table tbody tr:hover {
     background-color: oklch(0.15 0.002 247.8) !important;
   }
+
+  /* ===== Fumadocs Callout Components - Claude Design System ===== */
+  /* 参考 DESIGN.md - Claude 官网设计令牌 */
+
+  /* Light mode - 使用 Claude 的 background-ivory/oat 色调 */
+  .prose div[class*='rounded-xl'][class*='border'][class*='bg-fd-card'],
+  .prose-slate div[class*='rounded-xl'][class*='border'][class*='bg-fd-card'] {
+    /* 背景：Claude ivory-medium #F0EEE6 */
+    background-color: oklch(0.952 0.008 85) !important;
+    /* 边框：极淡的 slate 色 */
+    border-color: oklch(0.925 0.01 85 / 0.4) !important;
+    /* Claude 设计：无阴影，干净简洁 */
+    box-shadow: none !important;
+    /* 圆角：Claude 使用 0.75rem (12px) */
+    border-radius: 0.75rem !important;
+    padding: 1.25rem 1.5rem !important;
+  }
+
+  /* Icon - 使用 text-faded (slate) 色调 #87867F - 低调和谐 */
+  .prose div[class*='rounded-xl'] svg.lucide,
+  .prose-slate div[class*='rounded-xl'] svg.lucide {
+    /* Override stroke and fill to match Claude design */
+    stroke: oklch(0.556 0.012 80) !important; /* Claude text-faded/slate */
+    fill: oklch(0.952 0.008 85) !important; /* Match background, subtle fill */
+    color: oklch(0.556 0.012 80) !important;
+    opacity: 0.8; /* 略微降低不透明度，更柔和 */
+  }
+
+  /* 文本：使用 Claude text-main #181818 */
+  .prose div[class*='rounded-xl'][class*='bg-fd-card'] p,
+  .prose-slate div[class*='rounded-xl'][class*='bg-fd-card'] p {
+    color: oklch(0.145 0 0) !important; /* text-main */
+    line-height: 1.5; /* Claude paragraph line-height */
+    font-size: 1.0625rem; /* 保持与 prose 一致 */
+  }
+
+  /* Strong - 同样使用 text-main，但加粗 */
+  .prose div[class*='rounded-xl'][class*='bg-fd-card'] strong,
+  .prose-slate div[class*='rounded-xl'][class*='bg-fd-card'] strong {
+    color: oklch(0.145 0 0) !important;
+    font-weight: 600; /* Claude 使用 600 */
+  }
+
+  /* Dark mode - 使用 Claude background-dark #141413 */
+  .dark .prose div[class*='rounded-xl'][class*='border'][class*='bg-fd-card'],
+  .dark .prose-slate div[class*='rounded-xl'][class*='border'][class*='bg-fd-card'] {
+    /* 背景：比 background-dark 稍亮的 faded 色 #3D3D3A */
+    background-color: oklch(0.25 0 0 / 0.5) !important;
+    /* 边框：使用 border-default (slate) 色调 */
+    border-color: oklch(0.556 0.012 80 / 0.2) !important;
+    box-shadow: none !important;
+  }
+
+  /* Dark mode icon - 使用更明亮的 slate，保持和谐 */
+  .dark .prose div[class*='rounded-xl'] svg.lucide,
+  .dark .prose-slate div[class*='rounded-xl'] svg.lucide {
+    /* Stroke - brighter for visibility */
+    stroke: oklch(0.708 0.015 80) !important; /* 更亮的 slate */
+    /* Fill - semi-transparent to blend with dark background */
+    fill: oklch(0.25 0 0 / 0.3) !important; /* Subtle dark fill */
+    color: oklch(0.708 0.015 80) !important;
+    opacity: 0.85; /* 暗色下稍微提高可见度 */
+  }
+
+  /* Dark mode text - 使用与正文相同的浅色 */
+  .dark .prose div[class*='rounded-xl'][class*='bg-fd-card'] p,
+  .dark .prose-slate div[class*='rounded-xl'][class*='bg-fd-card'] p {
+    color: oklch(0.85 0 0) !important; /* 与 prose 正文一致 */
+  }
+
+  /* Dark mode strong - 高对比白色 */
+  .dark .prose div[class*='rounded-xl'][class*='bg-fd-card'] strong,
+  .dark .prose-slate div[class*='rounded-xl'][class*='bg-fd-card'] strong {
+    color: oklch(0.985 0 0) !important; /* 纯白强调 */
+  }
+
+  /* Left accent bar - 使用 primary 色作为强调 */
+  .prose div[class*='rounded-xl'] > div[role='none'],
+  .prose-slate div[class*='rounded-xl'] > div[role='none'] {
+    background-color: var(--color-primary-500) !important;
+    opacity: 0.5 !important; /* 低调，符合 Claude 设计 */
+  }
+
+  .dark .prose div[class*='rounded-xl'] > div[role='none'],
+  .dark .prose-slate div[class*='rounded-xl'] > div[role='none'] {
+    background-color: var(--color-primary-400) !important;
+    opacity: 0.6 !important; /* 暗色下稍微明显些 */
+  }
 }
 
 .task-list-item::before {
