@@ -100,15 +100,15 @@ export function PricingCard({ tier }: PricingCardProps) {
   return (
     <div className={cardClasses}>
       {/* Badges Section - contained within card */}
-      <div className="mb-3 flex min-h-[1.75rem] items-center justify-between gap-2">
+      <div className="mb-4 flex min-h-[2rem] items-center justify-between gap-2">
         {tier.popular && (
-          <div className="bg-primary-700 text-primary-foreground inline-block rounded-full px-2.5 py-0.5 text-[10px] leading-tight font-semibold">
+          <div className="bg-primary-700 text-primary-foreground inline-block rounded-full px-3.5 py-1.5 text-sm leading-tight font-semibold">
             Most Popular
           </div>
         )}
         {tier.discount > 0 && (
           <div
-            className={`${tier.popular ? 'bg-primary-800' : tier.isContactSales ? 'bg-muted text-muted-foreground' : 'bg-primary-600'} ml-auto inline-block rounded-full px-2.5 py-0.5 text-[10px] leading-tight font-semibold ${tier.isContactSales ? '' : 'text-white'}`}
+            className={`${tier.popular ? 'bg-primary-800' : tier.isContactSales ? 'bg-muted text-muted-foreground' : 'bg-primary-600'} ml-auto inline-block rounded-full px-3.5 py-1.5 text-sm leading-tight font-semibold ${tier.isContactSales ? '' : 'text-white'}`}
           >
             {tier.isContactSales ? 'Up to 30%' : `Save ${tier.discount}%`}
           </div>
@@ -116,23 +116,23 @@ export function PricingCard({ tier }: PricingCardProps) {
       </div>
 
       <div className="flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <h3 className={`text-sm font-semibold xl:text-base ${textColor}`}>{tier.name}</h3>
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className={`text-lg font-bold xl:text-xl ${textColor}`}>{tier.name}</h3>
           {tier.isContactSales && (
-            <span className="border-border bg-background text-muted-foreground rounded border px-1.5 py-0.5 text-[9px] font-semibold">
+            <span className="border-border bg-background text-muted-foreground rounded border px-2 py-1 text-xs font-semibold">
               Enterprise
             </span>
           )}
         </div>
 
-        <div className="mt-3 flex h-20 flex-col justify-center xl:mt-4 xl:h-24">
+        <div className="mt-4 flex h-24 flex-col justify-center xl:mt-5 xl:h-28">
           <div className="flex items-baseline gap-2">
-            <p className={`text-2xl font-bold tracking-tight xl:text-3xl ${textColor}`}>
+            <p className={`text-4xl font-bold tracking-tight xl:text-5xl ${textColor}`}>
               {tier.priceDisplay}
             </p>
-            {tier.type === 'subscription' && <span className={`text-sm ${subtextColor}`}>/mo</span>}
+            {tier.type === 'subscription' && <span className={`text-lg ${subtextColor}`}>/mo</span>}
           </div>
-          <p className={`mt-1 text-[11px] xl:text-xs ${subtextColor}`}>
+          <p className={`mt-2 text-sm xl:text-base ${subtextColor}`}>
             {tier.isContactSales
               ? 'Tailored to your needs'
               : tier.type === 'one-time'
@@ -140,38 +140,38 @@ export function PricingCard({ tier }: PricingCardProps) {
                 : `${tier.monthlyCredits?.toLocaleString()} credits/month`}
           </p>
           {tier.discount > 0 && !tier.isContactSales && (
-            <p className="text-success mt-0.5 text-[10px] font-semibold xl:text-[11px]">
+            <p className="text-success mt-1 text-sm font-semibold xl:text-base">
               Save {tier.discount}% vs pay-as-you-go
             </p>
           )}
         </div>
 
-        <p className={`mt-3 text-[11px] leading-tight xl:mt-4 xl:text-xs ${subtextColor}`}>
+        <p className={`mt-4 text-sm leading-relaxed xl:mt-5 xl:text-base ${subtextColor}`}>
           {tier.description}
         </p>
 
-        <ul className="mt-3 space-y-1 xl:mt-4 xl:space-y-1.5">
+        <ul className="mt-4 space-y-2 xl:mt-5 xl:space-y-2.5">
           {tier.features.map((feature, idx) => (
             <li key={idx} className="flex items-start justify-between gap-2">
               <div className="flex items-start">
                 <span
                   className={
                     tier.popular
-                      ? 'text-primary-foreground mr-1.5 flex-shrink-0 text-xs'
-                      : 'text-primary-600 mr-1.5 flex-shrink-0 text-xs'
+                      ? 'text-primary-foreground mr-2 flex-shrink-0 text-base'
+                      : 'text-primary-600 mr-2 flex-shrink-0 text-base'
                   }
                 >
                   {feature.included ? '✓' : '−'}
                 </span>
                 <span
-                  className={`text-[11px] leading-tight xl:text-xs ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
+                  className={`text-sm leading-relaxed xl:text-base ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
                 >
                   {feature.text}
                 </span>
               </div>
               {feature.badge && (
                 <span
-                  className={`${tier.popular ? 'bg-primary-800' : 'bg-primary-600'} flex-shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold text-white`}
+                  className={`${tier.popular ? 'bg-primary-800' : 'bg-primary-600'} flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold text-white`}
                 >
                   {feature.badge}
                 </span>
@@ -185,7 +185,7 @@ export function PricingCard({ tier }: PricingCardProps) {
       {tier.isContactSales ? (
         <Link
           href="mailto:sales@reelvan.com?subject=Business%20Plan%20Inquiry"
-          className="bg-secondary text-foreground hover:bg-muted mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-base"
+          className="bg-secondary text-foreground hover:bg-muted mt-5 block rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-lg"
         >
           {tier.ctaText}
         </Link>
@@ -195,8 +195,8 @@ export function PricingCard({ tier }: PricingCardProps) {
           disabled={isLoading}
           className={`${
             tier.popular
-              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-base'
-              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-base'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-lg'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-lg'
           }`}
         >
           {isLoading ? 'Loading...' : tier.ctaText}
@@ -206,8 +206,8 @@ export function PricingCard({ tier }: PricingCardProps) {
           href="/signup"
           className={
             tier.popular
-              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-base'
-              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block rounded-lg px-4 py-2.5 text-center text-sm font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-base'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-lg'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-lg'
           }
         >
           Get started
