@@ -604,6 +604,12 @@
   .dark .prose-slate ul > li::marker {
     color: oklch(0.65 0 0) !important; /* Bullets - subtle gray */
   }
+
+  /* Table hover fix for dark mode */
+  .dark .prose table tbody tr:hover,
+  .dark .prose-slate table tbody tr:hover {
+    background-color: oklch(0.15 0.002 247.8) !important;
+  }
 }
 
 .task-list-item::before {
