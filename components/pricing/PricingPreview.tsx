@@ -1,12 +1,15 @@
 import { pricingPlans } from '@/data/pricingData'
-import { PricingCard } from './PricingCard'
+import { DynamicPricingCard } from './DynamicPricingCard'
 
 /**
  * Pricing Preview Component for Homepage
  *
- * Reuses PricingCard component to display all pricing plans.
- * Uses negative margins to expand beyond container for better visibility.
- * Maintains consistency with /pricing page.
+ * Shows 3 interactive pricing cards with dynamic credit selection:
+ * 1. One-Time Purchase (with dropdown)
+ * 2. Subscription (with weekly/monthly toggle + dropdown)
+ * 3. Enterprise (contact sales)
+ *
+ * Inspired by watermarkremover.io's pricing UX
  */
 export function PricingPreview() {
   return (
@@ -18,23 +21,39 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Pay once or subscribe. Save up to 40% with Pro plan. First subscription gets 2x credits.
+            Choose your credits, pick your plan. Save up to 75% with subscriptions.
           </p>
         </div>
 
-        {/* Negative margin to expand pricing cards beyond container */}
-        <div className="-mx-4 mt-16 sm:-mx-6 sm:mt-20 xl:-mx-64">
-          <div className="mx-auto grid grid-cols-1 gap-5 px-4 pt-6 sm:max-w-2xl sm:grid-cols-2 sm:px-6 lg:max-w-none xl:grid-cols-4">
+        {/* 3 Dynamic Pricing Cards */}
+        <div className="mt-16 sm:mt-20">
+          <div className="mx-auto grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6">
             {pricingPlans.map((plan) => (
-              <PricingCard key={plan.name} tier={plan} />
+              <DynamicPricingCard key={plan.id} tier={plan} />
             ))}
           </div>
         </div>
 
-        <p className="text-muted-foreground mx-auto mt-10 max-w-2xl text-center text-sm">
-          All plans include the same features. Start with 100 free credits on signup. 1 credit =
-          $0.01 • 10s video = 100 credits ($1.00)
-        </p>
+        {/* Pricing Info */}
+        <div className="text-muted-foreground mx-auto mt-12 max-w-3xl text-center">
+          <p className="text-sm">
+            All plans include the same core features. Start with 100 free credits on signup.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-primary-600 text-lg">💎</span>
+              <span className="font-medium">1 credit = 1 second of video</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-primary-600 text-lg">⚡</span>
+              <span className="font-medium">Starting from $2.99/month</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-primary-600 text-lg">🎯</span>
+              <span className="font-medium">Save up to 76% with subscriptions</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   )

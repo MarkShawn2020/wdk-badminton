@@ -16,10 +16,13 @@ interface PricingCardProps {
   tier: {
     name: string
     type: 'one-time' | 'subscription' | 'contact'
+    subscriptionInterval?: 'week' | 'month'
     credits?: number
+    weeklyCredits?: number
     monthlyCredits?: number
     price: number
     priceDisplay: string
+    pricePerCredit: string
     discount: number
     description: string
     videoExamples: string
@@ -59,7 +62,9 @@ export function PricingCard({ tier }: PricingCardProps) {
         body: JSON.stringify({
           planName: tier.name,
           type: tier.type,
+          subscriptionInterval: tier.subscriptionInterval,
           credits: tier.credits,
+          weeklyCredits: tier.weeklyCredits,
           monthlyCredits: tier.monthlyCredits,
           price: tier.price,
         }),
@@ -138,14 +143,23 @@ export function PricingCard({ tier }: PricingCardProps) {
             <p className={`text-4xl font-bold tracking-tight xl:text-5xl ${textColor}`}>
               {tier.priceDisplay}
             </p>
-            {tier.type === 'subscription' && <span className={`text-lg ${subtextColor}`}>/mo</span>}
+            {tier.type === 'subscription' && (
+              <span className={`text-lg ${subtextColor}`}>
+                {tier.subscriptionInterval === 'week' ? '/week' : '/month'}
+              </span>
+            )}
           </div>
           <p className={`mt-2 text-sm xl:text-base ${subtextColor}`}>
             {tier.isContactSales
               ? 'Tailored to your needs'
               : tier.type === 'one-time'
                 ? `${tier.credits?.toLocaleString()} credits (one-time)`
-                : `${tier.monthlyCredits?.toLocaleString()} credits/month`}
+                : tier.subscriptionInterval === 'week'
+                  ? `${tier.weeklyCredits?.toLocaleString()} credits/week`
+                  : `${tier.monthlyCredits?.toLocaleString()} credits/month`}
+          </p>
+          <p className={`mt-1 text-xs xl:text-sm ${subtextColor} opacity-75`}>
+            {tier.pricePerCredit}
           </p>
           {tier.discount > 0 && !tier.isContactSales && (
             <p className="text-success mt-1 text-sm font-semibold xl:text-base">
