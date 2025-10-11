@@ -47,3 +47,6 @@ yarn-error.log*
 
 # Contentlayer
 .contentlayer
+
+# Fumadocs auto-generated files
+.source
