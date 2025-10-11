@@ -26,7 +26,7 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
   const [isLoading, setIsLoading] = useState(false)
 
   // Subscription interval state
-  const [interval, setInterval] = useState<'week' | 'month'>(tier.defaultInterval || 'month')
+  const [interval, setInterval] = useState<'month' | 'year'>(tier.defaultInterval || 'month')
 
   // Selected credit option state
   const [selectedOption, setSelectedOption] = useState<CreditOption | null>(() =>
@@ -68,12 +68,12 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
           type: tier.type,
           subscriptionInterval: tier.type === 'subscription' ? interval : undefined,
           credits: tier.type === 'one-time' ? selectedOption.credits : undefined,
-          weeklyCredits:
-            tier.type === 'subscription' && interval === 'week'
-              ? selectedOption.credits
-              : undefined,
           monthlyCredits:
             tier.type === 'subscription' && interval === 'month'
+              ? selectedOption.credits
+              : undefined,
+          yearlyCredits:
+            tier.type === 'subscription' && interval === 'year'
               ? selectedOption.credits
               : undefined,
           price: selectedOption.price,
@@ -102,8 +102,8 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
       return tier.creditOptions?.oneTime || []
     }
     if (tier.type === 'subscription') {
-      return interval === 'week'
-        ? tier.creditOptions?.weekly || []
+      return interval === 'year'
+        ? tier.creditOptions?.yearly || []
         : tier.creditOptions?.monthly || []
     }
     return []
@@ -153,20 +153,6 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
             {tier.hasIntervalToggle && (
               <div className="flex gap-2">
                 <button
-                  onClick={() => setInterval('week')}
-                  className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
-                    interval === 'week'
-                      ? tier.popular
-                        ? 'bg-primary-700 text-primary-foreground'
-                        : 'bg-primary-600 text-white'
-                      : tier.popular
-                        ? 'bg-primary-800/50 text-primary-foreground/60 hover:bg-primary-800'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                  }`}
-                >
-                  Weekly
-                </button>
-                <button
                   onClick={() => setInterval('month')}
                   className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
                     interval === 'month'
@@ -180,19 +166,34 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
                 >
                   Monthly
                 </button>
+                <button
+                  onClick={() => setInterval('year')}
+                  className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+                    interval === 'year'
+                      ? tier.popular
+                        ? 'bg-primary-700 text-primary-foreground'
+                        : 'bg-primary-600 text-white'
+                      : tier.popular
+                        ? 'bg-primary-800/50 text-primary-foreground/60 hover:bg-primary-800'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  }`}
+                >
+                  Yearly
+                  <span className="ml-1 text-xs opacity-75">(Save 17%)</span>
+                </button>
               </div>
             )}
 
-            {/* Credit Selection - Compact Single Line */}
-            <div className="space-y-1">
-              <p className={`mb-1.5 text-xs font-medium ${textColor}`}>Choose credits:</p>
+            {/* Credit Selection - Two-line detailed display */}
+            <div className="space-y-1.5">
+              <p className={`mb-2 text-xs font-medium ${textColor}`}>Choose credits:</p>
               {getAvailableOptions().map((option) => {
                 const isSelected = selectedOption?.credits === option.credits
                 return (
                   <button
                     key={option.credits}
                     onClick={() => setSelectedOption(option)}
-                    className={`flex w-full items-center gap-2 rounded border px-2.5 py-1.5 text-xs transition-all ${
+                    className={`flex w-full items-start gap-2 rounded border px-2.5 py-2 text-xs transition-all ${
                       isSelected
                         ? tier.popular
                           ? 'border-primary-700 bg-primary-700/20'
@@ -202,9 +203,9 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
                           : 'border-border hover:border-primary-600/50 bg-transparent'
                     }`}
                   >
-                    {/* Radio indicator - smaller */}
+                    {/* Radio indicator */}
                     <div
-                      className={`flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border ${
+                      className={`mt-0.5 flex h-3.5 w-3.5 flex-shrink-0 items-center justify-center rounded-full border ${
                         isSelected
                           ? tier.popular
                             ? 'border-primary-foreground bg-primary-foreground'
@@ -223,32 +224,45 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
                       )}
                     </div>
 
-                    {/* Compact info in one line */}
-                    <div className="flex flex-1 items-center justify-between gap-1 overflow-hidden">
-                      <span className={`font-medium ${textColor} truncate`}>
-                        {option.credits.toLocaleString()}
-                      </span>
-                      <div className="flex flex-shrink-0 items-center gap-1">
-                        <span className={`text-[10px] line-through opacity-50 ${subtextColor}`}>
-                          {option.basePriceDisplay}
-                        </span>
+                    {/* Two-line detailed info */}
+                    <div className="flex flex-1 flex-col gap-0.5">
+                      {/* Line 1: Credits + Price */}
+                      <div className="flex items-center justify-between gap-2">
                         <span className={`font-semibold ${textColor}`}>
-                          {option.priceDisplay}
-                          {tier.type === 'subscription' && (
-                            <span className="text-[10px] font-normal">
-                              /{interval === 'week' ? 'w' : 'm'}
-                            </span>
-                          )}
+                          {option.credits.toLocaleString()} credits
+                        </span>
+                        <div className="flex items-center gap-1.5">
+                          <span className={`text-[10px] line-through opacity-50 ${subtextColor}`}>
+                            {option.basePriceDisplay}
+                            {tier.type === 'subscription' && (
+                              <span>/{interval === 'year' ? 'yr' : 'mo'}</span>
+                            )}
+                          </span>
+                          <span className={`font-bold ${textColor}`}>
+                            {option.priceDisplay}
+                            {tier.type === 'subscription' && (
+                              <span className="font-normal">
+                                /{interval === 'year' ? 'yr' : 'mo'}
+                              </span>
+                            )}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Line 2: Per credit price + Discount */}
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`text-[10px] ${subtextColor}`}>
+                          {option.pricePerCredit}
                         </span>
                         {option.discount > 0 && (
                           <span
-                            className={`flex-shrink-0 rounded px-1 py-0.5 text-[10px] leading-none font-semibold ${
+                            className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[10px] leading-none font-semibold ${
                               tier.popular
                                 ? 'bg-primary-800 text-primary-foreground'
                                 : 'bg-primary-600 text-white'
                             }`}
                           >
-                            -{option.discount}%
+                            Save {option.discount}%
                           </span>
                         )}
                       </div>

@@ -94,9 +94,9 @@ const PRESETS: PresetOption[] = [
 ]
 
 const RESOLUTIONS = [
+  { value: '720p', label: '720p (HD)' },
   { value: '1080p', label: '1080p (Full HD)' },
-  { value: '1440p', label: '1440p (2K)' },
-  { value: '4K', label: '4K (Ultra HD)' },
+  { value: '4k', label: '4K (Ultra HD)' },
 ] as const
 
 const ASPECT_RATIOS = [
@@ -270,7 +270,7 @@ export function ProcessingOptionsPresets({
                 onValueChange={(value) =>
                   updateCustomOptions({
                     targetResolution:
-                      value === 'none' ? undefined : (value as '1080p' | '1440p' | '4K'),
+                      value === 'none' ? undefined : (value as '720p' | '1080p' | '4k'),
                   })
                 }
                 disabled={disabled}

@@ -30,6 +30,12 @@ import {
   validateVideoConstraints,
 } from '@/lib/video/cost'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
+import { getReplicateClient } from '@/lib/video-api/replicate'
+import {
+  buildPipeline,
+  createPipelineSteps,
+  calculatePipelineCost,
+} from '@/lib/video/pipeline-orchestrator'
 
 /**
  * Combined request schema for video processing
@@ -80,11 +86,32 @@ export async function POST(request: NextRequest) {
     // Note: Tier only affects rate limiting, not video capabilities
     // Rate limiting is handled separately (see /api/rate-limit or client-side)
 
-    // 5. Calculate cost
-    const creditsRequired = calculateCreditsRequired(validated.duration)
-    const apiCostUsd = calculateApiCost(validated.duration)
+    // 5. Build processing pipeline based on user options
+    const pipeline = buildPipeline(
+      {
+        removeWatermark: validated.removeWatermark,
+        enhanceQuality: validated.enhanceQuality,
+        targetResolution: validated.targetResolution,
+        targetFps: validated.targetFps,
+      },
+      '', // URL will be set later
+      validated.duration
+    )
 
-    // 6. Check sufficient balance
+    // 6. Calculate total cost for all pipeline steps
+    const creditsRequired = calculatePipelineCost(pipeline)
+    const apiCostUsd = pipeline.reduce((sum, step) => {
+      // Estimate API cost for each step
+      if (step.provider === 'wavespeed') {
+        return sum + calculateApiCost(validated.duration)
+      } else if (step.provider === 'replicate') {
+        // Replicate cost is already in estimatedCostCredits / 100
+        return sum + step.estimatedCostCredits / 100
+      }
+      return sum
+    }, 0)
+
+    // 7. Check sufficient balance
     const userBalance = (userCredits as { balance: number }).balance
     if (userBalance < creditsRequired) {
       return errorResponse(
@@ -93,7 +120,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 7. Get storage URL
+    // Log pipeline summary
+    console.log('📋 Processing pipeline:', {
+      steps: pipeline.map((s) => s.stepName),
+      totalCredits: creditsRequired,
+      totalSteps: pipeline.length,
+    })
+
+    // 8. Get storage URL
     const { data: urlData } = await supabase.storage
       .from('videos')
       .createSignedUrl(validated.storagePath, 3600 * 24) // 24 hour expiry
@@ -102,7 +136,7 @@ export async function POST(request: NextRequest) {
       return errorResponse('Failed to generate video URL', 500)
     }
 
-    // 8. Create video record in database
+    // 9. Create video record in database
     const videoInsertData = {
       user_id: user.id,
       original_filename: validated.filename,
@@ -118,6 +152,9 @@ export async function POST(request: NextRequest) {
       status: 'pending' as const,
       estimated_cost_credits: creditsRequired,
       api_cost_usd: apiCostUsd,
+      pipeline_enabled: pipeline.length > 1, // Enable pipeline if multiple steps
+      total_pipeline_steps: pipeline.length,
+      current_pipeline_step: 1,
     }
 
     const { data: video, error: insertError } = (await supabase
@@ -133,7 +170,18 @@ export async function POST(request: NextRequest) {
 
     videoId = video.id
 
-    // 9. Deduct credits using database function
+    // 10. Create pipeline steps in database
+    try {
+      await createPipelineSteps(videoId, pipeline, urlData.signedUrl)
+      console.log(`✅ Created ${pipeline.length} pipeline steps for video ${videoId}`)
+    } catch (pipelineError) {
+      console.error('Failed to create pipeline steps:', pipelineError)
+      // Cleanup: delete video record
+      await supabase.from('videos').delete().eq('id', videoId)
+      return errorResponse('Failed to create processing pipeline', 500)
+    }
+
+    // 11. Deduct credits using database function
     const serviceClient = createServiceClient()
     // NOTE: Type assertion needed due to Supabase RPC type inference issue
     // See: https://github.com/supabase/supabase-js/issues/1018
@@ -156,29 +204,68 @@ export async function POST(request: NextRequest) {
 
     creditsDeducted = true
 
-    // 10. Submit to WaveSpeed API
+    // 12. Start the first pipeline step
     try {
-      const waveSpeed = getWaveSpeedClient()
-      const prediction = await waveSpeed.createPrediction(urlData.signedUrl)
+      const firstStep = pipeline[0]
 
-      // Update database with external job ID
+      if (firstStep.stepType === 'remove_watermark') {
+        // Start WaveSpeed watermark removal
+        const waveSpeed = getWaveSpeedClient()
+        const prediction = await waveSpeed.createPrediction(urlData.signedUrl)
+
+        // Update the first pipeline step
+        await supabase
+          .from('processing_pipeline')
+          .update({
+            status: 'processing',
+            started_at: new Date().toISOString(),
+            external_job_id: prediction.id,
+          } as never)
+          .eq('video_id', videoId)
+          .eq('step_order', 1)
+
+        console.log('✅ Started pipeline step 1 (remove_watermark):', {
+          videoId,
+          predictionId: prediction.id,
+        })
+      } else if (firstStep.stepType === 'enhance_quality') {
+        // Start Replicate quality enhancement
+        const replicate = getReplicateClient()
+        const prediction = await replicate.createPrediction({
+          video: urlData.signedUrl,
+          target_resolution: firstStep.config?.targetResolution,
+          target_fps: firstStep.config?.targetFps,
+        })
+
+        // Update the first pipeline step
+        await supabase
+          .from('processing_pipeline')
+          .update({
+            status: 'processing',
+            started_at: new Date().toISOString(),
+            external_job_id: prediction.id,
+          } as never)
+          .eq('video_id', videoId)
+          .eq('step_order', 1)
+
+        console.log('✅ Started pipeline step 1 (enhance_quality):', {
+          videoId,
+          predictionId: prediction.id,
+        })
+      }
+
+      // Update video status to processing
       await supabase
         .from('videos')
         .update({
           status: 'processing',
           started_processing_at: new Date().toISOString(),
-          external_job_id: prediction.id,
-          external_provider: 'wavespeed',
+          external_job_id: pipeline[0].provider, // Store provider for reference
+          external_provider: pipeline[0].provider,
         } as never)
         .eq('id', videoId)
-
-      console.log('✅ Video submitted to WaveSpeed:', {
-        videoId,
-        predictionId: prediction.id,
-        status: prediction.status,
-      })
     } catch (apiError) {
-      console.error('Failed to submit to WaveSpeed API:', apiError)
+      console.error('Failed to start first pipeline step:', apiError)
       console.error('API Error details:', {
         message: apiError instanceof Error ? apiError.message : 'Unknown error',
         stack: apiError instanceof Error ? apiError.stack : undefined,
@@ -205,11 +292,13 @@ export async function POST(request: NextRequest) {
       return errorResponse('Failed to start processing', 500)
     }
 
-    // 11. Return success
+    // 13. Return success
     return successResponse({
       videoId,
       status: 'processing',
-      estimatedTime: Math.ceil(validated.duration * 2), // Estimate: 2x video duration
+      pipelineEnabled: pipeline.length > 1,
+      totalSteps: pipeline.length,
+      estimatedTime: Math.ceil(validated.duration * 2 * pipeline.length), // Estimate: 2x per step
       creditsDeducted: creditsRequired,
     })
   } catch (error) {

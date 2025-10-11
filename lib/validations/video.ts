@@ -56,7 +56,9 @@ export type VideoUpload = z.infer<typeof videoUploadSchema>
 export const processingOptionsSchema = z.object({
   removeWatermark: z.boolean().default(false),
 
-  targetResolution: z.enum(['1080p', '1440p', '4K']).optional(),
+  targetResolution: z.enum(['720p', '1080p', '4k']).optional(),
+
+  targetFps: z.number().int().min(15).max(60).optional(),
 
   targetAspectRatio: z.enum(['16:9', '9:16', '1:1', '4:5']).optional(),
 

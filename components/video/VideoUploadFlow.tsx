@@ -46,9 +46,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   // Feature toggles (default: watermark removal + quality enhancement enabled)
   const [removeWatermark, setRemoveWatermark] = useState(true)
   const [enhanceQuality, setEnhanceQuality] = useState(true)
-  const [targetResolution, setTargetResolution] = useState<'1080p' | '1440p' | '4K' | undefined>(
+  const [targetResolution, setTargetResolution] = useState<'720p' | '1080p' | '4k' | undefined>(
     undefined
   )
+  const [targetFps, setTargetFps] = useState<number | undefined>(undefined)
   const [addCustomWatermark, setAddCustomWatermark] = useState(false)
   const [generateCaptions, setGenerateCaptions] = useState(false)
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['Instagram'])
@@ -230,6 +231,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
           removeWatermark,
           enhanceQuality,
           targetResolution,
+          targetFps,
           addCustomWatermark,
           generateCaptions,
           captionPlatforms: generateCaptions ? selectedPlatforms : undefined,
@@ -416,6 +418,8 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
         setEnhanceQuality={setEnhanceQuality}
         targetResolution={targetResolution}
         setTargetResolution={setTargetResolution}
+        targetFps={targetFps}
+        setTargetFps={setTargetFps}
         addCustomWatermark={addCustomWatermark}
         setAddCustomWatermark={setAddCustomWatermark}
         generateCaptions={generateCaptions}

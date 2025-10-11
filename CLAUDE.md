@@ -216,7 +216,7 @@ interface VideoProcessingRequest {
   enhancements: {
     removeWatermark: boolean
     enhanceQuality: boolean
-    targetResolution?: '1080p' | '1440p' | '4K'
+    targetResolution?: '720p' | '1080p' | '4k'
     aspectRatio?: '16:9' | '9:16' | '1:1' | '4:5'
   }
 }

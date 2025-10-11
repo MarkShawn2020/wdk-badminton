@@ -26,10 +26,10 @@ function getStripe() {
 const checkoutSchema = z.object({
   planName: z.string(),
   type: z.enum(['one-time', 'subscription', 'contact']),
-  subscriptionInterval: z.enum(['week', 'month']).optional(), // For subscriptions
+  subscriptionInterval: z.enum(['month', 'year']).optional(), // For subscriptions
   credits: z.number().int().positive().optional(), // For one-time purchases
-  weeklyCredits: z.number().int().positive().optional(), // For weekly subscriptions
   monthlyCredits: z.number().int().positive().optional(), // For monthly subscriptions
+  yearlyCredits: z.number().int().positive().optional(), // For yearly subscriptions
   price: z.number().int().positive(), // Price in cents
 })
 
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     const isSubscription = validated.type === 'subscription'
     const interval = validated.subscriptionInterval || 'month'
     const credits = isSubscription
-      ? interval === 'week'
-        ? validated.weeklyCredits!
+      ? interval === 'year'
+        ? validated.yearlyCredits!
         : validated.monthlyCredits!
       : validated.credits!
 
@@ -69,8 +69,8 @@ export async function POST(request: NextRequest) {
             product_data: {
               name: `${validated.planName} - ${credits.toLocaleString()} ReelVan Credits`,
               description: isSubscription
-                ? interval === 'week'
-                  ? `${credits.toLocaleString()} credits per week`
+                ? interval === 'year'
+                  ? `${credits.toLocaleString()} credits per month (billed yearly)`
                   : `${credits.toLocaleString()} credits per month`
                 : `${credits.toLocaleString()} one-time credits`,
               images: [`${process.env.NEXT_PUBLIC_APP_URL}/static/images/logo.svg`],

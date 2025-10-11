@@ -12,16 +12,16 @@
  * - API cost: $0.02 per second ($0.20 per 10s video)
  * - Target margin: 70-80%
  *
- * Competitive Advantage:
- * - Ultra-low entry price: $2.99/month (50 credits) - lowest in market
- * - 10-15% cheaper than watermarkremover.io across all tiers
- * - Better volume discounts
- * - Starting from 30 credits (vs competitor's 50 minimum)
+ * Professional Pricing Structure:
+ * - Consistent 4 tiers: 50, 100, 200, 500 credits (across all types)
+ * - Smooth discount progression: one-time < weekly < monthly
+ * - Clear value ladder: longer commitment = better savings
+ * - Easy price comparison: same credits, different commitment levels
  *
- * Discount Strategy:
- * - One-time: 0-30% off standard rate
- * - Weekly subscription: 20-40% off standard rate
- * - Monthly subscription: 40-76% off standard rate
+ * Discount Strategy (Science-based):
+ * - One-time: 0-15% off (Standard pricing + small volume discount)
+ * - Weekly: 15-30% off (Moderate subscription commitment)
+ * - Monthly: 30-60% off (Best value for highest commitment)
  * - Enterprise: Custom pricing (contact sales)
  */
 
@@ -45,13 +45,13 @@ export interface PricingTier {
 
   // For subscription cards
   hasIntervalToggle?: boolean
-  defaultInterval?: 'week' | 'month'
+  defaultInterval?: 'month' | 'year'
 
   // Credit options for this tier
   creditOptions?: {
     oneTime?: CreditOption[]
-    weekly?: CreditOption[]
     monthly?: CreditOption[]
+    yearly?: CreditOption[]
   }
 
   // Static features (same for all options)
@@ -65,27 +65,41 @@ export interface PricingTier {
 // ==========================================
 // CREDIT OPTION DEFINITIONS
 // Standard rate: $1 = 10 credits = $0.10/credit
-// Competitor analysis: watermarkremover.io charges $0.02-0.16/credit
-// Our strategy: 10-15% cheaper than watermarkremover.io
+//
+// Professional Pricing Strategy:
+// - Consistent 4 tiers across ALL purchase types (50, 100, 200, 500 credits)
+// - Smooth, predictable discount progression
+// - Clear value proposition: Longer commitment = Better discount
+//
+// CRITICAL UNDERSTANDING: Credits Reset Logic
+// - Monthly: X credits PER MONTH (resets monthly, does NOT accumulate)
+// - Yearly: X credits PER MONTH (resets monthly, does NOT accumulate)
+// - Both Monthly and Yearly give SAME credit amount per month
+// - Yearly = Monthly × 10 (pay for 10 months, get 12 months - 2 months free)
+//
+// Discount Structure:
+// - One-time:  0%, 5%, 10%, 15% (Standard + small volume discount)
+// - Monthly:   30%, 40%, 50%, 60% off standard (Flexible monthly billing)
+// - Yearly:    41%, 50%, 58%, 66% off standard (Best value for commitment)
+//
+// Example for 100 credits:
+// - One-time: $9.50 (5% off) - 100 credits forever
+// - Monthly: $6.00/month (40% off) - 100 credits/month
+// - Yearly: $60.00/year = $5.00/month avg (50% off) - 100 credits/month (save $12/year)
+//
+// User Choice Logic:
+// - Occasional use → One-time (永不过期，按需使用)
+// - Trial/Short-term → Monthly (随时取消，灵活)
+// - Long-term users → Yearly (最优惠，年付送2个月)
 // ==========================================
 
 const ONE_TIME_OPTIONS: CreditOption[] = [
   {
-    credits: 30,
-    basePrice: 300, // $3.00 standard
-    price: 299, // $2.99 (ultra-low entry)
-    basePriceDisplay: '$3',
-    priceDisplay: '$2.99',
-    pricePerCredit: '$0.10/credit',
-    discount: 0,
-    videoCount: '~30s',
-  },
-  {
     credits: 50,
     basePrice: 500, // $5.00 standard
-    price: 499, // $4.99
+    price: 500, // $5.00 (no discount - standard pricing)
     basePriceDisplay: '$5',
-    priceDisplay: '$4.99',
+    priceDisplay: '$5.00',
     pricePerCredit: '$0.10/credit',
     discount: 0,
     videoCount: '~50s',
@@ -93,65 +107,75 @@ const ONE_TIME_OPTIONS: CreditOption[] = [
   {
     credits: 100,
     basePrice: 1000, // $10.00 standard
-    price: 899, // $8.99 (competitor: $7.99 for 50 credits = $0.16/credit)
+    price: 950, // $9.50 (5% volume discount)
     basePriceDisplay: '$10',
-    priceDisplay: '$8.99',
-    pricePerCredit: '$0.09/credit',
-    discount: 10,
+    priceDisplay: '$9.50',
+    pricePerCredit: '$0.095/credit',
+    discount: 5,
     videoCount: '~2 min',
   },
   {
     credits: 200,
     basePrice: 2000, // $20.00 standard
-    price: 1599, // $15.99
+    price: 1800, // $18.00 (10% volume discount)
     basePriceDisplay: '$20',
-    priceDisplay: '$15.99',
-    pricePerCredit: '$0.08/credit',
-    discount: 20,
+    priceDisplay: '$18.00',
+    pricePerCredit: '$0.09/credit',
+    discount: 10,
     videoCount: '~3 min',
   },
   {
     credits: 500,
     basePrice: 5000, // $50.00 standard
-    price: 3499, // $34.99 (competitor: $54.99)
+    price: 4250, // $42.50 (15% volume discount)
     basePriceDisplay: '$50',
-    priceDisplay: '$34.99',
-    pricePerCredit: '$0.07/credit',
-    discount: 30,
+    priceDisplay: '$42.50',
+    pricePerCredit: '$0.085/credit',
+    discount: 15,
     videoCount: '~8 min',
   },
 ]
 
-const WEEKLY_OPTIONS: CreditOption[] = [
+const YEARLY_OPTIONS: CreditOption[] = [
   {
     credits: 50,
-    basePrice: 500, // $5.00 standard
-    price: 399, // $3.99/week
-    basePriceDisplay: '$5',
-    priceDisplay: '$3.99',
-    pricePerCredit: '$0.08/credit',
-    discount: 20,
-    videoCount: '~50s/wk',
+    basePrice: 6000, // $60.00 standard per year
+    price: 3500, // $35.00/year ($2.92/month avg, pay 10 months get 12)
+    basePriceDisplay: '$60',
+    priceDisplay: '$35.00',
+    pricePerCredit: '$0.058/credit',
+    discount: 41, // vs standard yearly rate
+    videoCount: '~50s/mo',
   },
   {
     credits: 100,
-    basePrice: 1000, // $10.00 standard
-    price: 699, // $6.99/week
-    basePriceDisplay: '$10',
-    priceDisplay: '$6.99',
-    pricePerCredit: '$0.07/credit',
-    discount: 30,
-    videoCount: '~2 min/wk',
+    basePrice: 12000, // $120.00 standard per year
+    price: 6000, // $60.00/year ($5.00/month avg, pay 10 months get 12)
+    basePriceDisplay: '$120',
+    priceDisplay: '$60.00',
+    pricePerCredit: '$0.050/credit',
+    discount: 50, // vs standard yearly rate
+    videoCount: '~100s/mo',
   },
   {
     credits: 200,
-    basePrice: 2000, // $20.00 standard
-    price: 1199, // $11.99/week
-    basePriceDisplay: '$20',
-    priceDisplay: '$11.99',
-    pricePerCredit: '$0.06/credit',
-    discount: 40,
-    videoCount: '~3 min/wk',
+    basePrice: 24000, // $240.00 standard per year
+    price: 10000, // $100.00/year ($8.33/month avg, pay 10 months get 12)
+    basePriceDisplay: '$240',
+    priceDisplay: '$100.00',
+    pricePerCredit: '$0.042/credit',
+    discount: 58, // vs standard yearly rate
+    videoCount: '~200s/mo',
+  },
+  {
+    credits: 500,
+    basePrice: 60000, // $600.00 standard per year
+    price: 20000, // $200.00/year ($16.67/month avg, pay 10 months get 12)
+    basePriceDisplay: '$600',
+    priceDisplay: '$200.00',
+    pricePerCredit: '$0.033/credit',
+    discount: 66, // vs standard yearly rate
+    videoCount: '~500s/mo',
   },
 ]
 
@@ -159,41 +183,41 @@ const MONTHLY_OPTIONS: CreditOption[] = [
   {
     credits: 50,
     basePrice: 500, // $5.00 standard
-    price: 299, // $2.99/month (ultra-low entry)
+    price: 350, // $3.50/month (30% best value discount)
     basePriceDisplay: '$5',
-    priceDisplay: '$2.99',
-    pricePerCredit: '$0.06/credit',
-    discount: 40,
+    priceDisplay: '$3.50',
+    pricePerCredit: '$0.07/credit',
+    discount: 30,
     videoCount: '~50s/mo',
   },
   {
     credits: 100,
     basePrice: 1000, // $10.00 standard
-    price: 499, // $4.99/month (competitor: $6.99)
+    price: 600, // $6.00/month (40% best value discount)
     basePriceDisplay: '$10',
-    priceDisplay: '$4.99',
-    pricePerCredit: '$0.05/credit',
-    discount: 50,
+    priceDisplay: '$6.00',
+    pricePerCredit: '$0.06/credit',
+    discount: 40,
     videoCount: '~2 min/mo',
   },
   {
     credits: 200,
     basePrice: 2000, // $20.00 standard
-    price: 799, // $7.99/month (competitor: $9.99)
+    price: 1000, // $10.00/month (50% best value discount)
     basePriceDisplay: '$20',
-    priceDisplay: '$7.99',
-    pricePerCredit: '$0.04/credit',
-    discount: 60,
+    priceDisplay: '$10.00',
+    pricePerCredit: '$0.05/credit',
+    discount: 50,
     videoCount: '~3 min/mo',
   },
   {
     credits: 500,
     basePrice: 5000, // $50.00 standard
-    price: 1199, // $11.99/month (competitor: $14.99)
+    price: 2000, // $20.00/month (60% best value discount)
     basePriceDisplay: '$50',
-    priceDisplay: '$11.99',
-    pricePerCredit: '$0.024/credit',
-    discount: 76,
+    priceDisplay: '$20.00',
+    pricePerCredit: '$0.04/credit',
+    discount: 60,
     videoCount: '~8 min/mo',
   },
 ]
@@ -211,7 +235,7 @@ export const pricingPlans: PricingTier[] = [
     name: 'One-Time Purchase',
     type: 'one-time',
     tagline: 'Pay once, use forever',
-    description: 'Perfect for occasional use. Starting from just $2.99.',
+    description: 'Perfect for occasional use. Starting from just $5.00.',
 
     creditOptions: {
       oneTime: ONE_TIME_OPTIONS,
@@ -219,12 +243,12 @@ export const pricingPlans: PricingTier[] = [
 
     features: [
       { text: 'Credits never expire', included: true, highlight: true },
-      { text: 'From $2.99 (30 credits)', included: true, highlight: true },
+      { text: 'From $5 (50 credits)', included: true, highlight: true },
+      { text: 'Standard pricing', included: true },
       { text: 'All enhancement features', included: true },
       { text: 'HD & 4K quality export', included: true },
       { text: 'Commercial use rights', included: true },
       { text: 'Email support', included: true },
-      { text: 'No commitment', included: true },
     ],
 
     ctaText: 'Buy Now',
@@ -232,28 +256,29 @@ export const pricingPlans: PricingTier[] = [
   },
 
   // ==========================================
-  // CARD 2: Subscription (Weekly + Monthly)
+  // CARD 2: Subscription (Monthly + Yearly)
   // ==========================================
   {
     id: 'subscription',
     name: 'Subscription',
     type: 'subscription',
     tagline: 'Best value for regular creators',
-    description: 'Save 20-76% with weekly or monthly plans. Cancel anytime.',
+    description: 'Save up to 66% with flexible plans. Get 2 months free with yearly.',
 
     hasIntervalToggle: true,
     defaultInterval: 'month',
 
     creditOptions: {
-      weekly: WEEKLY_OPTIONS,
       monthly: MONTHLY_OPTIONS,
+      yearly: YEARLY_OPTIONS,
     },
 
     features: [
-      { text: 'Save up to 76% vs standard', included: true, highlight: true, badge: 'Best Value' },
-      { text: 'From $2.99/month', included: true, highlight: true },
-      { text: 'Credits reset weekly/monthly', included: true },
+      { text: 'Save up to 66% vs standard', included: true, highlight: true, badge: 'Best Value' },
+      { text: 'From $3.50/month or $35/year', included: true, highlight: true },
+      { text: 'Credits reset monthly', included: true },
       { text: 'Cancel anytime, no commitment', included: true },
+      { text: 'Yearly: 2 months free (pay 10, get 12)', included: true, highlight: true },
       { text: 'All enhancement features', included: true },
       { text: 'HD & 4K quality export', included: true },
       { text: 'Commercial use rights', included: true },
@@ -310,19 +335,19 @@ export function getPlanById(id: string): PricingTier | undefined {
  */
 export function getDefaultCreditOption(
   plan: PricingTier,
-  interval?: 'week' | 'month'
+  interval?: 'month' | 'year'
 ): CreditOption | null {
   if (plan.type === 'contact') return null
 
   if (plan.type === 'one-time') {
-    return plan.creditOptions?.oneTime?.[2] || null // Default to middle option
+    return plan.creditOptions?.oneTime?.[1] || null // Default to second option (100 credits)
   }
 
   if (plan.type === 'subscription') {
     const targetInterval = interval || plan.defaultInterval || 'month'
     const options =
-      targetInterval === 'week' ? plan.creditOptions?.weekly : plan.creditOptions?.monthly
-    return options?.[1] || null // Default to second option (good value)
+      targetInterval === 'year' ? plan.creditOptions?.yearly : plan.creditOptions?.monthly
+    return options?.[1] || null // Default to second option (100 credits)
   }
 
   return null
@@ -344,13 +369,13 @@ export function calculateMargin(option: CreditOption): number {
  */
 export function getAllCreditOptions(): {
   oneTime: CreditOption[]
-  weekly: CreditOption[]
   monthly: CreditOption[]
+  yearly: CreditOption[]
 } {
   return {
     oneTime: ONE_TIME_OPTIONS,
-    weekly: WEEKLY_OPTIONS,
     monthly: MONTHLY_OPTIONS,
+    yearly: YEARLY_OPTIONS,
   }
 }
 

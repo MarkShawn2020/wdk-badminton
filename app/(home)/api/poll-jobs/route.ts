@@ -14,10 +14,18 @@ import { NextRequest } from 'next/server'
 import { successResponse, errorResponse } from '@/lib/api/response'
 import { createServiceClient } from '@/lib/supabase/server'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
+import { getReplicateClient } from '@/lib/video-api/replicate'
 import type { Database } from '@/types/database'
+import { isPipelineCompleted } from '@/lib/video/pipeline-orchestrator'
+import {
+  pollPipelineStep,
+  startNextPipelineStep,
+  finalizePipeline,
+} from '@/lib/video/pipeline-step-handler'
 
 type Video = Database['public']['Tables']['videos']['Row']
 type VideoUpdate = Database['public']['Tables']['videos']['Update']
+type ProcessingPipeline = Database['public']['Tables']['processing_pipeline']['Row']
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,106 +37,148 @@ export async function GET(request: NextRequest) {
       return errorResponse('Unauthorized', 401)
     }
 
-    // 2. Get all processing videos
+    // 2. Get all processing pipeline steps
     const supabase = createServiceClient()
-    const { data: processingVideos, error: queryError } = await supabase
-      .from('videos')
-      .select('id, user_id, external_job_id, external_provider, estimated_cost_credits')
+    const { data: processingSteps, error: queryError } = await supabase
+      .from('processing_pipeline')
+      .select('*')
       .eq('status', 'processing')
       .not('external_job_id', 'is', null)
 
     if (queryError) {
-      console.error('Failed to query processing videos:', queryError)
+      console.error('Failed to query processing pipeline steps:', queryError)
       return errorResponse('Database query failed', 500)
     }
 
-    if (!processingVideos || processingVideos.length === 0) {
+    if (!processingSteps || processingSteps.length === 0) {
       return successResponse({
-        message: 'No processing jobs to poll',
+        message: 'No processing pipeline steps to poll',
         count: 0,
       })
     }
 
-    console.log(`📊 Polling ${processingVideos.length} processing jobs...`)
+    console.log(`📊 Polling ${processingSteps.length} processing pipeline steps...`)
 
-    // 3. Poll each job
-    const waveSpeed = getWaveSpeedClient()
+    // 3. Poll each pipeline step
     const results = {
-      completed: 0,
-      failed: 0,
-      stillProcessing: 0,
+      stepsCompleted: 0,
+      stepsFailed: 0,
+      stepsProcessing: 0,
+      pipelinesCompleted: 0,
       errors: 0,
     }
 
-    for (const video of processingVideos as Video[]) {
+    for (const step of processingSteps as ProcessingPipeline[]) {
       try {
-        if (video.external_provider !== 'wavespeed' || !video.external_job_id) {
-          console.warn(`⚠️ Video ${video.id} has invalid provider or job ID`)
-          continue
-        }
+        console.log(`🔄 Polling step ${step.step_order} for video ${step.video_id}`)
 
-        // Poll WaveSpeed API
-        const prediction = await waveSpeed.getPredictionResult(video.external_job_id)
+        // Poll the step
+        const isCompleted = await pollPipelineStep(step)
 
-        console.log(`🔄 Job ${video.external_job_id} status: ${prediction.status}`)
+        if (isCompleted) {
+          console.log(`✅ Step ${step.step_order} completed for video ${step.video_id}`)
+          results.stepsCompleted++
 
-        // Update based on status
-        if (prediction.status === 'completed') {
-          // Get processed video URL
-          const processedUrl = prediction.outputs?.[0]
+          // Check if this was the last step
+          const pipelineComplete = await isPipelineCompleted(step.video_id)
 
-          if (!processedUrl) {
-            throw new Error('No output URL in completed prediction')
+          if (pipelineComplete) {
+            // Finalize the pipeline
+            await finalizePipeline(step.video_id)
+            results.pipelinesCompleted++
+            console.log(`🎉 Pipeline completed for video ${step.video_id}`)
+          } else {
+            // Start next step
+            try {
+              await startNextPipelineStep(step.video_id)
+              console.log(`🚀 Started next step for video ${step.video_id}`)
+            } catch (nextStepError) {
+              console.error(`Failed to start next step for video ${step.video_id}:`, nextStepError)
+
+              // Mark video as failed
+              await supabase
+                .from('videos')
+                .update({
+                  status: 'failed',
+                  error_message: 'Failed to start next pipeline step',
+                  completed_at: new Date().toISOString(),
+                } as never)
+                .eq('id', step.video_id)
+
+              // Refund credits
+              const { data: video } = await supabase
+                .from('videos')
+                .select('user_id, estimated_cost_credits')
+                .eq('id', step.video_id)
+                .single()
+
+              if (video) {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                await (supabase.rpc as any)('refund_credits', {
+                  p_user_id: video.user_id,
+                  p_video_id: step.video_id,
+                  p_amount: video.estimated_cost_credits,
+                })
+              }
+
+              results.stepsFailed++
+            }
           }
-
-          // Update database
-          const updateData: VideoUpdate = {
-            status: 'completed',
-            processed_url: processedUrl,
-            completed_at: new Date().toISOString(),
-            progress: 100,
-          }
-          await supabase
-            .from('videos')
-            .update(updateData as never)
-            .eq('id', video.id)
-
-          console.log(`✅ Video ${video.id} completed: ${processedUrl}`)
-          results.completed++
-        } else if (prediction.status === 'failed') {
-          // Refund credits on failure
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (supabase.rpc as any)('refund_credits', {
-            p_user_id: video.user_id,
-            p_video_id: video.id,
-            p_amount: video.estimated_cost_credits,
-          })
-
-          // Update database
-          const updateData: VideoUpdate = {
-            status: 'failed',
-            error_message: 'Processing failed at WaveSpeed',
-            completed_at: new Date().toISOString(),
-          }
-          await supabase
-            .from('videos')
-            .update(updateData as never)
-            .eq('id', video.id)
-
-          console.log(`❌ Video ${video.id} failed`)
-          results.failed++
         } else {
           // Still processing
-          results.stillProcessing++
+          results.stepsProcessing++
         }
       } catch (error) {
-        console.error(`❌ Error polling video ${video.id}:`, error)
+        console.error(`❌ Error polling step ${step.id}:`, error)
         console.error('Error details:', {
-          videoId: video.id,
-          externalJobId: video.external_job_id,
+          stepId: step.id,
+          videoId: step.video_id,
+          stepOrder: step.step_order,
+          provider: step.provider,
           message: error instanceof Error ? error.message : 'Unknown error',
           stack: error instanceof Error ? error.stack : undefined,
         })
+
+        // Mark step as failed
+        try {
+          await supabase
+            .from('processing_pipeline')
+            .update({
+              status: 'failed',
+              error_message: error instanceof Error ? error.message : 'Unknown error',
+              completed_at: new Date().toISOString(),
+            } as never)
+            .eq('id', step.id)
+
+          // Mark video as failed
+          await supabase
+            .from('videos')
+            .update({
+              status: 'failed',
+              error_message: `Pipeline step ${step.step_order} failed`,
+              completed_at: new Date().toISOString(),
+            } as never)
+            .eq('id', step.video_id)
+
+          // Refund credits
+          const { data: video } = await supabase
+            .from('videos')
+            .select('user_id, estimated_cost_credits')
+            .eq('id', step.video_id)
+            .single()
+
+          if (video) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (supabase.rpc as any)('refund_credits', {
+              p_user_id: video.user_id,
+              p_video_id: step.video_id,
+              p_amount: video.estimated_cost_credits,
+            })
+          }
+        } catch (cleanupError) {
+          console.error('Failed to cleanup after error:', cleanupError)
+        }
+
         results.errors++
       }
     }
@@ -137,7 +187,7 @@ export async function GET(request: NextRequest) {
 
     return successResponse({
       message: 'Polling completed',
-      totalJobs: processingVideos.length,
+      totalSteps: processingSteps.length,
       results,
     })
   } catch (error) {

@@ -21,7 +21,7 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Choose your credits, pick your plan. Save up to 75% with subscriptions.
+            Choose your credits, pick your plan. Save up to 66% with yearly subscription.
           </p>
         </div>
 
@@ -46,11 +46,11 @@ export function PricingPreview() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-primary-600 text-lg">⚡</span>
-              <span className="font-medium">Starting from $2.99/month</span>
+              <span className="font-medium">Starting from $3.50/month</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-primary-600 text-lg">🎯</span>
-              <span className="font-medium">Save up to 76% with subscriptions</span>
+              <span className="font-medium">Yearly: Get 2 months free</span>
             </div>
           </div>
         </div>

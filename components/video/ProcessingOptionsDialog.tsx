@@ -34,8 +34,10 @@ interface ProcessingOptionsDialogProps {
   setRemoveWatermark: Dispatch<SetStateAction<boolean>>
   enhanceQuality: boolean
   setEnhanceQuality: Dispatch<SetStateAction<boolean>>
-  targetResolution: '1080p' | '1440p' | '4K' | undefined
-  setTargetResolution: Dispatch<SetStateAction<'1080p' | '1440p' | '4K' | undefined>>
+  targetResolution: '720p' | '1080p' | '4k' | undefined
+  setTargetResolution: Dispatch<SetStateAction<'720p' | '1080p' | '4k' | undefined>>
+  targetFps: number | undefined
+  setTargetFps: Dispatch<SetStateAction<number | undefined>>
   addCustomWatermark: boolean
   setAddCustomWatermark: Dispatch<SetStateAction<boolean>>
   generateCaptions: boolean
@@ -56,6 +58,8 @@ export function ProcessingOptionsDialog({
   setEnhanceQuality,
   targetResolution,
   setTargetResolution,
+  targetFps,
+  setTargetFps,
   addCustomWatermark,
   setAddCustomWatermark,
   generateCaptions,
@@ -98,32 +102,330 @@ export function ProcessingOptionsDialog({
             onToggle={setEnhanceQuality}
             disabled={disabled}
           >
-            <div className="space-y-2">
-              <Label htmlFor="target-resolution" className="text-sm font-medium">
-                Target Resolution
-              </Label>
-              <Select
-                value={targetResolution || 'original'}
-                onValueChange={(value) =>
-                  setTargetResolution(
-                    value === 'original' ? undefined : (value as '1080p' | '1440p' | '4K')
-                  )
-                }
-                disabled={disabled}
-              >
-                <SelectTrigger id="target-resolution">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="original">Original Quality</SelectItem>
-                  <SelectItem value="1080p">1080p (Full HD)</SelectItem>
-                  <SelectItem value="1440p">1440p (2K)</SelectItem>
-                  <SelectItem value="4K">4K (Ultra HD)</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-muted-foreground text-xs">
-                Higher resolutions may increase processing time and cost
-              </p>
+            <div className="space-y-4">
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Target Resolution</Label>
+                <div className="space-y-2">
+                  {/* Original Resolution Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetResolution(undefined)}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetResolution === undefined
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetResolution === undefined
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetResolution === undefined && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">Original Quality</span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          Keep the original resolution without upscaling
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* 720p Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetResolution('720p')}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetResolution === '720p'
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetResolution === '720p'
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetResolution === '720p' && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">720p</span>
+                          <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                            HD
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          1280×720 - Good for social media, smaller file sizes
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* 1080p Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetResolution('1080p')}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetResolution === '1080p'
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetResolution === '1080p'
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetResolution === '1080p' && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">1080p</span>
+                          <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                            Full HD
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          1920×1080 - Standard for YouTube, Instagram, most platforms
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* 4K Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetResolution('4k')}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetResolution === '4k'
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetResolution === '4k'
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetResolution === '4k' && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">4K</span>
+                          <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                            Ultra HD
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          3840×2160 - Premium quality for professional use (higher cost & time)
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <Label className="text-sm font-medium">Target FPS</Label>
+                <div className="space-y-2">
+                  {/* Original FPS Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetFps(undefined)}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetFps === undefined
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetFps === undefined
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetFps === undefined && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">Original FPS</span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          Keep the original frame rate of your video
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* 24 FPS Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetFps(24)}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetFps === 24
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetFps === 24
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetFps === 24 && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">24 FPS</span>
+                          <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900 dark:text-amber-300">
+                            Cinematic
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          Film-like motion blur, best for artistic/cinematic content
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* 30 FPS Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetFps(30)}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetFps === 30
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetFps === 30
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetFps === 30 && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">30 FPS</span>
+                          <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                            Standard
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          Balanced quality and file size, ideal for most social media
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* 60 FPS Option */}
+                  <button
+                    type="button"
+                    onClick={() => setTargetFps(60)}
+                    disabled={disabled}
+                    className={`w-full rounded-lg border p-3 text-left transition-all ${
+                      targetFps === 60
+                        ? 'border-primary bg-primary/10'
+                        : 'border-border bg-card hover:border-primary/50'
+                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`h-4 w-4 rounded-full border-2 transition-all ${
+                              targetFps === 60
+                                ? 'border-primary bg-primary'
+                                : 'border-muted-foreground'
+                            }`}
+                          >
+                            {targetFps === 60 && (
+                              <div
+                                className="h-full w-full rounded-full bg-white"
+                                style={{ transform: 'scale(0.5)' }}
+                              />
+                            )}
+                          </div>
+                          <span className="font-medium">60 FPS</span>
+                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
+                            Smooth
+                          </span>
+                        </div>
+                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
+                          Ultra-smooth motion, perfect for gaming/sports content (larger file size)
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
           </FeatureToggleCard>
 
