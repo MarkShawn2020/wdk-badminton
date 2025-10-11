@@ -135,6 +135,7 @@ export async function createPipelineSteps(
     // First step uses input video, subsequent steps will use previous step's output
     input_video_url: index === 0 ? inputVideoUrl : '',
     estimated_cost_credits: step.estimatedCostCredits,
+    config: step.config ? (step.config as never) : null,
   }))
 
   const { data, error } = await supabase

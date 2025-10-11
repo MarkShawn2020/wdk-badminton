@@ -63,6 +63,8 @@ export class ReplicateClient {
   private baseUrl = 'https://api.replicate.com/v1'
   private apiToken: string
   private model = 'topazlabs/video-upscale'
+  // Latest version as of 2025-01 (from https://replicate.com/topazlabs/video-upscale)
+  private version = 'f4dad23bbe2d0bf4736d2ea8c9156f1911d8eeb511c8d0bb390931e25caaef61'
 
   constructor(apiToken: string) {
     if (!apiToken) {
@@ -86,7 +88,7 @@ export class ReplicateClient {
         Authorization: `Bearer ${this.apiToken}`,
       },
       body: JSON.stringify({
-        version: 'topazlabs/video-upscale:latest', // Or specific version hash
+        version: this.version,
         input: {
           video: input.video,
           ...(input.target_resolution && { target_resolution: input.target_resolution }),

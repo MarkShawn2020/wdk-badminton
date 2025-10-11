@@ -6,9 +6,10 @@
  *
  * This endpoint:
  * 1. Queries the database for the video
- * 2. If video is still processing, fetches latest status from WaveSpeed
- * 3. Updates database with latest status
- * 4. Returns current status to frontend
+ * 2. If pipeline enabled, queries pipeline steps for status
+ * 3. Fetches latest status from external API (WaveSpeed/Replicate)
+ * 4. Updates database with latest status
+ * 5. Returns current status to frontend
  */
 
 import { NextRequest } from 'next/server'
@@ -16,10 +17,14 @@ import { successResponse, errorResponse } from '@/lib/api/response'
 import { requireAuth } from '@/lib/api/auth'
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
+import { getReplicateClient } from '@/lib/video-api/replicate'
+import { calculatePipelineProgress } from '@/lib/video/pipeline-orchestrator'
 import type { Database } from '@/types/database'
 
 type Video = Database['public']['Tables']['videos']['Row']
 type VideoUpdate = Database['public']['Tables']['videos']['Update']
+type ProcessingPipeline = Database['public']['Tables']['processing_pipeline']['Row']
+type PipelineUpdate = Database['public']['Tables']['processing_pipeline']['Update']
 
 interface RouteContext {
   params: Promise<{ videoId: string }>
@@ -50,8 +55,9 @@ export async function GET(request: NextRequest, context: RouteContext) {
         started_processing_at,
         completed_at,
         estimated_cost_credits,
-        external_job_id,
-        external_provider
+        pipeline_enabled,
+        total_pipeline_steps,
+        current_pipeline_step
       `
       )
       .eq('id', videoId)
@@ -64,135 +70,362 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const typedVideo = video as Video
 
-    // 4. If video is still processing, fetch latest status from WaveSpeed
-    if (
-      typedVideo.status === 'processing' &&
-      typedVideo.external_job_id &&
-      typedVideo.external_provider === 'wavespeed'
-    ) {
+    // 4. Handle pipeline-enabled videos
+    if (typedVideo.pipeline_enabled && typedVideo.status === 'processing') {
       try {
-        console.log(`🔄 Fetching latest status for video ${videoId} from WaveSpeed...`)
+        // Get the current processing step from pipeline
+        const { data: currentStep, error: stepError } = await supabase
+          .from('processing_pipeline')
+          .select('*')
+          .eq('video_id', videoId)
+          .eq('status', 'processing')
+          .order('step_order', { ascending: true })
+          .limit(1)
+          .single()
 
-        const waveSpeed = getWaveSpeedClient()
-        const prediction = await waveSpeed.getPredictionResult(typedVideo.external_job_id)
+        if (stepError || !currentStep) {
+          console.log(`⚠️ No active pipeline step found for video ${videoId}`)
+          // Check if pipeline is completed
+          const { data: completedSteps } = await supabase
+            .from('processing_pipeline')
+            .select('step_order, output_video_url')
+            .eq('video_id', videoId)
+            .eq('status', 'completed')
+            .order('step_order', { ascending: false })
+            .limit(1)
 
-        console.log(`📊 WaveSpeed status: ${prediction.status}`)
+          if (completedSteps && completedSteps.length > 0) {
+            const lastStep = completedSteps[0]
+            if (lastStep.step_order === typedVideo.total_pipeline_steps) {
+              // All steps completed!
+              const serviceClient = createServiceClient()
+              await serviceClient
+                .from('videos')
+                .update({
+                  status: 'completed',
+                  processed_url: lastStep.output_video_url,
+                  completed_at: new Date().toISOString(),
+                  progress: 100,
+                } as never)
+                .eq('id', videoId)
 
-        // Update database based on WaveSpeed status
-        const serviceClient = createServiceClient()
-
-        if (prediction.status === 'completed') {
-          const processedUrl = prediction.outputs?.[0]
-
-          if (!processedUrl) {
-            throw new Error('No output URL in completed prediction')
+              return successResponse({
+                id: typedVideo.id,
+                status: 'completed',
+                progress: 100,
+                filename: typedVideo.original_filename,
+                processedUrl: lastStep.output_video_url,
+                errorMessage: null,
+                createdAt: typedVideo.created_at,
+                startedAt: typedVideo.started_processing_at,
+                completedAt: new Date().toISOString(),
+                creditsUsed: typedVideo.estimated_cost_credits,
+              })
+            }
           }
 
-          const updateData: VideoUpdate = {
-            status: 'completed',
-            processed_url: processedUrl,
-            completed_at: new Date().toISOString(),
-            progress: 100,
-          }
-          await serviceClient
-            .from('videos')
-            .update(updateData as never)
-            .eq('id', videoId)
-
-          console.log(`✅ Video ${videoId} completed: ${processedUrl}`)
-
-          // Return updated status
+          // Otherwise, return current database status
           return successResponse({
             id: typedVideo.id,
-            status: 'completed',
-            progress: 100,
-            filename: typedVideo.original_filename,
-            processedUrl: processedUrl,
-            errorMessage: null,
-            createdAt: typedVideo.created_at,
-            startedAt: typedVideo.started_processing_at,
-            completedAt: new Date().toISOString(),
-            creditsUsed: typedVideo.estimated_cost_credits,
-          })
-        } else if (prediction.status === 'failed') {
-          // Refund credits on failure
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          await (serviceClient.rpc as any)('refund_credits', {
-            p_user_id: typedVideo.user_id,
-            p_video_id: videoId,
-            p_amount: typedVideo.estimated_cost_credits,
-          })
-
-          const failUpdateData: VideoUpdate = {
-            status: 'failed',
-            error_message: 'Processing failed at WaveSpeed',
-            completed_at: new Date().toISOString(),
-          }
-          await serviceClient
-            .from('videos')
-            .update(failUpdateData as never)
-            .eq('id', videoId)
-
-          console.log(`❌ Video ${videoId} failed`)
-
-          return successResponse({
-            id: typedVideo.id,
-            status: 'failed',
+            status: typedVideo.status,
             progress: typedVideo.progress || 0,
             filename: typedVideo.original_filename,
-            processedUrl: null,
-            errorMessage: 'Processing failed at WaveSpeed',
+            processedUrl: typedVideo.processed_url,
+            errorMessage: typedVideo.error_message,
             createdAt: typedVideo.created_at,
             startedAt: typedVideo.started_processing_at,
-            completedAt: new Date().toISOString(),
-            creditsUsed: typedVideo.estimated_cost_credits,
-          })
-        } else {
-          // Still processing, estimate progress based on time elapsed
-          const startedAt = typedVideo.started_processing_at
-            ? new Date(typedVideo.started_processing_at)
-            : new Date()
-          const elapsedMs = Date.now() - startedAt.getTime()
-          const elapsedSeconds = Math.floor(elapsedMs / 1000)
-
-          // Rough estimate: 2x video duration processing time
-          const estimatedTotalSeconds = ((typedVideo.estimated_cost_credits || 0) / 10) * 5 * 2
-          const estimatedProgress = Math.min(
-            95,
-            Math.floor((elapsedSeconds / estimatedTotalSeconds) * 100)
-          )
-
-          // Update progress
-          if (estimatedProgress > (typedVideo.progress || 0)) {
-            const progressUpdate: VideoUpdate = { progress: estimatedProgress }
-            await serviceClient
-              .from('videos')
-              .update(progressUpdate as never)
-              .eq('id', videoId)
-          }
-
-          console.log(`⏳ Video ${videoId} still processing (${estimatedProgress}%)`)
-
-          return successResponse({
-            id: typedVideo.id,
-            status: 'processing',
-            progress: estimatedProgress,
-            filename: typedVideo.original_filename,
-            processedUrl: null,
-            errorMessage: null,
-            createdAt: typedVideo.created_at,
-            startedAt: typedVideo.started_processing_at,
-            completedAt: null,
+            completedAt: typedVideo.completed_at,
             creditsUsed: typedVideo.estimated_cost_credits,
           })
         }
+
+        const typedStep = currentStep as ProcessingPipeline
+        console.log(
+          `🔄 Checking status for video ${videoId}, step ${typedStep.step_order}/${typedVideo.total_pipeline_steps} (${typedStep.provider})...`
+        )
+
+        // Fetch status from external API based on provider
+        const serviceClient = createServiceClient()
+
+        if (typedStep.provider === 'wavespeed' && typedStep.external_job_id) {
+          const waveSpeed = getWaveSpeedClient()
+          const prediction = await waveSpeed.getPredictionResult(typedStep.external_job_id)
+
+          console.log(`📊 WaveSpeed status: ${prediction.status}`)
+
+          if (prediction.status === 'completed') {
+            const processedUrl = prediction.outputs?.[0]
+
+            if (!processedUrl) {
+              throw new Error('No output URL in completed WaveSpeed prediction')
+            }
+
+            // Update pipeline step
+            await serviceClient
+              .from('processing_pipeline')
+              .update({
+                status: 'completed',
+                output_video_url: processedUrl,
+                completed_at: new Date().toISOString(),
+                progress: 100,
+              } as never)
+              .eq('id', typedStep.id)
+
+            console.log(
+              `✅ Pipeline step ${typedStep.step_order} completed: ${processedUrl.substring(0, 50)}...`
+            )
+
+            // Check if this is the last step
+            if (typedStep.step_order === typedVideo.total_pipeline_steps) {
+              // All steps completed!
+              await serviceClient
+                .from('videos')
+                .update({
+                  status: 'completed',
+                  processed_url: processedUrl,
+                  completed_at: new Date().toISOString(),
+                  progress: 100,
+                } as never)
+                .eq('id', videoId)
+
+              return successResponse({
+                id: typedVideo.id,
+                status: 'completed',
+                progress: 100,
+                filename: typedVideo.original_filename,
+                processedUrl: processedUrl,
+                errorMessage: null,
+                createdAt: typedVideo.created_at,
+                startedAt: typedVideo.started_processing_at,
+                completedAt: new Date().toISOString(),
+                creditsUsed: typedVideo.estimated_cost_credits,
+              })
+            } else {
+              // More steps to go - the cron job will pick up the next step
+              const overallProgress = await calculatePipelineProgress(videoId)
+
+              return successResponse({
+                id: typedVideo.id,
+                status: 'processing',
+                progress: overallProgress,
+                filename: typedVideo.original_filename,
+                processedUrl: null,
+                errorMessage: null,
+                createdAt: typedVideo.created_at,
+                startedAt: typedVideo.started_processing_at,
+                completedAt: null,
+                creditsUsed: typedVideo.estimated_cost_credits,
+              })
+            }
+          } else if (prediction.status === 'failed') {
+            // Mark step as failed
+            await serviceClient
+              .from('processing_pipeline')
+              .update({
+                status: 'failed',
+                error_message: 'WaveSpeed processing failed',
+                completed_at: new Date().toISOString(),
+              } as never)
+              .eq('id', typedStep.id)
+
+            // Mark video as failed and refund credits
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (serviceClient.rpc as any)('refund_credits', {
+              p_user_id: typedVideo.user_id,
+              p_video_id: videoId,
+              p_amount: typedVideo.estimated_cost_credits,
+            })
+
+            await serviceClient
+              .from('videos')
+              .update({
+                status: 'failed',
+                error_message: `Processing failed at step ${typedStep.step_order}: WaveSpeed error`,
+                completed_at: new Date().toISOString(),
+              } as never)
+              .eq('id', videoId)
+
+            console.log(`❌ Video ${videoId} failed at step ${typedStep.step_order}`)
+
+            return successResponse({
+              id: typedVideo.id,
+              status: 'failed',
+              progress: typedVideo.progress || 0,
+              filename: typedVideo.original_filename,
+              processedUrl: null,
+              errorMessage: `Processing failed at step ${typedStep.step_order}`,
+              createdAt: typedVideo.created_at,
+              startedAt: typedVideo.started_processing_at,
+              completedAt: new Date().toISOString(),
+              creditsUsed: typedVideo.estimated_cost_credits,
+            })
+          } else {
+            // Still processing
+            const overallProgress = await calculatePipelineProgress(videoId)
+
+            return successResponse({
+              id: typedVideo.id,
+              status: 'processing',
+              progress: overallProgress,
+              filename: typedVideo.original_filename,
+              processedUrl: null,
+              errorMessage: null,
+              createdAt: typedVideo.created_at,
+              startedAt: typedVideo.started_processing_at,
+              completedAt: null,
+              creditsUsed: typedVideo.estimated_cost_credits,
+            })
+          }
+        } else if (typedStep.provider === 'replicate' && typedStep.external_job_id) {
+          const replicate = getReplicateClient()
+          const prediction = await replicate.getPrediction(typedStep.external_job_id)
+
+          console.log(`📊 Replicate status: ${prediction.status}`)
+
+          if (prediction.status === 'succeeded') {
+            const processedUrl = typeof prediction.output === 'string' ? prediction.output : null
+
+            if (!processedUrl) {
+              throw new Error('No output URL in completed Replicate prediction')
+            }
+
+            // Update pipeline step
+            await serviceClient
+              .from('processing_pipeline')
+              .update({
+                status: 'completed',
+                output_video_url: processedUrl,
+                completed_at: new Date().toISOString(),
+                progress: 100,
+              } as never)
+              .eq('id', typedStep.id)
+
+            console.log(
+              `✅ Pipeline step ${typedStep.step_order} completed: ${processedUrl.substring(0, 50)}...`
+            )
+
+            // Check if this is the last step
+            if (typedStep.step_order === typedVideo.total_pipeline_steps) {
+              // All steps completed!
+              await serviceClient
+                .from('videos')
+                .update({
+                  status: 'completed',
+                  processed_url: processedUrl,
+                  completed_at: new Date().toISOString(),
+                  progress: 100,
+                } as never)
+                .eq('id', videoId)
+
+              return successResponse({
+                id: typedVideo.id,
+                status: 'completed',
+                progress: 100,
+                filename: typedVideo.original_filename,
+                processedUrl: processedUrl,
+                errorMessage: null,
+                createdAt: typedVideo.created_at,
+                startedAt: typedVideo.started_processing_at,
+                completedAt: new Date().toISOString(),
+                creditsUsed: typedVideo.estimated_cost_credits,
+              })
+            } else {
+              // More steps to go
+              const overallProgress = await calculatePipelineProgress(videoId)
+
+              return successResponse({
+                id: typedVideo.id,
+                status: 'processing',
+                progress: overallProgress,
+                filename: typedVideo.original_filename,
+                processedUrl: null,
+                errorMessage: null,
+                createdAt: typedVideo.created_at,
+                startedAt: typedVideo.started_processing_at,
+                completedAt: null,
+                creditsUsed: typedVideo.estimated_cost_credits,
+              })
+            }
+          } else if (prediction.status === 'failed' || prediction.status === 'canceled') {
+            // Mark step as failed
+            await serviceClient
+              .from('processing_pipeline')
+              .update({
+                status: 'failed',
+                error_message: prediction.error || 'Replicate processing failed',
+                completed_at: new Date().toISOString(),
+              } as never)
+              .eq('id', typedStep.id)
+
+            // Mark video as failed and refund credits
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await (serviceClient.rpc as any)('refund_credits', {
+              p_user_id: typedVideo.user_id,
+              p_video_id: videoId,
+              p_amount: typedVideo.estimated_cost_credits,
+            })
+
+            await serviceClient
+              .from('videos')
+              .update({
+                status: 'failed',
+                error_message: `Processing failed at step ${typedStep.step_order}: ${prediction.error || 'Replicate error'}`,
+                completed_at: new Date().toISOString(),
+              } as never)
+              .eq('id', videoId)
+
+            console.log(`❌ Video ${videoId} failed at step ${typedStep.step_order}`)
+
+            return successResponse({
+              id: typedVideo.id,
+              status: 'failed',
+              progress: typedVideo.progress || 0,
+              filename: typedVideo.original_filename,
+              processedUrl: null,
+              errorMessage: `Processing failed at step ${typedStep.step_order}`,
+              createdAt: typedVideo.created_at,
+              startedAt: typedVideo.started_processing_at,
+              completedAt: new Date().toISOString(),
+              creditsUsed: typedVideo.estimated_cost_credits,
+            })
+          } else {
+            // Still processing (starting or processing)
+            const overallProgress = await calculatePipelineProgress(videoId)
+
+            return successResponse({
+              id: typedVideo.id,
+              status: 'processing',
+              progress: overallProgress,
+              filename: typedVideo.original_filename,
+              processedUrl: null,
+              errorMessage: null,
+              createdAt: typedVideo.created_at,
+              startedAt: typedVideo.started_processing_at,
+              completedAt: null,
+              creditsUsed: typedVideo.estimated_cost_credits,
+            })
+          }
+        }
       } catch (apiError) {
-        console.error('Failed to fetch WaveSpeed status:', apiError)
-        // Continue with database status if WaveSpeed query fails
+        console.error('Failed to fetch pipeline status:', apiError)
+        // Return current database status if API query fails
+        const overallProgress = await calculatePipelineProgress(videoId)
+        return successResponse({
+          id: typedVideo.id,
+          status: 'processing',
+          progress: overallProgress,
+          filename: typedVideo.original_filename,
+          processedUrl: null,
+          errorMessage: null,
+          createdAt: typedVideo.created_at,
+          startedAt: typedVideo.started_processing_at,
+          completedAt: null,
+          creditsUsed: typedVideo.estimated_cost_credits,
+        })
       }
     }
 
-    // 5. Return current database status (for completed/failed videos or if WaveSpeed query failed)
+    // 5. Return current database status (for non-pipeline or completed/failed videos)
     return successResponse({
       id: typedVideo.id,
       status: typedVideo.status,

@@ -70,10 +70,15 @@ export async function startNextPipelineStep(videoId: string): Promise<boolean> {
 
       console.log(`✅ Started WaveSpeed job for step ${nextStep.step_order}:`, prediction.id)
     } else if (nextStep.provider === 'replicate') {
-      // Parse config from database (stored in step metadata)
+      // Parse config from database
+      const stepConfig = nextStep.config as
+        | { targetResolution?: '720p' | '1080p' | '4k'; targetFps?: number }
+        | null
+        | undefined
+
       const config = {
-        target_resolution: '1080p' as '720p' | '1080p' | '4k',
-        target_fps: 60,
+        target_resolution: stepConfig?.targetResolution || '1080p',
+        target_fps: stepConfig?.targetFps || 60,
       }
 
       const replicate = getReplicateClient()
