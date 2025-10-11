@@ -18,7 +18,7 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Pay once or subscribe. Save up to 30% with Pro plan. First subscription gets 2x credits.
+            Pay once or subscribe. Save up to 40% with Pro plan. First subscription gets 2x credits.
           </p>
         </div>
 
@@ -33,7 +33,7 @@ export function PricingPreview() {
 
         <p className="text-muted-foreground mx-auto mt-10 max-w-2xl text-center text-sm">
           All plans include the same features. Start with 100 free credits on signup. 1 credit =
-          $0.01 • 10s video ≈ 80 credits ($0.80)
+          $0.01 • 10s video = 100 credits ($1.00)
         </p>
       </div>
     </section>

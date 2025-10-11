@@ -16,7 +16,7 @@ export default function Pricing() {
         <div className="from-primary-600 to-primary-700 bg-gradient-to-r py-3 text-center">
           <div className="flex items-center justify-center gap-2 text-sm font-semibold text-white md:text-base">
             <span className="text-xl">🎉</span>
-            <span>First subscription gets 2x credits! Save up to 30%</span>
+            <span>First subscription gets 2x credits! Save up to 40%</span>
             <span className="hidden sm:inline">· Cancel anytime, no commitment</span>
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function Pricing() {
                   d="M5 13l4 4L19 7"
                 />
               </svg>
-              <span>Subscriptions: Save up to 30%</span>
+              <span>Subscriptions: Save up to 40%</span>
             </div>
             <div className="flex items-center gap-2">
               <svg
@@ -87,7 +87,7 @@ export default function Pricing() {
             <div className="mb-12 text-center">
               <h2 className="text-foreground text-3xl font-bold">Choose Your Plan</h2>
               <p className="text-muted-foreground mt-4 text-lg">
-                1 credit = $0.01 • 10s video ≈ 80 credits ($0.80)
+                1 credit = $0.01 • 10s video = 100 credits ($1.00)
               </p>
             </div>
 
@@ -210,16 +210,16 @@ export default function Pricing() {
             <dl className="space-y-8">
               <div>
                 <dt className="text-foreground text-lg font-semibold">
-                  Pay-as-you-go vs Subscription: What's the difference?
+                  One-time vs Subscription: What's the difference?
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
-                  <strong>Pay-as-you-go:</strong> $10 for 1,000 credits that never expire. Perfect
-                  for occasional users who want flexibility.
+                  <strong>One-time (Basic):</strong> $2.99 for 300 credits that never expire.
+                  Perfect for trying out the service with no commitment.
                   <br />
                   <br />
-                  <strong>Subscription:</strong> Monthly plans with more credits at better prices -
-                  save up to 30%! First purchase gets 2x credits. Credits reset monthly
-                  (use-it-or-lose-it). Ideal for regular creators.
+                  <strong>Subscription:</strong> Monthly plans with significantly more credits at
+                  better prices - save up to 40%! First purchase gets 2x credits. Credits reset
+                  monthly (use-it-or-lose-it). Ideal for regular creators.
                 </dd>
               </div>
               <div>
@@ -228,8 +228,8 @@ export default function Pricing() {
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
                   Yes. Subscription credits reset monthly (use-it-or-lose-it) to encourage
-                  consistent creation. However, pay-as-you-go credits never expire! Your first
-                  purchase 2x bonus credits are also permanent.
+                  consistent creation. However, one-time purchase credits never expire! Your first
+                  subscription 2x bonus credits are also part of the monthly allocation.
                 </dd>
               </div>
               <div>
@@ -238,11 +238,13 @@ export default function Pricing() {
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
                   All plans include the same core features. The differences:
-                  <br />• <strong>Pay-as-you-go</strong>: 1,000 credits (lifetime), 3 videos/day
-                  <br />• <strong>Starter</strong>: 2,500 credits/month, save 24%, 10 videos/day
-                  <br />• <strong>Pro</strong>: 7,000 credits/month, save 30%, 50 videos/day +
-                  priority
-                  <br />• <strong>Business</strong>: Custom, save up to 30%
+                  <br />• <strong>Basic</strong>: 300 credits (lifetime), ~3 videos, 3 videos/day
+                  <br />• <strong>Starter</strong>: 1,500 credits/month, ~15 videos, save 33%, 10
+                  videos/day
+                  <br />• <strong>Pro</strong>: 5,000 credits/month, ~50 videos, save 40%, 50
+                  videos/day + priority
+                  <br />• <strong>Business</strong>: Custom volume, unlimited processing, save up to
+                  30%
                 </dd>
               </div>
               <div>
@@ -251,7 +253,7 @@ export default function Pricing() {
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
                   Absolutely! Cancel anytime with no penalties. You'll keep access until the end of
-                  your current billing period. Pay-as-you-go credits never expire. We want happy
+                  your current billing period. One-time purchase credits never expire. We want happy
                   customers, not trapped ones.
                 </dd>
               </div>
@@ -277,10 +279,9 @@ export default function Pricing() {
                   Can I get bulk discounts for teams or enterprises?
                 </dt>
                 <dd className="text-muted-foreground mt-2 text-base">
-                  Yes! Our Max package ($80 for 10,000 credits) offers 20% savings. For teams and
-                  enterprises needing larger volumes, dedicated support, and custom solutions,
-                  contact our sales team at sales@reelvan.com for tailored pricing with up to 30%
-                  savings.
+                  Yes! For teams and enterprises needing large volumes, dedicated support, and
+                  custom solutions, contact our sales team at sales@reelvan.com. We offer custom
+                  pricing with up to 30% savings and unlimited daily processing for Business plans.
                 </dd>
               </div>
             </dl>

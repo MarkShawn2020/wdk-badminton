@@ -4,8 +4,8 @@
  * Hybrid Model
  * - One-time credits: Pay once, use forever (standard price)
  * - Monthly subscriptions: Better value, credits reset monthly
- * - 1 credit = $0.01 (standard)
- * - 10s video ≈ 80 credits ($0.80) - based on 8 credits/second
+ * - 1 credit = $0.01 (to user)
+ * - 10s video = 100 credits ($1.00) - Upstream cost: $0.10 (10x markup, 90% margin)
  * - Subscription bonus: 2x credits on first purchase
  */
 
@@ -28,17 +28,17 @@ export interface PricingTier {
 export const pricingPlans: PricingTier[] = [
   // One-time purchase
   {
-    name: 'Pay-as-you-go',
+    name: 'Basic',
     type: 'one-time',
-    credits: 1000,
-    price: 1000, // $10 one-time
-    priceDisplay: '$10',
+    credits: 300,
+    price: 299, // $2.99 one-time
+    priceDisplay: '$2.99',
     discount: 0,
-    description: 'Try it out, pay once',
-    videoExamples: '~12 videos (10s each)',
+    description: 'Perfect to get started',
+    videoExamples: '~3 videos (10s each)',
     features: [
-      { text: '1,000 credits (one-time)', included: true },
-      { text: '~12 videos (10s each)', included: true },
+      { text: '300 credits (one-time)', included: true },
+      { text: '~3 videos (10s each)', included: true },
       { text: 'Credits never expire', included: true, highlight: true },
       { text: 'All features included', included: true },
       { text: 'Commercial use', included: true },
@@ -52,22 +52,22 @@ export const pricingPlans: PricingTier[] = [
   {
     name: 'Starter',
     type: 'subscription',
-    monthlyCredits: 2500,
-    price: 1900, // $19/month
-    priceDisplay: '$19',
-    discount: 24, // 24% off vs one-time ($0.0076/credit vs $0.01/credit)
+    monthlyCredits: 1500,
+    price: 999, // $9.99/month
+    priceDisplay: '$9.99',
+    discount: 33, // 33% off vs Basic ($0.00665/credit vs $0.00997/credit)
     description: 'Best for regular creators',
-    videoExamples: '~31 videos/month',
+    videoExamples: '~15 videos/month',
     features: [
-      { text: '2,500 credits/month', included: true },
+      { text: '1,500 credits/month', included: true },
+      { text: 'Worth $14.96 in credit value', included: true, highlight: true },
       {
-        text: 'First purchase: 2x credits (5,000)',
+        text: 'First purchase: 2x credits (3,000)',
         included: true,
         highlight: true,
         badge: 'Limited',
       },
-      { text: '~31 videos/month (10s each)', included: true },
-      { text: 'Save 24% vs pay-as-you-go', included: true, highlight: true },
+      { text: '~15 videos/month (10s each)', included: true },
       { text: 'All features included', included: true },
       { text: 'Commercial use', included: true },
       { text: '10 videos/day limit', included: true },
@@ -79,22 +79,22 @@ export const pricingPlans: PricingTier[] = [
   {
     name: 'Pro',
     type: 'subscription',
-    monthlyCredits: 7000,
-    price: 4900, // $49/month
-    priceDisplay: '$49',
-    discount: 30, // 30% off vs one-time ($0.007/credit vs $0.01/credit)
+    monthlyCredits: 5000,
+    price: 2999, // $29.99/month
+    priceDisplay: '$29.99',
+    discount: 40, // 40% off vs Basic ($0.00600/credit vs $0.00997/credit)
     description: 'For professional creators',
-    videoExamples: '~87 videos/month',
+    videoExamples: '~50 videos/month',
     features: [
-      { text: '7,000 credits/month', included: true },
+      { text: '5,000 credits/month', included: true },
+      { text: 'Worth $49.85 in credit value', included: true, highlight: true },
       {
-        text: 'First purchase: 2x credits (14,000)',
+        text: 'First purchase: 2x credits (10,000)',
         included: true,
         highlight: true,
         badge: 'Limited',
       },
-      { text: '~87 videos/month (10s each)', included: true },
-      { text: 'Save 30% vs pay-as-you-go', included: true, highlight: true },
+      { text: '~50 videos/month (10s each)', included: true },
       { text: 'All features included', included: true },
       { text: 'Commercial use', included: true },
       { text: '50 videos/day limit', included: true, highlight: true },

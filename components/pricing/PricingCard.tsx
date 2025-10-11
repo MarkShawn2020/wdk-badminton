@@ -125,7 +125,15 @@ export function PricingCard({ tier }: PricingCardProps) {
           )}
         </div>
 
-        <div className="mt-4 flex h-24 flex-col justify-center xl:mt-5 xl:h-28">
+        <div className="mt-4 flex h-28 flex-col justify-center xl:mt-5 xl:h-32">
+          {/* Regular price display for subscriptions */}
+          {tier.type === 'subscription' && tier.discount > 0 && (
+            <p className={`text-xs line-through ${subtextColor} opacity-75`}>
+              Regular value:{' '}
+              {tier.name === 'Starter' ? '$14.96' : tier.name === 'Pro' ? '$49.85' : ''}
+            </p>
+          )}
+
           <div className="flex items-baseline gap-2">
             <p className={`text-4xl font-bold tracking-tight xl:text-5xl ${textColor}`}>
               {tier.priceDisplay}
@@ -141,7 +149,7 @@ export function PricingCard({ tier }: PricingCardProps) {
           </p>
           {tier.discount > 0 && !tier.isContactSales && (
             <p className="text-success mt-1 text-sm font-semibold xl:text-base">
-              Save {tier.discount}% vs pay-as-you-go
+              Save {tier.discount}% vs Basic
             </p>
           )}
         </div>
