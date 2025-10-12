@@ -56,7 +56,7 @@ const createJobSchema = z.object({
   filename: z.string().min(1).max(255),
   fileSize: z
     .number()
-    .positive()
+    .nonnegative() // Allow 0 for URL-based videos (size unknown)
     .max(500 * 1024 * 1024), // 500MB
   duration: z.number().positive().max(120), // 2 minutes
   mimeType: z.enum(['video/mp4', 'video/quicktime', 'video/webm', 'video/x-matroska']),
@@ -76,9 +76,12 @@ const createJobSchema = z.object({
 /**
  * Create a new video processing job
  *
- * Video file should be uploaded to Supabase Storage BEFORE calling this
+ * Supports two modes:
+ * 1. File upload: Video should be uploaded to Supabase Storage BEFORE calling this
+ * 2. URL mode: External video URL can be passed directly via storagePath
  *
  * @param input - Video metadata and options (NO file data)
+ * @param input.storagePath - Either a Supabase Storage path or an external HTTPS URL
  * @returns Job ID or error
  */
 export async function createVideoJob(input: {
@@ -149,42 +152,54 @@ export async function createVideoJob(input: {
       return { error: `Insufficient credits. Need ${estimatedCost}, have ${credits?.balance || 0}` }
     }
 
-    // 5. Verify video exists in storage
-    console.log('📦 Verifying video in storage...')
-    const storageFolderPath = input.storagePath.split('/').slice(0, -1).join('/')
-    console.log('   Folder path:', storageFolderPath)
+    // 5. Determine if video is from external URL or Supabase Storage
+    const isExternalUrl =
+      input.storagePath.startsWith('https://') || input.storagePath.startsWith('http://')
+    let videoUrl: string
 
-    const { data: fileList, error: listError } = await supabase.storage
-      .from('videos')
-      .list(storageFolderPath)
+    if (isExternalUrl) {
+      // For external URLs, use the URL directly
+      console.log('🔗 Using external URL:', input.storagePath)
+      videoUrl = input.storagePath
+    } else {
+      // For Supabase Storage, verify and create signed URL
+      console.log('📦 Verifying video in Supabase storage...')
+      const storageFolderPath = input.storagePath.split('/').slice(0, -1).join('/')
+      console.log('   Folder path:', storageFolderPath)
 
-    if (listError) {
-      console.error('❌ Storage list error:', listError)
-      return { error: 'Video file not found in storage' }
+      const { data: fileList, error: listError } = await supabase.storage
+        .from('videos')
+        .list(storageFolderPath)
+
+      if (listError) {
+        console.error('❌ Storage list error:', listError)
+        return { error: 'Video file not found in storage' }
+      }
+
+      console.log(
+        '📦 Files in storage:',
+        fileList?.map((f) => f.name)
+      )
+
+      if (!fileList || fileList.length === 0) {
+        console.error('❌ No files found in storage')
+        return { error: 'Video file not found in storage' }
+      }
+
+      // 6. Get signed URL for external API access (bucket is private)
+      console.log('🔗 Creating signed URL for external API access...')
+      const { data: signedData, error: signedError } = await supabase.storage
+        .from('videos')
+        .createSignedUrl(input.storagePath, 3600 * 24) // Valid for 24 hours
+
+      if (signedError || !signedData) {
+        console.error('❌ Failed to create signed URL:', signedError)
+        return { error: 'Failed to create signed URL for video' }
+      }
+
+      console.log('🔗 Signed URL created, length:', signedData.signedUrl.length)
+      videoUrl = signedData.signedUrl
     }
-
-    console.log(
-      '📦 Files in storage:',
-      fileList?.map((f) => f.name)
-    )
-
-    if (!fileList || fileList.length === 0) {
-      console.error('❌ No files found in storage')
-      return { error: 'Video file not found in storage' }
-    }
-
-    // 6. Get signed URL for external API access (bucket is private)
-    console.log('🔗 Creating signed URL for external API access...')
-    const { data: signedData, error: signedError } = await supabase.storage
-      .from('videos')
-      .createSignedUrl(input.storagePath, 3600 * 24) // Valid for 24 hours
-
-    if (signedError || !signedData) {
-      console.error('❌ Failed to create signed URL:', signedError)
-      return { error: 'Failed to create signed URL for video' }
-    }
-
-    console.log('🔗 Signed URL created, length:', signedData.signedUrl.length)
 
     const serviceSupabase = createServiceClient()
 
@@ -194,7 +209,7 @@ export async function createVideoJob(input: {
       id: input.videoId,
       user_id: user.id,
       original_filename: validated.filename,
-      original_url: signedData.signedUrl,
+      original_url: videoUrl,
       original_storage_path: input.storagePath,
       duration_seconds: validated.duration,
       file_size_bytes: validated.fileSize,
@@ -212,9 +227,11 @@ export async function createVideoJob(input: {
 
     if (videoError) {
       console.error('❌ Failed to create video record:', videoError)
-      // Cleanup uploaded file
-      console.log('🗑️  Cleaning up uploaded file...')
-      await supabase.storage.from('videos').remove([input.storagePath])
+      // Cleanup uploaded file (only for Supabase Storage, not external URLs)
+      if (!isExternalUrl) {
+        console.log('🗑️  Cleaning up uploaded file...')
+        await supabase.storage.from('videos').remove([input.storagePath])
+      }
       return { error: 'Failed to create video record' }
     }
 
@@ -235,10 +252,12 @@ export async function createVideoJob(input: {
         videoId: input.videoId,
         amount: estimatedCost,
       })
-      // Cleanup video record and uploaded file
+      // Cleanup video record and uploaded file (only for Supabase Storage)
       console.log('🗑️  Cleaning up video record and file...')
       await serviceSupabase.from('videos').delete().eq('id', input.videoId)
-      await supabase.storage.from('videos').remove([input.storagePath])
+      if (!isExternalUrl) {
+        await supabase.storage.from('videos').remove([input.storagePath])
+      }
       return { error: `Failed to deduct credits: ${deductError.message}` }
     }
 
@@ -246,7 +265,7 @@ export async function createVideoJob(input: {
 
     // 9. Create pipeline steps
     console.log('🔧 Creating pipeline steps...')
-    const steps = buildPipelineSteps(input.videoId, signedData.signedUrl, options)
+    const steps = buildPipelineSteps(input.videoId, videoUrl, options)
     console.log('🔧 Pipeline steps:', steps.length)
 
     const { error: stepsError } = await serviceSupabase
