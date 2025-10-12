@@ -66,6 +66,24 @@ export function ProcessingOptionsDialog({
       prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
     )
   }
+
+  /**
+   * Handle enhance quality toggle with auto-defaults
+   * Sets 1080p and 60fps when enabled (respects existing preferences)
+   */
+  const handleEnhanceQualityToggle = (enabled: boolean) => {
+    setEnhanceQuality(enabled)
+    if (enabled) {
+      // Set defaults for first-time users (when undefined)
+      if (targetResolution === undefined) {
+        setTargetResolution('1080p')
+      }
+      if (targetFps === undefined) {
+        setTargetFps(60)
+      }
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
@@ -91,339 +109,13 @@ export function ProcessingOptionsDialog({
           <FeatureToggleCard
             icon={Zap}
             title="Enhance Quality"
-            description="Upscale, denoise, and improve video quality"
+            description="Boost quality for perfect social sharing (1080p, 60fps)"
             badge="Popular"
             badgeVariant="popular"
             enabled={enhanceQuality}
-            onToggle={setEnhanceQuality}
+            onToggle={handleEnhanceQualityToggle}
             disabled={disabled}
-          >
-            <div className="space-y-4">
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Target Resolution</Label>
-                <div className="space-y-2">
-                  {/* Original Resolution Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetResolution(undefined)}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetResolution === undefined
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetResolution === undefined
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetResolution === undefined && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">Original Quality</span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          Keep the original resolution without upscaling
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* 720p Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetResolution('720p')}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetResolution === '720p'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetResolution === '720p'
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetResolution === '720p' && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">720p</span>
-                          <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                            HD
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          1280×720 - Good for social media, smaller file sizes
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* 1080p Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetResolution('1080p')}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetResolution === '1080p'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetResolution === '1080p'
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetResolution === '1080p' && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">1080p</span>
-                          <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                            Full HD
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          1920×1080 - Standard for YouTube, Instagram, most platforms
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* 4K Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetResolution('4k')}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetResolution === '4k'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetResolution === '4k'
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetResolution === '4k' && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">4K</span>
-                          <span className="rounded bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
-                            Ultra HD
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          3840×2160 - Premium quality for professional use (higher cost & time)
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label className="text-sm font-medium">Target FPS</Label>
-                <div className="space-y-2">
-                  {/* Original FPS Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetFps(undefined)}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetFps === undefined
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetFps === undefined
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetFps === undefined && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">Original FPS</span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          Keep the original frame rate of your video
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* 24 FPS Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetFps(24)}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetFps === 24
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetFps === 24
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetFps === 24 && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">24 FPS</span>
-                          <span className="rounded bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900 dark:text-amber-300">
-                            Cinematic
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          Film-like motion blur, best for artistic/cinematic content
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* 30 FPS Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetFps(30)}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetFps === 30
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetFps === 30
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetFps === 30 && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">30 FPS</span>
-                          <span className="rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                            Standard
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          Balanced quality and file size, ideal for most social media
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* 60 FPS Option */}
-                  <button
-                    type="button"
-                    onClick={() => setTargetFps(60)}
-                    disabled={disabled}
-                    className={`w-full rounded-lg border p-3 text-left transition-all ${
-                      targetFps === 60
-                        ? 'border-primary bg-primary/10'
-                        : 'border-border bg-card hover:border-primary/50'
-                    } ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`h-4 w-4 rounded-full border-2 transition-all ${
-                              targetFps === 60
-                                ? 'border-primary bg-primary'
-                                : 'border-muted-foreground'
-                            }`}
-                          >
-                            {targetFps === 60 && (
-                              <div
-                                className="h-full w-full rounded-full bg-white"
-                                style={{ transform: 'scale(0.5)' }}
-                              />
-                            )}
-                          </div>
-                          <span className="font-medium">60 FPS</span>
-                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900 dark:text-green-300">
-                            Smooth
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mt-1 ml-6 text-xs">
-                          Ultra-smooth motion, perfect for gaming/sports content (larger file size)
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </FeatureToggleCard>
+          />
 
           {/* F4: Custom Watermark Addition */}
           <FeatureToggleCard
