@@ -31,10 +31,12 @@ import { getUploadUrl } from '@/app/actions/storage'
 import { createVideoJob } from '@/app/actions/video-processing'
 
 interface VideoFile {
-  file: File
+  file?: File // Optional for URL-based videos
   duration: number
   size: number
-  url: string
+  url: string // Local preview URL or remote URL
+  sourceType: 'file' | 'url' // Track the source type
+  filename?: string // For URL-based videos
 }
 
 interface UploadFlowProps {
@@ -170,8 +172,8 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
   /**
    * Handle form submission
-   * Step 1: Upload to Storage
-   * Step 2: Call Server Action with metadata
+   * For file: Step 1: Upload to Storage, Step 2: Call Server Action
+   * For URL: Skip upload, directly call Server Action
    */
   const handleSubmit = async () => {
     if (!selectedVideo) return
@@ -200,48 +202,75 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
       // Generate unique video ID
       const videoId = crypto.randomUUID()
 
-      // Step 1: Get pre-signed upload URL
-      console.log('🔑 Getting upload URL...')
-      setUploadProgress(5)
+      let storagePath: string
 
-      const uploadResult = await getUploadUrl(videoId, selectedVideo.file.name)
+      // Handle URL-based videos (skip Supabase upload)
+      if (selectedVideo.sourceType === 'url') {
+        console.log('🔗 Processing video from URL...')
+        console.log('   Video ID:', videoId)
+        console.log('   URL:', selectedVideo.url)
+        setUploadProgress(30)
 
-      console.log('🔑 Upload URL result:', {
-        success: !!uploadResult.uploadUrl,
-        error: uploadResult.error,
-        hasStoragePath: !!uploadResult.storagePath,
-      })
-
-      if (uploadResult.error || !uploadResult.uploadUrl) {
-        throw new Error(uploadResult.error || 'Failed to get upload URL')
+        // Use the URL directly as storage path
+        storagePath = selectedVideo.url
+        setUploadProgress(50)
       }
+      // Handle file-based videos (upload to Supabase)
+      else {
+        if (!selectedVideo.file) {
+          throw new Error('No file provided for file-based video')
+        }
 
-      const { uploadUrl, storagePath } = uploadResult
+        // Step 1: Get pre-signed upload URL
+        console.log('🔑 Getting upload URL...')
+        setUploadProgress(5)
 
-      // Step 2: Upload to Supabase Storage
-      console.log('📤 Uploading video to storage...')
-      console.log('   Storage path:', storagePath)
-      setUploadProgress(10)
+        const uploadResult = await getUploadUrl(videoId, selectedVideo.file.name)
 
-      await uploadVideoToStorage(selectedVideo.file, uploadUrl)
+        console.log('🔑 Upload URL result:', {
+          success: !!uploadResult.uploadUrl,
+          error: uploadResult.error,
+          hasStoragePath: !!uploadResult.storagePath,
+        })
 
-      console.log('✅ Video uploaded to storage')
-      setUploadProgress(50)
+        if (uploadResult.error || !uploadResult.uploadUrl) {
+          throw new Error(uploadResult.error || 'Failed to get upload URL')
+        }
+
+        const { uploadUrl, storagePath: uploadStoragePath } = uploadResult
+        storagePath = uploadStoragePath
+
+        // Step 2: Upload to Supabase Storage
+        console.log('📤 Uploading video to storage...')
+        console.log('   Storage path:', storagePath)
+        setUploadProgress(10)
+
+        await uploadVideoToStorage(selectedVideo.file, uploadUrl)
+
+        console.log('✅ Video uploaded to storage')
+        setUploadProgress(50)
+      }
 
       // Step 3: Call Server Action with metadata
       console.log('🔧 Creating processing job...')
       console.log('   Video ID:', videoId)
       console.log('   Storage path:', storagePath)
       console.log('   Duration:', selectedVideo.duration)
-      console.log('   File size:', selectedVideo.file.size)
+      console.log('   Source type:', selectedVideo.sourceType)
 
       const result = await createVideoJob({
         videoId,
         storagePath,
-        filename: selectedVideo.file.name,
-        fileSize: selectedVideo.file.size,
+        filename:
+          selectedVideo.sourceType === 'file' && selectedVideo.file
+            ? selectedVideo.file.name
+            : selectedVideo.filename || 'video-from-url',
+        fileSize: selectedVideo.size,
         duration: selectedVideo.duration,
-        mimeType: selectedVideo.file.type,
+        mimeType:
+          selectedVideo.sourceType === 'file' && selectedVideo.file
+            ? selectedVideo.file.type
+            : 'video/mp4',
         options: {
           removeWatermark,
           enhanceQuality,

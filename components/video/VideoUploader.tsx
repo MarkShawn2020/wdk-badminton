@@ -5,21 +5,35 @@
  *
  * Features:
  * - Drag and drop file upload
+ * - URL input with persistent storage (jotai)
  * - File validation (type, size, duration)
  * - Real-time cost estimation
  * - Progress feedback
  */
 
 import { useState, useRef, useCallback } from 'react'
-import { Upload, FileVideo, X, AlertCircle } from 'lucide-react'
+import { Upload, FileVideo, X, AlertCircle, Link2 } from 'lucide-react'
+import { useAtom } from 'jotai'
 import { ALLOWED_VIDEO_MIME_TYPES, sanitizeFilename } from '@/lib/validations/video'
 import { calculateCreditsRequired, formatCredits, PRICING } from '@/lib/video/cost'
+import { videoUrlAtom, videoInputSourceAtom } from '@/lib/store/video-atoms'
+import { Button } from '@/components/components/ui/button'
+import { z } from 'zod'
+
+/**
+ * URL validation schema
+ */
+const videoUrlSchema = z.string().url().startsWith('https://', {
+  message: 'URL must start with https://',
+})
 
 interface VideoFile {
-  file: File
+  file?: File // Optional for URL-based videos
   duration: number
   size: number
-  url: string // Local preview URL
+  url: string // Local preview URL or remote URL
+  sourceType: 'file' | 'url' // Track the source type
+  filename?: string // For URL-based videos
 }
 
 interface VideoUploaderProps {
@@ -41,6 +55,11 @@ export function VideoUploader({
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Jotai atoms
+  const [videoUrl, setVideoUrl] = useAtom(videoUrlAtom)
+  const [inputSource, setInputSource] = useAtom(videoInputSourceAtom)
+  const [urlInput, setUrlInput] = useState(videoUrl)
+
   /**
    * Get video duration from file
    */
@@ -59,6 +78,27 @@ export function VideoUploader({
       }
 
       video.src = window.URL.createObjectURL(file)
+    })
+  }, [])
+
+  /**
+   * Get video duration from URL
+   */
+  const getVideoDurationFromUrl = useCallback((url: string): Promise<number> => {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video')
+      video.preload = 'metadata'
+      video.crossOrigin = 'anonymous'
+
+      video.onloadedmetadata = () => {
+        resolve(video.duration)
+      }
+
+      video.onerror = () => {
+        reject(new Error('Failed to load video from URL. Please check if the URL is accessible.'))
+      }
+
+      video.src = url
     })
   }, [])
 
@@ -107,6 +147,7 @@ export function VideoUploader({
           duration,
           size: file.size,
           url,
+          sourceType: 'file',
         }
 
         setSelectedVideo(videoFile)
@@ -121,6 +162,71 @@ export function VideoUploader({
     },
     [maxSize, maxDuration, getVideoDuration, onVideoSelected]
   )
+
+  /**
+   * Validate and process video URL
+   */
+  const processUrl = useCallback(
+    async (url: string) => {
+      setError(null)
+      setIsAnalyzing(true)
+
+      try {
+        // Validate URL format
+        const validationResult = videoUrlSchema.safeParse(url)
+        if (!validationResult.success) {
+          throw new Error(validationResult.error.errors[0]?.message || 'Invalid URL format')
+        }
+
+        // Get video duration
+        const duration = await getVideoDurationFromUrl(url)
+
+        // Validate duration
+        if (duration > maxDuration) {
+          throw new Error(`Video too long (${Math.round(duration)}s). Maximum: ${maxDuration}s`)
+        }
+
+        if (duration < PRICING.MIN_VIDEO_DURATION) {
+          throw new Error(`Video too short. Minimum: ${PRICING.MIN_VIDEO_DURATION}s`)
+        }
+
+        // Extract filename from URL
+        const urlObj = new URL(url)
+        const pathParts = urlObj.pathname.split('/')
+        const filename = pathParts[pathParts.length - 1] || 'video-from-url'
+
+        const videoFile: VideoFile = {
+          duration,
+          size: 0, // Size unknown for URL videos
+          url,
+          sourceType: 'url',
+          filename,
+        }
+
+        setVideoUrl(url)
+        setSelectedVideo(videoFile)
+        onVideoSelected(videoFile)
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to process video URL'
+        setError(message)
+        setSelectedVideo(null)
+      } finally {
+        setIsAnalyzing(false)
+      }
+    },
+    [maxDuration, getVideoDurationFromUrl, setVideoUrl, onVideoSelected]
+  )
+
+  /**
+   * Handle URL submit
+   */
+  const handleUrlSubmit = useCallback(() => {
+    if (!urlInput.trim()) {
+      setError('Please enter a video URL')
+      return
+    }
+    processUrl(urlInput.trim())
+  }, [urlInput, processUrl])
 
   /**
    * Handle file drop
@@ -195,60 +301,154 @@ export function VideoUploader({
 
   return (
     <div className="w-full">
-      {/* Upload Area */}
+      {/* Input Source Toggle */}
       {!selectedVideo && (
-        <div
-          onClick={handleClick}
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              handleClick()
-            }
-          }}
-          role="button"
-          tabIndex={0}
-          className={`group relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-16 transition-all ${
-            isDragging
-              ? 'border-primary bg-primary/10 shadow-lg'
-              : 'border-border bg-card hover:border-primary/60 hover:shadow-md'
-          } ${isAnalyzing ? 'pointer-events-none opacity-50' : ''} `}
-        >
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept={ALLOWED_VIDEO_MIME_TYPES.join(',')}
-            onChange={handleFileChange}
-            className="hidden"
-            disabled={isAnalyzing}
-          />
-
-          <div
-            className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full transition-colors ${
-              isDragging
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
-            }`}
+        <div className="mb-4 flex gap-2">
+          <Button
+            type="button"
+            variant={inputSource === 'file' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setInputSource('file')}
+            className="gap-2"
           >
-            <Upload className="h-10 w-10" />
+            <Upload className="h-4 w-4" />
+            Upload File
+          </Button>
+          <Button
+            type="button"
+            variant={inputSource === 'url' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setInputSource('url')}
+            className="gap-2"
+          >
+            <Link2 className="h-4 w-4" />
+            Enter URL
+          </Button>
+        </div>
+      )}
+
+      {/* Input Area Container - Prevent layout shift */}
+      {!selectedVideo && (
+        <div className="grid w-full">
+          {/* File Upload Area */}
+          <div
+            onClick={inputSource === 'file' ? handleClick : undefined}
+            onDrop={inputSource === 'file' ? handleDrop : undefined}
+            onDragOver={inputSource === 'file' ? handleDragOver : undefined}
+            onDragLeave={inputSource === 'file' ? handleDragLeave : undefined}
+            onKeyDown={
+              inputSource === 'file'
+                ? (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      handleClick()
+                    }
+                  }
+                : undefined
+            }
+            role={inputSource === 'file' ? 'button' : undefined}
+            tabIndex={inputSource === 'file' ? 0 : undefined}
+            style={{ gridArea: '1 / 1' }}
+            className={`${inputSource === 'file' ? 'visible' : 'pointer-events-none invisible'} group flex w-full cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-16 transition-all ${
+              isDragging
+                ? 'border-primary bg-primary/10 shadow-lg'
+                : 'border-border bg-card hover:border-primary/60 hover:shadow-md'
+            } ${isAnalyzing ? 'pointer-events-none opacity-50' : ''} `}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept={ALLOWED_VIDEO_MIME_TYPES.join(',')}
+              onChange={handleFileChange}
+              className="hidden"
+              disabled={isAnalyzing}
+            />
+
+            <div
+              className={`mb-6 flex h-20 w-20 items-center justify-center rounded-full transition-colors ${
+                isDragging
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary'
+              }`}
+            >
+              <Upload className="h-10 w-10" />
+            </div>
+
+            <p className="text-foreground mb-3 text-xl font-bold">
+              {isAnalyzing ? 'Analyzing video...' : 'Drop your video here'}
+            </p>
+
+            <p className="text-muted-foreground mb-6 text-base">
+              or click to browse files (MP4, MOV, WebM)
+            </p>
+
+            <div className="text-muted-foreground flex items-center gap-4 text-sm">
+              <span className="inline-flex items-center gap-1">
+                📦 Max: {Math.round(maxSize / (1024 * 1024))}MB
+              </span>
+              <span>•</span>
+              <span className="inline-flex items-center gap-1">⏱️ Max: {maxDuration}s</span>
+            </div>
           </div>
 
-          <p className="text-foreground mb-3 text-xl font-bold">
-            {isAnalyzing ? 'Analyzing video...' : 'Drop your video here'}
-          </p>
+          {/* URL Input Area */}
+          <div
+            style={{ gridArea: '1 / 1' }}
+            className={`${inputSource === 'url' ? 'visible' : 'pointer-events-none invisible'} border-border bg-card flex w-full flex-col items-start rounded-2xl border-2 p-16`}
+          >
+            <div className="mb-6 flex w-full items-center gap-3">
+              <div className="bg-primary flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full">
+                <Link2 className="text-primary-foreground h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-foreground text-lg font-semibold">Enter Video URL</h3>
+                <p className="text-muted-foreground text-sm">
+                  Paste a direct link to your video (must start with https://)
+                </p>
+              </div>
+            </div>
 
-          <p className="text-muted-foreground mb-6 text-base">
-            or click to browse files (MP4, MOV, WebM)
-          </p>
+            <div className="w-full space-y-4">
+              <div>
+                <input
+                  type="url"
+                  value={urlInput}
+                  onChange={(e) => setUrlInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      handleUrlSubmit()
+                    }
+                  }}
+                  placeholder="https://example.com/video.mp4"
+                  className="border-border bg-background text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-primary/20 w-full rounded-lg border px-4 py-3 focus:ring-2 focus:outline-none"
+                  disabled={isAnalyzing}
+                />
+              </div>
 
-          <div className="text-muted-foreground flex items-center gap-4 text-sm">
-            <span className="inline-flex items-center gap-1">
-              📦 Max: {Math.round(maxSize / (1024 * 1024))}MB
-            </span>
-            <span>•</span>
-            <span className="inline-flex items-center gap-1">⏱️ Max: {maxDuration}s</span>
+              <Button
+                type="button"
+                onClick={handleUrlSubmit}
+                disabled={isAnalyzing || !urlInput.trim()}
+                className="w-full"
+                size="lg"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Upload className="mr-2 h-5 w-5 animate-spin" />
+                    Analyzing video...
+                  </>
+                ) : (
+                  <>
+                    <Link2 className="mr-2 h-5 w-5" />
+                    Load Video
+                  </>
+                )}
+              </Button>
+
+              <div className="text-muted-foreground flex items-center gap-4 text-sm">
+                <span className="inline-flex items-center gap-1">⏱️ Max: {maxDuration}s</span>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -265,10 +465,15 @@ export function VideoUploader({
                   className="h-full w-full object-cover"
                   muted
                   playsInline
+                  crossOrigin={selectedVideo.sourceType === 'url' ? 'anonymous' : undefined}
                 />
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[1px]">
                   <div className="bg-card flex h-12 w-12 items-center justify-center rounded-full shadow-lg">
-                    <FileVideo className="text-primary h-6 w-6" />
+                    {selectedVideo.sourceType === 'url' ? (
+                      <Link2 className="text-primary h-6 w-6" />
+                    ) : (
+                      <FileVideo className="text-primary h-6 w-6" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -276,17 +481,32 @@ export function VideoUploader({
               {/* Video Info */}
               <div className="min-w-0 flex-1">
                 <h3 className="text-foreground mb-3 text-lg leading-tight font-semibold">
-                  {sanitizeFilename(selectedVideo.file.name)}
+                  {selectedVideo.sourceType === 'file' && selectedVideo.file
+                    ? sanitizeFilename(selectedVideo.file.name)
+                    : selectedVideo.filename || 'Video from URL'}
                 </h3>
                 <div className="space-y-2">
                   <div className="text-muted-foreground flex flex-wrap items-center gap-3 text-sm">
-                    <span className="inline-flex items-center gap-1">
-                      📦 {Math.round(selectedVideo.size / (1024 * 1024))}MB
-                    </span>
-                    <span>•</span>
+                    {selectedVideo.sourceType === 'file' && (
+                      <>
+                        <span className="inline-flex items-center gap-1">
+                          📦 {Math.round(selectedVideo.size / (1024 * 1024))}MB
+                        </span>
+                        <span>•</span>
+                      </>
+                    )}
                     <span className="inline-flex items-center gap-1">
                       ⏱️ {Math.round(selectedVideo.duration)}s
                     </span>
+                    {selectedVideo.sourceType === 'url' && (
+                      <>
+                        <span>•</span>
+                        <span className="inline-flex items-center gap-1">
+                          <Link2 className="h-3 w-3" />
+                          URL
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
