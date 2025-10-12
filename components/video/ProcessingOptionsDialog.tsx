@@ -5,9 +5,10 @@
  *
  * Dialog for configuring video processing options
  * Features: Watermark removal, quality enhancement, custom watermark, AI captions
+ * All options are persisted using jotai atoms
  */
 
-import { Dispatch, SetStateAction } from 'react'
+import { useAtom } from 'jotai'
 import {
   Dialog,
   DialogContent,
@@ -25,51 +26,46 @@ import {
 } from '@/components/components/ui/select'
 import { FeatureToggleCard } from './FeatureToggleCard'
 import { BadgeCheck, Zap, ImagePlus, Sparkles } from 'lucide-react'
+import {
+  removeWatermarkAtom,
+  enhanceQualityAtom,
+  targetResolutionAtom,
+  targetFpsAtom,
+  addCustomWatermarkAtom,
+  generateCaptionsAtom,
+  selectedPlatformsAtom,
+  captionToneAtom,
+} from '@/lib/store/video-atoms'
 
 interface ProcessingOptionsDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  // Feature toggles
-  removeWatermark: boolean
-  setRemoveWatermark: Dispatch<SetStateAction<boolean>>
-  enhanceQuality: boolean
-  setEnhanceQuality: Dispatch<SetStateAction<boolean>>
-  targetResolution: '720p' | '1080p' | '4k' | undefined
-  setTargetResolution: Dispatch<SetStateAction<'720p' | '1080p' | '4k' | undefined>>
-  targetFps: number | undefined
-  setTargetFps: Dispatch<SetStateAction<number | undefined>>
-  addCustomWatermark: boolean
-  setAddCustomWatermark: Dispatch<SetStateAction<boolean>>
-  generateCaptions: boolean
-  setGenerateCaptions: Dispatch<SetStateAction<boolean>>
-  selectedPlatforms: string[]
-  togglePlatform: (platform: string) => void
-  captionTone: string
-  setCaptionTone: Dispatch<SetStateAction<string>>
   disabled?: boolean
 }
 
 export function ProcessingOptionsDialog({
   open,
   onOpenChange,
-  removeWatermark,
-  setRemoveWatermark,
-  enhanceQuality,
-  setEnhanceQuality,
-  targetResolution,
-  setTargetResolution,
-  targetFps,
-  setTargetFps,
-  addCustomWatermark,
-  setAddCustomWatermark,
-  generateCaptions,
-  setGenerateCaptions,
-  selectedPlatforms,
-  togglePlatform,
-  captionTone,
-  setCaptionTone,
   disabled = false,
 }: ProcessingOptionsDialogProps) {
+  // Use jotai atoms for persistent state
+  const [removeWatermark, setRemoveWatermark] = useAtom(removeWatermarkAtom)
+  const [enhanceQuality, setEnhanceQuality] = useAtom(enhanceQualityAtom)
+  const [targetResolution, setTargetResolution] = useAtom(targetResolutionAtom)
+  const [targetFps, setTargetFps] = useAtom(targetFpsAtom)
+  const [addCustomWatermark, setAddCustomWatermark] = useAtom(addCustomWatermarkAtom)
+  const [generateCaptions, setGenerateCaptions] = useAtom(generateCaptionsAtom)
+  const [selectedPlatforms, setSelectedPlatforms] = useAtom(selectedPlatformsAtom)
+  const [captionTone, setCaptionTone] = useAtom(captionToneAtom)
+
+  /**
+   * Toggle platform selection for captions
+   */
+  const togglePlatform = (platform: string) => {
+    setSelectedPlatforms((prev) =>
+      prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
+    )
+  }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">

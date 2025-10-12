@@ -12,6 +12,7 @@
 
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useAtom } from 'jotai'
 import { VideoUploader } from './VideoUploader'
 import { ProcessingOptionsDialog } from './ProcessingOptionsDialog'
 import { Button } from '@/components/components/ui/button'
@@ -29,6 +30,16 @@ import {
 import { calculateCreditsRequired, formatCredits, formatCreditsAsUSD } from '@/lib/video/cost'
 import { getUploadUrl } from '@/app/actions/storage'
 import { createVideoJob } from '@/app/actions/video-processing'
+import {
+  removeWatermarkAtom,
+  enhanceQualityAtom,
+  targetResolutionAtom,
+  targetFpsAtom,
+  addCustomWatermarkAtom,
+  generateCaptionsAtom,
+  selectedPlatformsAtom,
+  captionToneAtom,
+} from '@/lib/store/video-atoms'
 
 interface VideoFile {
   file?: File // Optional for URL-based videos
@@ -47,17 +58,15 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   const router = useRouter()
   const [selectedVideo, setSelectedVideo] = useState<VideoFile | null>(null)
 
-  // Feature toggles (default: watermark removal + quality enhancement enabled)
-  const [removeWatermark, setRemoveWatermark] = useState(true)
-  const [enhanceQuality, setEnhanceQuality] = useState(true)
-  const [targetResolution, setTargetResolution] = useState<'720p' | '1080p' | '4k' | undefined>(
-    undefined
-  )
-  const [targetFps, setTargetFps] = useState<number | undefined>(undefined)
-  const [addCustomWatermark, setAddCustomWatermark] = useState(false)
-  const [generateCaptions, setGenerateCaptions] = useState(false)
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['Instagram'])
-  const [captionTone, setCaptionTone] = useState<string>('professional')
+  // Feature toggles with jotai persistence
+  const [removeWatermark, setRemoveWatermark] = useAtom(removeWatermarkAtom)
+  const [enhanceQuality, setEnhanceQuality] = useAtom(enhanceQualityAtom)
+  const [targetResolution, setTargetResolution] = useAtom(targetResolutionAtom)
+  const [targetFps, setTargetFps] = useAtom(targetFpsAtom)
+  const [addCustomWatermark, setAddCustomWatermark] = useAtom(addCustomWatermarkAtom)
+  const [generateCaptions, setGenerateCaptions] = useAtom(generateCaptionsAtom)
+  const [selectedPlatforms, setSelectedPlatforms] = useAtom(selectedPlatformsAtom)
+  const [captionTone, setCaptionTone] = useAtom(captionToneAtom)
 
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
@@ -78,15 +87,6 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   const handleVideoRemoved = useCallback(() => {
     setSelectedVideo(null)
     setError(null)
-  }, [])
-
-  /**
-   * Toggle platform selection for captions
-   */
-  const togglePlatform = useCallback((platform: string) => {
-    setSelectedPlatforms((prev) =>
-      prev.includes(platform) ? prev.filter((p) => p !== platform) : [...prev, platform]
-    )
   }, [])
 
   /**
@@ -457,22 +457,6 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
       <ProcessingOptionsDialog
         open={optionsDialogOpen}
         onOpenChange={setOptionsDialogOpen}
-        removeWatermark={removeWatermark}
-        setRemoveWatermark={setRemoveWatermark}
-        enhanceQuality={enhanceQuality}
-        setEnhanceQuality={setEnhanceQuality}
-        targetResolution={targetResolution}
-        setTargetResolution={setTargetResolution}
-        targetFps={targetFps}
-        setTargetFps={setTargetFps}
-        addCustomWatermark={addCustomWatermark}
-        setAddCustomWatermark={setAddCustomWatermark}
-        generateCaptions={generateCaptions}
-        setGenerateCaptions={setGenerateCaptions}
-        selectedPlatforms={selectedPlatforms}
-        togglePlatform={togglePlatform}
-        captionTone={captionTone}
-        setCaptionTone={setCaptionTone}
         disabled={isUploading}
       />
     </>
