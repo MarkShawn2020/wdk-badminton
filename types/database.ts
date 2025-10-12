@@ -46,6 +46,86 @@ export type Database = {
           },
         ]
       }
+      processing_pipeline: {
+        Row: {
+          id: string
+          video_id: string
+          step_order: number
+          step_type: string
+          step_name: string
+          status: string
+          progress: number | null
+          provider: string
+          external_job_id: string | null
+          input_video_url: string
+          output_video_url: string | null
+          estimated_cost_credits: number
+          actual_cost_credits: number | null
+          api_cost_usd: number | null
+          error_message: string | null
+          retry_count: number
+          max_retries: number
+          config: Json | null
+          created_at: string | null
+          started_at: string | null
+          completed_at: string | null
+        }
+        Insert: {
+          id?: string
+          video_id: string
+          step_order: number
+          step_type: string
+          step_name: string
+          status?: string
+          progress?: number | null
+          provider: string
+          external_job_id?: string | null
+          input_video_url: string
+          output_video_url?: string | null
+          estimated_cost_credits: number
+          actual_cost_credits?: number | null
+          api_cost_usd?: number | null
+          error_message?: string | null
+          retry_count?: number
+          max_retries?: number
+          config?: Json | null
+          created_at?: string | null
+          started_at?: string | null
+          completed_at?: string | null
+        }
+        Update: {
+          id?: string
+          video_id?: string
+          step_order?: number
+          step_type?: string
+          step_name?: string
+          status?: string
+          progress?: number | null
+          provider?: string
+          external_job_id?: string | null
+          input_video_url?: string
+          output_video_url?: string | null
+          estimated_cost_credits?: number
+          actual_cost_credits?: number | null
+          api_cost_usd?: number | null
+          error_message?: string | null
+          retry_count?: number
+          max_retries?: number
+          config?: Json | null
+          created_at?: string | null
+          started_at?: string | null
+          completed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'processing_pipeline_video_id_fkey'
+            columns: ['video_id']
+            isOneToOne: false
+            referencedRelation: 'videos'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       coupons: {
         Row: {
           code: string
@@ -301,6 +381,7 @@ export type Database = {
           api_cost_usd: number | null
           completed_at: string | null
           created_at: string | null
+          current_pipeline_step: number | null
           duration_seconds: number
           enhance_quality: boolean | null
           error_message: string | null
@@ -313,6 +394,7 @@ export type Database = {
           original_filename: string
           original_storage_path: string | null
           original_url: string | null
+          pipeline_enabled: boolean | null
           processed_storage_path: string | null
           processed_url: string | null
           progress: number | null
@@ -321,6 +403,7 @@ export type Database = {
           status: string
           target_aspect_ratio: string | null
           target_resolution: string | null
+          total_pipeline_steps: number | null
           user_id: string
           video_hash: string | null
         }
@@ -329,6 +412,7 @@ export type Database = {
           api_cost_usd?: number | null
           completed_at?: string | null
           created_at?: string | null
+          current_pipeline_step?: number | null
           duration_seconds: number
           enhance_quality?: boolean | null
           error_message?: string | null
@@ -341,6 +425,7 @@ export type Database = {
           original_filename: string
           original_storage_path?: string | null
           original_url?: string | null
+          pipeline_enabled?: boolean | null
           processed_storage_path?: string | null
           processed_url?: string | null
           progress?: number | null
@@ -349,6 +434,7 @@ export type Database = {
           status?: string
           target_aspect_ratio?: string | null
           target_resolution?: string | null
+          total_pipeline_steps?: number | null
           user_id: string
           video_hash?: string | null
         }
@@ -357,6 +443,7 @@ export type Database = {
           api_cost_usd?: number | null
           completed_at?: string | null
           created_at?: string | null
+          current_pipeline_step?: number | null
           duration_seconds?: number
           enhance_quality?: boolean | null
           error_message?: string | null
@@ -369,6 +456,7 @@ export type Database = {
           original_filename?: string
           original_storage_path?: string | null
           original_url?: string | null
+          pipeline_enabled?: boolean | null
           processed_storage_path?: string | null
           processed_url?: string | null
           progress?: number | null
@@ -377,6 +465,7 @@ export type Database = {
           status?: string
           target_aspect_ratio?: string | null
           target_resolution?: string | null
+          total_pipeline_steps?: number | null
           user_id?: string
           video_hash?: string | null
         }
@@ -413,9 +502,21 @@ export type Database = {
         Args: { p_amount: number; p_user_id: string; p_video_id: string }
         Returns: boolean
       }
+      get_next_pipeline_step: {
+        Args: { p_video_id: string }
+        Returns: Tables<'processing_pipeline'>
+      }
+      get_pipeline_progress: {
+        Args: { p_video_id: string }
+        Returns: number
+      }
       increment_showcase_views: {
         Args: { showcase_uuid: string }
         Returns: undefined
+      }
+      is_pipeline_completed: {
+        Args: { p_video_id: string }
+        Returns: boolean
       }
       redeem_coupon: {
         Args: {

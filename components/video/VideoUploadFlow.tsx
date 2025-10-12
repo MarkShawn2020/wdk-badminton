@@ -27,6 +27,8 @@ import {
   ImagePlus,
 } from 'lucide-react'
 import { calculateCreditsRequired, formatCredits, formatCreditsAsUSD } from '@/lib/video/cost'
+import { getUploadUrl } from '@/app/actions/storage'
+import { createVideoJob } from '@/app/actions/video-processing'
 
 interface VideoFile {
   file: File
@@ -112,20 +114,16 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
   ])
 
   /**
-   * Upload video to Supabase Storage
+   * Upload video to Supabase Storage using pre-signed URL
    */
-  const uploadVideoToStorage = async (
-    file: File,
-    uploadUrl: string,
-    token: string
-  ): Promise<void> => {
+  const uploadVideoToStorage = async (file: File, uploadUrl: string): Promise<void> => {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
 
       // Track upload progress
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
-          const progress = Math.round((e.loaded / e.total) * 100)
+          const progress = Math.round((e.loaded / e.total) * 40) + 10 // 10-50%
           setUploadProgress(progress)
         }
       })
@@ -144,16 +142,14 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
       xhr.open('PUT', uploadUrl)
       xhr.setRequestHeader('Content-Type', file.type)
-      xhr.setRequestHeader('x-upsert', 'true')
-      if (token) {
-        xhr.setRequestHeader('Authorization', `Bearer ${token}`)
-      }
       xhr.send(file)
     })
   }
 
   /**
    * Handle form submission
+   * Step 1: Upload to Storage
+   * Step 2: Call Server Action with metadata
    */
   const handleSubmit = async () => {
     if (!selectedVideo) return
@@ -179,78 +175,62 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
     setUploadProgress(0)
 
     try {
-      // Step 1: Request upload URL
-      const uploadResponse = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: selectedVideo.file.name,
-          contentType: selectedVideo.file.type,
-          fileSize: selectedVideo.file.size,
-        }),
-      })
+      // Generate unique video ID
+      const videoId = crypto.randomUUID()
 
-      if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json()
-        throw new Error(errorData.error || 'Failed to request upload URL')
+      // Step 1: Get pre-signed upload URL
+      console.log('🔑 Getting upload URL...')
+      setUploadProgress(5)
+
+      const uploadResult = await getUploadUrl(videoId, selectedVideo.file.name)
+
+      if (uploadResult.error || !uploadResult.uploadUrl) {
+        throw new Error(uploadResult.error || 'Failed to get upload URL')
       }
 
-      const uploadData = await uploadResponse.json()
-      const { uploadUrl, storagePath, token } = uploadData.data
+      const { uploadUrl, storagePath } = uploadResult
 
-      // Step 2: Upload file to Supabase Storage
-      await uploadVideoToStorage(selectedVideo.file, uploadUrl, token)
+      // Step 2: Upload to Supabase Storage
+      console.log('📤 Uploading video to storage...')
+      setUploadProgress(10)
 
-      // Step 2.5: Get public URL for the uploaded video
-      const publicUrlResponse = await fetch('/api/storage/public-url', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ storagePath }),
-      })
+      await uploadVideoToStorage(selectedVideo.file, uploadUrl)
 
-      if (publicUrlResponse.ok) {
-        const publicUrlData = await publicUrlResponse.json()
-        const publicUrl = publicUrlData.data.publicUrl
-        console.log('✅ Video uploaded successfully!')
-        console.log('📹 Storage Path:', storagePath)
-        console.log('🔗 Public URL:', publicUrl)
-        console.log('📊 File Size:', (selectedVideo.file.size / (1024 * 1024)).toFixed(2), 'MB')
-        console.log('⏱️ Duration:', selectedVideo.duration.toFixed(1), 'seconds')
-      }
+      console.log('✅ Video uploaded to storage')
+      setUploadProgress(50)
 
-      // Step 3: Submit to processing API
-      const processResponse = await fetch('/api/process', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          filename: selectedVideo.file.name,
-          fileSize: selectedVideo.file.size,
-          duration: selectedVideo.duration,
-          mimeType: selectedVideo.file.type,
-          storagePath,
+      // Step 3: Call Server Action with metadata
+      console.log('🔧 Creating processing job...')
+
+      const result = await createVideoJob({
+        videoId,
+        storagePath,
+        filename: selectedVideo.file.name,
+        fileSize: selectedVideo.file.size,
+        duration: selectedVideo.duration,
+        mimeType: selectedVideo.file.type,
+        options: {
           removeWatermark,
           enhanceQuality,
-          targetResolution,
-          targetFps,
-          addCustomWatermark,
           generateCaptions,
-          captionPlatforms: generateCaptions ? selectedPlatforms : undefined,
-          captionTone: generateCaptions ? captionTone : undefined,
-        }),
+          targetResolution,
+          targetAspectRatio: undefined, // TODO: Add aspect ratio support
+        },
       })
 
-      if (!processResponse.ok) {
-        const errorData = await processResponse.json()
-        throw new Error(errorData.error || 'Failed to start processing')
+      setUploadProgress(100)
+
+      if (result.error) {
+        throw new Error(result.error)
       }
 
-      const processData = await processResponse.json()
-      const { videoId } = processData.data
+      console.log('✅ Video job created successfully!')
+      console.log('📹 Video ID:', result.videoId)
 
-      // Step 4: Redirect to case page
-      router.push(`/case/${videoId}`)
+      // Redirect to job status page
+      router.push(`/jobs/${result.videoId}`)
     } catch (err) {
-      console.error('Upload/case error:', err)
+      console.error('Upload/processing error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
       setIsUploading(false)
       setUploadProgress(0)
