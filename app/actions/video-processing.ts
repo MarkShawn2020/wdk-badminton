@@ -306,12 +306,7 @@ export async function checkAndAdvanceJob(videoId: string): Promise<JobStatus> {
     throw new Error('Video not found')
   }
 
-  // If already completed or failed, return status
-  if (video.status === 'completed' || video.status === 'failed') {
-    return formatJobStatus(video, [])
-  }
-
-  // 3. Get pipeline steps
+  // 3. Get pipeline steps (always fetch for proper display)
   const { data: steps } = await supabase
     .from('processing_pipeline')
     .select('*')
@@ -320,6 +315,11 @@ export async function checkAndAdvanceJob(videoId: string): Promise<JobStatus> {
 
   if (!steps || steps.length === 0) {
     throw new Error('No pipeline steps found')
+  }
+
+  // If already completed or failed, return status with steps
+  if (video.status === 'completed' || video.status === 'failed') {
+    return formatJobStatus(video, steps as PipelineStep[])
   }
 
   // 4. Find current processing step
@@ -337,7 +337,17 @@ export async function checkAndAdvanceJob(videoId: string): Promise<JobStatus> {
     } else {
       // All steps completed
       await completeJob(videoId, video as Video, steps as PipelineStep[])
-      return formatJobStatus({ ...video, status: 'completed', progress: 100 }, steps)
+
+      // Refetch video to get updated processed_url
+      const { data: updatedVideo } = await supabase
+        .from('videos')
+        .select('*')
+        .eq('id', videoId)
+        .single()
+
+      console.log('✅ Job completed, final video URL:', updatedVideo?.processed_url)
+
+      return formatJobStatus(updatedVideo as Video, steps)
     }
   }
 
@@ -688,13 +698,20 @@ async function completeJob(videoId: string, video: Video, steps: PipelineStep[])
   const serviceSupabase = createServiceClient()
 
   // Get final output URL from last completed step
-  const lastStep = steps
-    .filter((s) => s.status === 'completed')
-    .sort((a, b) => b.step_order - a.step_order)[0]
+  const completedSteps = steps.filter((s) => s.status === 'completed')
+  console.log('📊 Completed steps:', completedSteps.length)
+
+  const lastStep = completedSteps.sort((a, b) => b.step_order - a.step_order)[0]
 
   const finalUrl = lastStep?.output_video_url || video.original_url
+  console.log('🔗 Final video URL:', finalUrl)
 
-  await serviceSupabase
+  if (!finalUrl) {
+    console.error('❌ No final video URL found!')
+    throw new Error('No final video URL available')
+  }
+
+  const { error: updateError } = await serviceSupabase
     .from('videos')
     .update({
       status: 'completed',
@@ -704,8 +721,13 @@ async function completeJob(videoId: string, video: Video, steps: PipelineStep[])
     } as never)
     .eq('id', videoId)
 
+  if (updateError) {
+    console.error('❌ Failed to update video as completed:', updateError)
+    throw updateError
+  }
+
   revalidatePath(`/jobs/${videoId}`)
-  console.log(`✅ Job ${videoId} completed!`)
+  console.log(`✅ Job ${videoId} completed with URL: ${finalUrl}`)
 }
 
 /**

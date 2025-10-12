@@ -83,12 +83,24 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
     const pollJobStatus = async () => {
       try {
         const status = await checkAndAdvanceJob(videoId)
+        console.log('📊 Job status update:', {
+          status: status.status,
+          progress: status.progress,
+          currentStep: status.currentStep,
+          hasFinalUrl: !!status.finalVideoUrl,
+          finalUrl: status.finalVideoUrl?.substring(0, 50) + '...',
+        })
+
         setJobStatus(status)
         setRetryCount(0)
         setError(null)
 
         // Stop polling if completed or failed
         if (status.status === 'completed' || status.status === 'failed') {
+          console.log('🎉 Job finished!', {
+            status: status.status,
+            finalVideoUrl: status.finalVideoUrl,
+          })
           setIsPolling(false)
         }
       } catch (err) {
@@ -178,40 +190,42 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
               <p className="mt-1 text-sm text-green-700">
                 Your video has been successfully processed.
               </p>
-              <div className="mt-4 flex gap-3">
-                {jobStatus.finalVideoUrl && (
-                  <>
-                    <a
-                      href={jobStatus.finalVideoUrl}
-                      download
-                      className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
+              {jobStatus.finalVideoUrl ? (
+                <div className="mt-4 flex gap-3">
+                  <a
+                    href={jobStatus.finalVideoUrl}
+                    download
+                    className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
+                  >
+                    <svg
+                      className="mr-2 h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
                     >
-                      <svg
-                        className="mr-2 h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                        />
-                      </svg>
-                      Download Video
-                    </a>
-                    <a
-                      href={jobStatus.finalVideoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50"
-                    >
-                      Preview
-                    </a>
-                  </>
-                )}
-              </div>
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    Download Video
+                  </a>
+                  <a
+                    href={jobStatus.finalVideoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50"
+                  >
+                    Preview
+                  </a>
+                </div>
+              ) : (
+                <div className="mt-4 text-sm text-green-700">
+                  <p>Finalizing video... Please refresh the page.</p>
+                </div>
+              )}
             </div>
           </div>
         </div>
