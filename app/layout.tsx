@@ -155,6 +155,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             `,
           }}
         />
+        {/* Organization Schema for Logo in Google Search */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'ReelVan',
+              url: siteMetadata.siteUrl,
+              logo: `${siteMetadata.siteUrl}/static/images/logo.png`,
+              description: siteMetadata.description,
+              email: siteMetadata.email,
+              sameAs: [siteMetadata.x, siteMetadata.youtube],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                email: siteMetadata.email,
+                contactType: 'Customer Support',
+              },
+            }),
+          }}
+        />
+        {/* SoftwareApplication Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
