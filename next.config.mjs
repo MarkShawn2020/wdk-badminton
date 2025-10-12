@@ -12,8 +12,8 @@ const withMDX = createMDX({
 
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
-  default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;
+  default-src 'self' https://*.clarity.ms https://c.bing.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://c.bing.com;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
   media-src 'self' blob: data: *.s3.amazonaws.com *.supabase.co *.cloudfront.net;
