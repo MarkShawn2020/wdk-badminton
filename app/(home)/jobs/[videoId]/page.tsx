@@ -11,10 +11,11 @@ import { notFound, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 interface Props {
-  params: { videoId: string }
+  params: Promise<{ videoId: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { videoId } = await params
   return {
     title: 'Processing Video | ReelVan',
     description: 'Your video is being processed. Watch the progress in real-time.',
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function JobPage({ params }: Props) {
+  const { videoId } = await params
   const supabase = await createServerClient()
 
   // Authenticate
@@ -30,14 +32,14 @@ export default async function JobPage({ params }: Props) {
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login?redirect=/jobs/' + params.videoId)
+    redirect('/login?redirect=/jobs/' + videoId)
   }
 
   // Fetch video and pipeline steps
   const { data: video, error: videoError } = await supabase
     .from('videos')
     .select('*')
-    .eq('id', params.videoId)
+    .eq('id', videoId)
     .eq('user_id', user.id)
     .single()
 
@@ -48,12 +50,12 @@ export default async function JobPage({ params }: Props) {
   const { data: steps } = await supabase
     .from('processing_pipeline')
     .select('*')
-    .eq('video_id', params.videoId)
+    .eq('video_id', videoId)
     .order('step_order', { ascending: true })
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <JobStatusClient videoId={params.videoId} initialVideo={video} initialSteps={steps || []} />
+      <JobStatusClient videoId={videoId} initialVideo={video} initialSteps={steps || []} />
     </div>
   )
 }

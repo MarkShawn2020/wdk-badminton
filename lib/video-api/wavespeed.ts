@@ -77,6 +77,8 @@ export class WaveSpeedClient {
   async createPrediction(videoUrl: string): Promise<PredictionResponse> {
     const url = `${this.baseUrl}/api/v3/wavespeed-ai/video-watermark-remover`
 
+    console.log('📡 WaveSpeed POST create prediction:', { videoUrl })
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -88,13 +90,16 @@ export class WaveSpeedClient {
 
     if (!response.ok) {
       const errorText = await response.text()
+      console.error('❌ WaveSpeed HTTP error:', response.status, errorText)
       throw new Error(`WaveSpeed API error (${response.status}): ${errorText}`)
     }
 
     const responseBody = await response.json()
+    console.log('📡 WaveSpeed create response:', JSON.stringify(responseBody, null, 2))
 
     // WaveSpeed API wraps response in { code, message, data } envelope
     if (responseBody.code !== 200) {
+      console.error('❌ WaveSpeed API error code:', responseBody.code, responseBody.message)
       throw new Error(`WaveSpeed API error: ${responseBody.message || 'Unknown error'}`)
     }
 
@@ -102,10 +107,14 @@ export class WaveSpeedClient {
     const data = responseBody.data
 
     if (!data) {
+      console.error('❌ WaveSpeed response missing data field')
       throw new Error('WaveSpeed API response missing data field')
     }
 
-    console.log('✅ WaveSpeed prediction created:', data.id)
+    console.log('✅ WaveSpeed prediction created:', {
+      id: data.id || data.request_id,
+      status: data.status,
+    })
 
     return PredictionResponseSchema.parse(data)
   }
@@ -118,6 +127,8 @@ export class WaveSpeedClient {
   async getPredictionResult(requestId: string): Promise<PredictionResponse> {
     const url = `${this.baseUrl}/api/v3/predictions/${requestId}/result`
 
+    console.log('📡 WaveSpeed GET result:', { requestId, url })
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -127,13 +138,16 @@ export class WaveSpeedClient {
 
     if (!response.ok) {
       const errorText = await response.text()
+      console.error('❌ WaveSpeed HTTP error:', response.status, errorText)
       throw new Error(`WaveSpeed API error (${response.status}): ${errorText}`)
     }
 
     const responseBody = await response.json()
+    console.log('📡 WaveSpeed response body:', JSON.stringify(responseBody, null, 2))
 
     // WaveSpeed API wraps response in { code, message, data } envelope
     if (responseBody.code !== 200) {
+      console.error('❌ WaveSpeed API error code:', responseBody.code, responseBody.message)
       throw new Error(`WaveSpeed API error: ${responseBody.message || 'Unknown error'}`)
     }
 
@@ -141,8 +155,15 @@ export class WaveSpeedClient {
     const data = responseBody.data
 
     if (!data) {
+      console.error('❌ WaveSpeed response missing data field')
       throw new Error('WaveSpeed API response missing data field')
     }
+
+    console.log('✅ WaveSpeed data parsed:', {
+      id: data.id || data.request_id,
+      status: data.status,
+      has_outputs: !!data.outputs && data.outputs.length > 0,
+    })
 
     return PredictionResponseSchema.parse(data)
   }

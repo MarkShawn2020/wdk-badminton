@@ -90,20 +90,35 @@ export async function createVideoJob(input: {
   mimeType: string
   options: ProcessingOptions
 }) {
+  console.log('🔧 createVideoJob called with:', {
+    videoId: input.videoId,
+    storagePath: input.storagePath,
+    filename: input.filename,
+    fileSize: input.fileSize,
+    duration: input.duration,
+    mimeType: input.mimeType,
+    options: input.options,
+  })
+
   try {
     const supabase = await createServerClient()
 
     // 1. Authenticate
+    console.log('🔐 Authenticating user...')
     const {
       data: { user },
       error: authError,
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
+      console.error('❌ Authentication failed:', authError)
       return { error: 'Unauthorized' }
     }
 
+    console.log('✅ User authenticated:', user.id)
+
     // 2. Validate input
+    console.log('📋 Validating input...')
     const validated = createJobSchema.parse({
       filename: input.filename,
       fileSize: input.fileSize,
@@ -113,41 +128,73 @@ export async function createVideoJob(input: {
     })
 
     const options = validated.options
+    console.log('✅ Input validated')
 
     // 3. Calculate cost
     const estimatedCost = calculatePipelineCost(validated.duration, options)
+    console.log('💰 Estimated cost:', estimatedCost, 'credits')
 
     // 4. Check credits
+    console.log('💳 Checking user credits...')
     const { data: credits } = await supabase
       .from('user_credits')
       .select('balance')
       .eq('user_id', user.id)
       .single()
 
+    console.log('💳 User balance:', credits?.balance, 'credits')
+
     if (!credits || credits.balance < estimatedCost) {
+      console.error('❌ Insufficient credits')
       return { error: `Insufficient credits. Need ${estimatedCost}, have ${credits?.balance || 0}` }
     }
 
     // 5. Verify video exists in storage
+    console.log('📦 Verifying video in storage...')
+    const storageFolderPath = input.storagePath.split('/').slice(0, -1).join('/')
+    console.log('   Folder path:', storageFolderPath)
+
     const { data: fileList, error: listError } = await supabase.storage
       .from('videos')
-      .list(input.storagePath.split('/').slice(0, -1).join('/'))
+      .list(storageFolderPath)
 
-    if (listError || !fileList) {
+    if (listError) {
+      console.error('❌ Storage list error:', listError)
       return { error: 'Video file not found in storage' }
     }
 
-    // 6. Get public URL
-    const { data: urlData } = supabase.storage.from('videos').getPublicUrl(input.storagePath)
+    console.log(
+      '📦 Files in storage:',
+      fileList?.map((f) => f.name)
+    )
+
+    if (!fileList || fileList.length === 0) {
+      console.error('❌ No files found in storage')
+      return { error: 'Video file not found in storage' }
+    }
+
+    // 6. Get signed URL for external API access (bucket is private)
+    console.log('🔗 Creating signed URL for external API access...')
+    const { data: signedData, error: signedError } = await supabase.storage
+      .from('videos')
+      .createSignedUrl(input.storagePath, 3600 * 24) // Valid for 24 hours
+
+    if (signedError || !signedData) {
+      console.error('❌ Failed to create signed URL:', signedError)
+      return { error: 'Failed to create signed URL for video' }
+    }
+
+    console.log('🔗 Signed URL created, length:', signedData.signedUrl.length)
 
     const serviceSupabase = createServiceClient()
 
     // 7. Create video record FIRST (required for foreign key constraint)
+    console.log('💾 Creating video record...')
     const videoData: VideoInsert = {
       id: input.videoId,
       user_id: user.id,
       original_filename: validated.filename,
-      original_url: urlData.publicUrl,
+      original_url: signedData.signedUrl,
       original_storage_path: input.storagePath,
       duration_seconds: validated.duration,
       file_size_bytes: validated.fileSize,
@@ -164,13 +211,17 @@ export async function createVideoJob(input: {
     const { error: videoError } = await serviceSupabase.from('videos').insert(videoData as never)
 
     if (videoError) {
-      console.error('Failed to create video record:', videoError)
+      console.error('❌ Failed to create video record:', videoError)
       // Cleanup uploaded file
+      console.log('🗑️  Cleaning up uploaded file...')
       await supabase.storage.from('videos').remove([input.storagePath])
       return { error: 'Failed to create video record' }
     }
 
+    console.log('✅ Video record created')
+
     // 8. Deduct credits AFTER video record exists (for foreign key)
+    console.log('💳 Deducting credits...')
     const { data: deductResult, error: deductError } = await serviceSupabase.rpc('deduct_credits', {
       p_user_id: user.id,
       p_video_id: input.videoId,
@@ -178,31 +229,36 @@ export async function createVideoJob(input: {
     })
 
     if (deductError) {
-      console.error('Deduct credits error:', {
+      console.error('❌ Deduct credits error:', {
         error: deductError,
         userId: user.id,
         videoId: input.videoId,
         amount: estimatedCost,
       })
       // Cleanup video record and uploaded file
+      console.log('🗑️  Cleaning up video record and file...')
       await serviceSupabase.from('videos').delete().eq('id', input.videoId)
       await supabase.storage.from('videos').remove([input.storagePath])
       return { error: `Failed to deduct credits: ${deductError.message}` }
     }
 
-    console.log('Credits deducted successfully:', deductResult)
+    console.log('✅ Credits deducted successfully:', deductResult)
 
     // 9. Create pipeline steps
-    const steps = buildPipelineSteps(input.videoId, urlData.publicUrl, options)
+    console.log('🔧 Creating pipeline steps...')
+    const steps = buildPipelineSteps(input.videoId, signedData.signedUrl, options)
+    console.log('🔧 Pipeline steps:', steps.length)
 
     const { error: stepsError } = await serviceSupabase
       .from('processing_pipeline')
       .insert(steps as never)
 
     if (stepsError) {
-      console.error('Failed to create pipeline steps:', stepsError)
+      console.error('❌ Failed to create pipeline steps:', stepsError)
       return { error: 'Failed to create pipeline' }
     }
+
+    console.log('✅ Pipeline steps created')
 
     revalidatePath('/dashboard')
 
@@ -529,7 +585,16 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
   switch (step.provider) {
     case 'wavespeed': {
       const wavespeed = getWaveSpeedClient()
+      console.log('🔍 Checking WaveSpeed job:', step.external_job_id)
+
       const result = await wavespeed.getPredictionResult(step.external_job_id)
+
+      console.log('🔍 WaveSpeed result:', {
+        id: result.id,
+        status: result.status,
+        outputs: result.outputs,
+        has_nsfw_contents: result.has_nsfw_contents,
+      })
 
       // Update progress
       const progressMap: Record<string, number> = {
@@ -545,11 +610,18 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
         .eq('id', step.id)
 
       if (result.status === 'completed') {
+        if (!result.outputs || result.outputs.length === 0) {
+          console.error('❌ WaveSpeed completed but no outputs')
+          throw new Error('WaveSpeed completed but no output video URL')
+        }
+
+        console.log('✅ WaveSpeed completed, output URL:', result.outputs[0])
+
         // Save output URL
         await serviceSupabase
           .from('processing_pipeline')
           .update({
-            output_video_url: result.outputs![0],
+            output_video_url: result.outputs[0],
           } as never)
           .eq('id', step.id)
 
@@ -557,9 +629,15 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
       }
 
       if (result.status === 'failed') {
-        throw new Error('WaveSpeed processing failed')
+        console.error('❌ WaveSpeed processing failed:', {
+          id: result.id,
+          status: result.status,
+          full_result: JSON.stringify(result, null, 2),
+        })
+        throw new Error('WaveSpeed processing failed - check if video URL is accessible')
       }
 
+      console.log('⏳ WaveSpeed still processing...')
       return false
     }
 

@@ -117,6 +117,12 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
    * Upload video to Supabase Storage using pre-signed URL
    */
   const uploadVideoToStorage = async (file: File, uploadUrl: string): Promise<void> => {
+    console.log('📤 Starting XHR upload...', {
+      fileSize: file.size,
+      fileName: file.name,
+      mimeType: file.type,
+    })
+
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest()
 
@@ -124,24 +130,40 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
           const progress = Math.round((e.loaded / e.total) * 40) + 10 // 10-50%
+          console.log(`📊 Upload progress: ${e.loaded}/${e.total} bytes (${progress}%)`)
           setUploadProgress(progress)
         }
       })
 
       xhr.addEventListener('load', () => {
+        console.log('📥 XHR load event', {
+          status: xhr.status,
+          statusText: xhr.statusText,
+          responseText: xhr.responseText.substring(0, 200),
+        })
+
         if (xhr.status >= 200 && xhr.status < 300) {
+          console.log('✅ Upload successful')
           resolve()
         } else {
-          reject(new Error('Upload failed'))
+          console.error('❌ Upload failed with status:', xhr.status)
+          reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`))
         }
       })
 
-      xhr.addEventListener('error', () => {
+      xhr.addEventListener('error', (e) => {
+        console.error('❌ XHR error event:', e)
         reject(new Error('Network error during upload'))
+      })
+
+      xhr.addEventListener('timeout', () => {
+        console.error('❌ XHR timeout')
+        reject(new Error('Upload timeout'))
       })
 
       xhr.open('PUT', uploadUrl)
       xhr.setRequestHeader('Content-Type', file.type)
+      console.log('🚀 Sending file via XHR...')
       xhr.send(file)
     })
   }
@@ -184,6 +206,12 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
       const uploadResult = await getUploadUrl(videoId, selectedVideo.file.name)
 
+      console.log('🔑 Upload URL result:', {
+        success: !!uploadResult.uploadUrl,
+        error: uploadResult.error,
+        hasStoragePath: !!uploadResult.storagePath,
+      })
+
       if (uploadResult.error || !uploadResult.uploadUrl) {
         throw new Error(uploadResult.error || 'Failed to get upload URL')
       }
@@ -192,6 +220,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
       // Step 2: Upload to Supabase Storage
       console.log('📤 Uploading video to storage...')
+      console.log('   Storage path:', storagePath)
       setUploadProgress(10)
 
       await uploadVideoToStorage(selectedVideo.file, uploadUrl)
@@ -201,6 +230,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
       // Step 3: Call Server Action with metadata
       console.log('🔧 Creating processing job...')
+      console.log('   Video ID:', videoId)
+      console.log('   Storage path:', storagePath)
+      console.log('   Duration:', selectedVideo.duration)
+      console.log('   File size:', selectedVideo.file.size)
 
       const result = await createVideoJob({
         videoId,
@@ -220,7 +253,10 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
 
       setUploadProgress(100)
 
+      console.log('📦 Server Action result:', result)
+
       if (result.error) {
+        console.error('❌ Server Action returned error:', result.error)
         throw new Error(result.error)
       }
 
