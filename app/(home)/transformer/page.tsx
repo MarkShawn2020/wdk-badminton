@@ -7,6 +7,7 @@
 
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import { VideoUploadFlow } from '@/components/video/VideoUploadFlow'
+import { ClientOnly } from '@/components/utils/ClientOnly'
 import type { Metadata } from 'next'
 import type { Database } from '@/types/database'
 
@@ -93,5 +94,25 @@ export default async function TransformerPage() {
     }
   }
 
-  return <VideoUploadFlow userCredits={userCredits} />
+  return (
+    <ClientOnly
+      fallback={
+        <section className="pb-24">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mx-auto max-w-6xl">
+              <div className="border-border bg-card rounded-2xl border p-6 shadow-sm sm:p-8">
+                <div className="flex animate-pulse flex-col gap-4">
+                  <div className="h-10 w-48 rounded bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-64 w-full rounded-lg bg-gray-200 dark:bg-gray-700" />
+                  <div className="h-12 w-full rounded-lg bg-gray-200 dark:bg-gray-700" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      }
+    >
+      <VideoUploadFlow userCredits={userCredits} />
+    </ClientOnly>
+  )
 }

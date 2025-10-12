@@ -55,10 +55,9 @@ export function VideoUploader({
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // Jotai atoms
+  // Jotai atoms - videoUrl is persisted in real-time as user types
   const [videoUrl, setVideoUrl] = useAtom(videoUrlAtom)
   const [inputSource, setInputSource] = useAtom(videoInputSourceAtom)
-  const [urlInput, setUrlInput] = useState(videoUrl)
 
   /**
    * Get video duration from file
@@ -203,7 +202,7 @@ export function VideoUploader({
           filename,
         }
 
-        setVideoUrl(url)
+        // Note: URL is already saved to videoUrlAtom during typing
         setSelectedVideo(videoFile)
         onVideoSelected(videoFile)
       } catch (err) {
@@ -214,19 +213,19 @@ export function VideoUploader({
         setIsAnalyzing(false)
       }
     },
-    [maxDuration, getVideoDurationFromUrl, setVideoUrl, onVideoSelected]
+    [maxDuration, getVideoDurationFromUrl, onVideoSelected]
   )
 
   /**
    * Handle URL submit
    */
   const handleUrlSubmit = useCallback(() => {
-    if (!urlInput.trim()) {
+    if (!videoUrl.trim()) {
       setError('Please enter a video URL')
       return
     }
-    processUrl(urlInput.trim())
-  }, [urlInput, processUrl])
+    processUrl(videoUrl.trim())
+  }, [videoUrl, processUrl])
 
   /**
    * Handle file drop
@@ -412,8 +411,8 @@ export function VideoUploader({
               <div>
                 <input
                   type="url"
-                  value={urlInput}
-                  onChange={(e) => setUrlInput(e.target.value)}
+                  value={videoUrl}
+                  onChange={(e) => setVideoUrl(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
                       handleUrlSubmit()
@@ -428,7 +427,7 @@ export function VideoUploader({
               <Button
                 type="button"
                 onClick={handleUrlSubmit}
-                disabled={isAnalyzing || !urlInput.trim()}
+                disabled={isAnalyzing || !videoUrl.trim()}
                 className="w-full"
                 size="lg"
               >
