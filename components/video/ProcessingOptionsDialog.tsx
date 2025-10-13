@@ -35,6 +35,7 @@ import {
   generateCaptionsAtom,
   selectedPlatformsAtom,
   captionToneAtom,
+  type CaptionTone,
 } from '@/lib/store/video-atoms'
 
 interface ProcessingOptionsDialogProps {
@@ -175,7 +176,11 @@ export function ProcessingOptionsDialog({
                 <Label htmlFor="caption-tone" className="mb-2 text-sm font-medium">
                   Tone & Style
                 </Label>
-                <Select value={captionTone} onValueChange={setCaptionTone} disabled={disabled}>
+                <Select
+                  value={captionTone}
+                  onValueChange={(value) => setCaptionTone(value as CaptionTone)}
+                  disabled={disabled}
+                >
                   <SelectTrigger id="caption-tone">
                     <SelectValue />
                   </SelectTrigger>

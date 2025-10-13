@@ -174,7 +174,7 @@ export function VideoUploader({
         // Validate URL format
         const validationResult = videoUrlSchema.safeParse(url)
         if (!validationResult.success) {
-          throw new Error(validationResult.error.errors[0]?.message || 'Invalid URL format')
+          throw new Error(validationResult.error.issues[0]?.message || 'Invalid URL format')
         }
 
         // Get video duration
