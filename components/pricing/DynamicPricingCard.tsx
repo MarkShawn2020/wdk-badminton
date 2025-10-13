@@ -68,7 +68,7 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
           planName: tier.name,
           type: tier.type,
           subscriptionInterval: tier.type === 'subscription' ? interval : undefined,
-          credits: tier.type === 'one-time' ? selectedOption.credits : undefined,
+          credits: tier.type === 'payg' ? selectedOption.credits : undefined,
           monthlyCredits:
             tier.type === 'subscription' && interval === 'month'
               ? selectedOption.credits
@@ -99,13 +99,11 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
 
   // Get available options based on tier and interval
   const getAvailableOptions = (): CreditOption[] => {
-    if (tier.type === 'one-time') {
-      return tier.creditOptions?.oneTime || []
+    if (tier.type === 'payg') {
+      return tier.options || []
     }
     if (tier.type === 'subscription') {
-      return interval === 'year'
-        ? tier.creditOptions?.yearly || []
-        : tier.creditOptions?.monthly || []
+      return interval === 'year' ? tier.yearlyOptions || [] : tier.monthlyOptions || []
     }
     return []
   }
@@ -232,9 +230,11 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
 
                     {/* Right: Price + Discount */}
                     <div className="flex items-center gap-1.5">
-                      <span className={`text-[10px] line-through opacity-50 ${subtextColor}`}>
-                        {option.basePriceDisplay}
-                      </span>
+                      {option.originalPrice && option.originalPrice !== option.price && (
+                        <span className={`text-[10px] line-through opacity-50 ${subtextColor}`}>
+                          {option.originalPriceDisplay}
+                        </span>
+                      )}
                       <span className={`font-bold ${textColor}`}>
                         {option.priceDisplay}
                         {tier.type === 'subscription' && (
@@ -243,7 +243,7 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
                           </span>
                         )}
                       </span>
-                      {option.discount > 0 && (
+                      {option.discount && option.discount > 0 && (
                         <span
                           className={`flex-shrink-0 rounded px-1.5 py-0.5 text-[10px] leading-none font-semibold ${
                             tier.popular
@@ -251,7 +251,7 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
                               : 'bg-primary-600 text-white'
                           }`}
                         >
-                          -{option.discount}%
+                          -{Math.round(option.discount)}%
                         </span>
                       )}
                     </div>

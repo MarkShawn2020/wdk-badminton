@@ -21,7 +21,7 @@ export function PricingPreview() {
             Simple, Transparent Pricing
           </p>
           <p className="text-muted-foreground mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Choose your credits, pick your plan. Save up to 66% with yearly subscription.
+            Pay as you go or subscribe. Save up to 93% with subscription plans.
           </p>
         </div>
 
@@ -39,20 +39,21 @@ export function PricingPreview() {
         {/* Pricing Info */}
         <div className="text-muted-foreground mx-auto mt-12 max-w-3xl text-center">
           <p className="text-sm">
-            All plans include the same core features. Start with 100 free credits on signup.
+            All plans include watermark removal and quality enhancement. Start with 15 free credits
+            on signup.
           </p>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-6 text-sm">
             <div className="flex items-center gap-2">
-              <span className="text-primary-600 text-lg">💎</span>
-              <span className="font-medium">1 credit = 1 second of video</span>
+              <span className="text-primary-600 text-lg">✨</span>
+              <span className="font-medium">Full Bundle: 30 credits per 10s video</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-primary-600 text-lg">⚡</span>
-              <span className="font-medium">Starting from $3.50/month</span>
+              <span className="font-medium">Starting from $9.99/month</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-primary-600 text-lg">🎯</span>
-              <span className="font-medium">Yearly: Get 2 months free</span>
+              <span className="font-medium">Yearly: Pay 10 months, get 12</span>
             </div>
           </div>
         </div>

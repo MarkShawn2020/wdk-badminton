@@ -68,8 +68,8 @@ async function initUserCredits() {
       // Insert user_credits record
       const { error: insertError } = await supabase.from('user_credits').insert({
         user_id: user.id,
-        balance: 100,
-        total_earned: 100,
+        balance: 15,
+        total_earned: 15,
         tier: 'free',
       })
 
@@ -82,9 +82,9 @@ async function initUserCredits() {
       const { error: txError } = await supabase.from('credit_transactions').insert({
         user_id: user.id,
         type: 'signup_bonus',
-        amount: 100,
-        balance_after: 100,
-        description: 'Welcome bonus - 100 free credits (retroactive)',
+        amount: 15,
+        balance_after: 15,
+        description: 'Welcome bonus - 15 free credits (enough for 5s Full Bundle video)',
       })
 
       if (txError) {

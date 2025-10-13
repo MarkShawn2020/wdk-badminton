@@ -25,9 +25,9 @@ function getStripe() {
  */
 const checkoutSchema = z.object({
   planName: z.string(),
-  type: z.enum(['one-time', 'subscription', 'contact']),
+  type: z.enum(['payg', 'subscription', 'enterprise']),
   subscriptionInterval: z.enum(['month', 'year']).optional(), // For subscriptions
-  credits: z.number().int().positive().optional(), // For one-time purchases
+  credits: z.number().int().positive().optional(), // For PAYG purchases
   monthlyCredits: z.number().int().positive().optional(), // For monthly subscriptions
   yearlyCredits: z.number().int().positive().optional(), // For yearly subscriptions
   price: z.number().int().positive(), // Price in cents
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
                 ? interval === 'year'
                   ? `${credits.toLocaleString()} credits per month (billed yearly)`
                   : `${credits.toLocaleString()} credits per month`
-                : `${credits.toLocaleString()} one-time credits`,
+                : `${credits.toLocaleString()} PAYG credits (never expire)`,
               images: [`${process.env.NEXT_PUBLIC_APP_URL}/static/images/logo.svg`],
             },
             unit_amount: validated.price, // Price in cents from frontend

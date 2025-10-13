@@ -163,11 +163,11 @@ CREATE OR REPLACE FUNCTION initialize_user_credits()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO user_credits (user_id, balance, total_earned, tier)
-  VALUES (NEW.id, 100, 100, 'free'); -- 100 free credits on signup ($1 worth)
+  VALUES (NEW.id, 15, 15, 'free'); -- 15 free credits on signup (enough for 5s Full Bundle video)
 
   -- Record signup bonus transaction
   INSERT INTO credit_transactions (user_id, type, amount, balance_after, description)
-  VALUES (NEW.id, 'signup_bonus', 100, 100, 'Welcome bonus - 100 free credits');
+  VALUES (NEW.id, 'signup_bonus', 15, 15, 'Welcome bonus - 15 free credits (enough for 5s Full Bundle video)');
 
   RETURN NEW;
 END;
