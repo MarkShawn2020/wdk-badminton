@@ -70,6 +70,38 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
   const [isPolling, setIsPolling] = useState(true)
   const [retryCount, setRetryCount] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [isDownloading, setIsDownloading] = useState(false)
+
+  const handleDownload = async () => {
+    if (!jobStatus.finalVideoUrl) return
+
+    try {
+      setIsDownloading(true)
+
+      // Fetch the video as a blob
+      const response = await fetch(jobStatus.finalVideoUrl)
+      if (!response.ok) throw new Error('Download failed')
+
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+
+      // Create temporary link and trigger download
+      const a = document.createElement('a')
+      a.href = url
+      a.download = initialVideo.original_filename || 'video.mp4'
+      document.body.appendChild(a)
+      a.click()
+
+      // Cleanup
+      window.URL.revokeObjectURL(url)
+      document.body.removeChild(a)
+    } catch (err) {
+      console.error('Download error:', err)
+      setError('Failed to download video. Please try again.')
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   useEffect(() => {
     // Stop polling if job is completed or failed
@@ -129,12 +161,6 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
     <div className="mx-auto max-w-4xl px-4">
       {/* Header */}
       <div className="mb-8">
-        <Link
-          href="/dashboard"
-          className="mb-4 inline-block text-sm text-gray-600 hover:text-gray-900"
-        >
-          ← Back to Dashboard
-        </Link>
         <h1 className="text-3xl font-bold text-gray-900">Processing Video</h1>
         <p className="mt-2 text-gray-600">{initialVideo.original_filename}</p>
       </div>
@@ -192,10 +218,52 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
               </p>
               {jobStatus.finalVideoUrl ? (
                 <div className="mt-4 flex gap-3">
-                  <a
-                    href={jobStatus.finalVideoUrl}
-                    download
-                    className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700"
+                  <button
+                    onClick={handleDownload}
+                    disabled={isDownloading}
+                    className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isDownloading ? (
+                      <>
+                        <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Downloading...
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="mr-2 h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                          />
+                        </svg>
+                        Download Video
+                      </>
+                    )}
+                  </button>
+                  <Link
+                    href="/transformer"
+                    className="inline-flex items-center rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50"
                   >
                     <svg
                       className="mr-2 h-4 w-4"
@@ -207,19 +275,11 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                        d="M12 4v16m8-8H4"
                       />
                     </svg>
-                    Download Video
-                  </a>
-                  <a
-                    href={jobStatus.finalVideoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center rounded-lg border border-green-300 bg-white px-4 py-2 text-sm font-medium text-green-700 transition hover:bg-green-50"
-                  >
-                    Preview
-                  </a>
+                    再处理一个
+                  </Link>
                 </div>
               ) : (
                 <div className="mt-4 text-sm text-green-700">
