@@ -9,22 +9,25 @@ export default function Home({ posts }) {
       <section className="relative overflow-hidden pt-16 pb-20 sm:pb-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-6xl">
+            <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
               Turn Your Video Instantly Shareable
             </h1>
-            <p className="text-muted-foreground mt-6 text-lg leading-8">
+            <p className="text-muted-foreground mt-6 text-base leading-7 sm:text-lg sm:leading-8">
               Transform AI videos from Sora, Veo, Kling & JiMeng into ready-to-post social content.
               Remove watermarks, enhance quality, add custom branding, and get AI-generated
               captions—all in minutes.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-x-6">
               <Link
                 href="/transformer"
-                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 w-full rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
               >
                 Get Started
               </Link>
-              <Link href="#features" className="text-foreground text-base leading-7 font-semibold">
+              <Link
+                href="#features"
+                className="text-foreground w-full text-center text-base leading-7 font-semibold sm:w-auto"
+              >
                 Learn more <span aria-hidden="true">→</span>
               </Link>
             </div>
@@ -33,17 +36,19 @@ export default function Home({ posts }) {
           {/* How It Works - Visual Process */}
           <div className="mt-16 sm:mt-24">
             <div className="mx-auto max-w-5xl">
-              <div className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-12 lg:max-w-none lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-y-12">
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-6">
-                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
-                      <span className="text-3xl font-bold text-white">1</span>
+                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
+                      <span className="text-2xl font-bold text-white sm:text-3xl">1</span>
                       <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
                     </div>
                     <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
                   </div>
                   <div>
-                    <p className="text-foreground text-lg font-semibold">Upload Video</p>
+                    <p className="text-foreground text-base font-semibold sm:text-lg">
+                      Upload Video
+                    </p>
                     <p className="text-muted-foreground mt-2 text-sm">
                       Drag and drop your AI video
                     </p>
@@ -51,39 +56,41 @@ export default function Home({ posts }) {
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-6">
-                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
-                      <span className="text-3xl font-bold text-white">2</span>
+                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
+                      <span className="text-2xl font-bold text-white sm:text-3xl">2</span>
                       <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
                     </div>
                     <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
                   </div>
                   <div>
-                    <p className="text-foreground text-lg font-semibold">Select Features</p>
+                    <p className="text-foreground text-base font-semibold sm:text-lg">
+                      Select Features
+                    </p>
                     <p className="text-muted-foreground mt-2 text-sm">Choose enhancements</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-6">
-                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
-                      <span className="text-3xl font-bold text-white">3</span>
+                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
+                      <span className="text-2xl font-bold text-white sm:text-3xl">3</span>
                       <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
                     </div>
                     <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
                   </div>
                   <div>
-                    <p className="text-foreground text-lg font-semibold">We Process</p>
+                    <p className="text-foreground text-base font-semibold sm:text-lg">We Process</p>
                     <p className="text-muted-foreground mt-2 text-sm">AI works in 2-5 minutes</p>
                   </div>
                 </div>
                 <div className="flex flex-col items-center text-center">
                   <div className="relative mb-6">
-                    <div className="bg-primary-600 relative flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
-                      <span className="text-3xl font-bold text-white">4</span>
+                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
+                      <span className="text-2xl font-bold text-white sm:text-3xl">4</span>
                       <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
                     </div>
                   </div>
                   <div>
-                    <p className="text-foreground text-lg font-semibold">Download</p>
+                    <p className="text-foreground text-base font-semibold sm:text-lg">Download</p>
                     <p className="text-muted-foreground mt-2 text-sm">Get enhanced video</p>
                   </div>
                 </div>
@@ -115,7 +122,7 @@ export default function Home({ posts }) {
             </p>
           </div>
           <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-3">
+            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:max-w-none lg:grid-cols-3">
               <div className="flex flex-col">
                 <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
                   <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
@@ -225,7 +232,7 @@ export default function Home({ posts }) {
               Join thousands enhancing their AI videos
             </p>
           </div>
-          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:mt-16 sm:gap-8 xl:mx-0 xl:max-w-none xl:grid-cols-3">
+          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:mt-16 sm:gap-8 md:grid-cols-2 xl:mx-0 xl:max-w-none xl:grid-cols-3">
             <div className="bg-card flex flex-col rounded-2xl p-6 sm:p-8">
               <div className="flex items-center gap-x-3 sm:gap-x-4">
                 <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
@@ -290,14 +297,17 @@ export default function Home({ posts }) {
               Start with our free tier. No credit card required. Process your first video in under 5
               minutes.
             </p>
-            <div className="mt-10 flex items-center justify-center gap-x-6">
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-x-6">
               <Link
                 href="/signup"
-                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 w-full rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
               >
                 Get started for free
               </Link>
-              <Link href="/pricing" className="text-foreground text-base leading-7 font-semibold">
+              <Link
+                href="/pricing"
+                className="text-foreground w-full text-center text-base leading-7 font-semibold sm:w-auto"
+              >
                 View pricing <span aria-hidden="true">→</span>
               </Link>
             </div>
