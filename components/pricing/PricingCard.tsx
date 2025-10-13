@@ -30,6 +30,14 @@ interface PricingCardProps {
     popular?: boolean
     ctaText: string
     isContactSales?: boolean
+    // Flexible content fields (can be customized from data layer)
+    regularPriceDisplay?: string // For strikethrough price display
+    savingsText?: string // Custom savings text (e.g., "Save 50% vs Basic")
+    popularBadgeText?: string // Custom "Most Popular" badge text
+    discountBadgeText?: string // Custom discount badge (e.g., "Save 30%", "Up to 30%")
+    tierBadge?: string // Custom tier badge (e.g., "Enterprise", "Pro")
+    emptyStateText?: string // Text for contact/enterprise cards
+    signupCtaText?: string // CTA text for non-logged-in users
   }
 }
 
@@ -93,10 +101,10 @@ export function PricingCard({ tier }: PricingCardProps) {
   }
 
   const cardClasses = tier.isContactSales
-    ? 'bg-muted/30 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-lg min-w-[320px]'
+    ? 'bg-muted/30 relative flex flex-col h-full rounded-2xl p-4 xl:p-5 ring-1 ring-border transition-all duration-300 hover:shadow-lg min-w-[320px]'
     : tier.popular
-      ? 'bg-primary-600 relative flex flex-col h-full rounded-2xl p-5 xl:p-6 shadow-2xl ring-1 ring-border/10 transition-all duration-300 hover:shadow-3xl min-w-[320px]'
-      : 'relative flex flex-col h-full rounded-2xl bg-card p-5 xl:p-6 ring-1 ring-border transition-all duration-300 hover:shadow-xl min-w-[320px]'
+      ? 'bg-primary-600 relative flex flex-col h-full rounded-2xl p-4 xl:p-5 shadow-2xl ring-1 ring-border/10 transition-all duration-300 hover:shadow-3xl min-w-[320px]'
+      : 'relative flex flex-col h-full rounded-2xl bg-card p-4 xl:p-5 ring-1 ring-border transition-all duration-300 hover:shadow-xl min-w-[320px]'
 
   const textColor = tier.popular ? 'text-primary-foreground' : 'text-foreground'
   const subtextColor = tier.popular ? 'text-primary-foreground/90' : 'text-muted-foreground'
@@ -105,17 +113,17 @@ export function PricingCard({ tier }: PricingCardProps) {
   return (
     <div className={cardClasses}>
       {/* Badges Section - contained within card */}
-      <div className="mb-4 flex min-h-[2rem] items-center justify-between gap-2">
+      <div className="mb-3 flex min-h-[1.75rem] items-center justify-between gap-2">
         {tier.popular && (
-          <div className="bg-primary-700 text-primary-foreground inline-block rounded-full px-3.5 py-1.5 text-sm leading-tight font-semibold">
-            Most Popular
+          <div className="bg-primary-700 text-primary-foreground inline-block rounded-full px-3 py-1 text-xs leading-tight font-semibold">
+            {tier.popularBadgeText || 'Most Popular'}
           </div>
         )}
         {tier.discount > 0 && (
           <div
-            className={`${tier.popular ? 'bg-primary-800' : tier.isContactSales ? 'bg-muted text-muted-foreground' : 'bg-primary-600'} ml-auto inline-block rounded-full px-3.5 py-1.5 text-sm leading-tight font-semibold ${tier.isContactSales ? '' : 'text-white'}`}
+            className={`${tier.popular ? 'bg-primary-800' : tier.isContactSales ? 'bg-muted text-muted-foreground' : 'bg-primary-600'} ml-auto inline-block rounded-full px-3 py-1 text-xs leading-tight font-semibold ${tier.isContactSales ? '' : 'text-white'}`}
           >
-            {tier.isContactSales ? 'Up to 30%' : `Save ${tier.discount}%`}
+            {tier.discountBadgeText || `Save ${tier.discount}%`}
           </div>
         )}
       </div>
@@ -123,77 +131,72 @@ export function PricingCard({ tier }: PricingCardProps) {
       <div className="flex-1">
         <div className="flex flex-wrap items-center gap-2">
           <h3 className={`text-lg font-bold xl:text-xl ${textColor}`}>{tier.name}</h3>
-          {tier.isContactSales && (
+          {tier.tierBadge && (
             <span className="border-border bg-background text-muted-foreground rounded border px-2 py-1 text-xs font-semibold">
-              Enterprise
+              {tier.tierBadge}
             </span>
           )}
         </div>
 
-        <div className="mt-4 flex h-28 flex-col justify-center xl:mt-5 xl:h-32">
-          {/* Regular price display for subscriptions */}
-          {tier.type === 'subscription' && tier.discount > 0 && (
-            <p className={`text-xs line-through ${subtextColor} opacity-75`}>
-              Regular value:{' '}
-              {tier.name === 'Starter' ? '$14.96' : tier.name === 'Pro' ? '$49.85' : ''}
+        <div className="mt-3">
+          {/* Regular price display (optional) */}
+          {tier.regularPriceDisplay && (
+            <p className={`text-xs line-through ${subtextColor} mb-1 opacity-75`}>
+              {tier.regularPriceDisplay}
             </p>
           )}
 
-          <div className="flex items-baseline gap-2">
-            <p className={`text-4xl font-bold tracking-tight xl:text-5xl ${textColor}`}>
+          <div className="flex items-baseline gap-1.5">
+            <p className={`text-3xl font-bold tracking-tight xl:text-4xl ${textColor}`}>
               {tier.priceDisplay}
             </p>
             {tier.type === 'subscription' && (
-              <span className={`text-lg ${subtextColor}`}>
+              <span className={`text-base ${subtextColor}`}>
                 {tier.subscriptionInterval === 'week' ? '/week' : '/month'}
               </span>
             )}
           </div>
-          <p className={`mt-2 text-sm xl:text-base ${subtextColor}`}>
+          <p className={`mt-1.5 text-sm ${subtextColor}`}>
             {tier.isContactSales
-              ? 'Tailored to your needs'
+              ? tier.emptyStateText || 'Tailored to your needs'
               : tier.type === 'one-time'
                 ? `${tier.credits?.toLocaleString()} credits (one-time)`
                 : tier.subscriptionInterval === 'week'
                   ? `${tier.weeklyCredits?.toLocaleString()} credits/week`
                   : `${tier.monthlyCredits?.toLocaleString()} credits/month`}
           </p>
-          <p className={`mt-1 text-xs xl:text-sm ${subtextColor} opacity-75`}>
-            {tier.pricePerCredit}
-          </p>
-          {tier.discount > 0 && !tier.isContactSales && (
-            <p className="text-success mt-1 text-sm font-semibold xl:text-base">
-              Save {tier.discount}% vs Basic
-            </p>
+          <p className={`mt-0.5 text-xs ${subtextColor} opacity-75`}>{tier.pricePerCredit}</p>
+          {tier.discount > 0 && !tier.isContactSales && tier.savingsText && (
+            <p className="text-success mt-1 text-xs font-semibold xl:text-sm">{tier.savingsText}</p>
           )}
         </div>
 
-        <p className={`mt-4 text-sm leading-relaxed xl:mt-5 xl:text-base ${subtextColor}`}>
+        <p className={`mt-3 text-xs leading-relaxed xl:text-sm ${subtextColor}`}>
           {tier.description}
         </p>
 
-        <ul className="mt-4 space-y-2 xl:mt-5 xl:space-y-2.5">
+        <ul className="mt-3 space-y-1.5">
           {tier.features.map((feature, idx) => (
             <li key={idx} className="flex items-start justify-between gap-2">
               <div className="flex items-start">
                 <span
                   className={
                     tier.popular
-                      ? 'text-primary-foreground mr-2 flex-shrink-0 text-base'
-                      : 'text-primary-600 mr-2 flex-shrink-0 text-base'
+                      ? 'text-primary-foreground mr-1.5 flex-shrink-0 text-sm'
+                      : 'text-primary-600 mr-1.5 flex-shrink-0 text-sm'
                   }
                 >
                   {feature.included ? '✓' : '−'}
                 </span>
                 <span
-                  className={`text-sm leading-relaxed xl:text-base ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
+                  className={`text-xs leading-relaxed xl:text-sm ${feature.included ? featureColor : 'text-muted-foreground'} ${feature.highlight ? 'font-semibold' : ''}`}
                 >
                   {feature.text}
                 </span>
               </div>
               {feature.badge && (
                 <span
-                  className={`${tier.popular ? 'bg-primary-800' : 'bg-primary-600'} flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold text-white`}
+                  className={`${tier.popular ? 'bg-primary-800' : 'bg-primary-600'} flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold text-white`}
                 >
                   {feature.badge}
                 </span>
@@ -207,7 +210,7 @@ export function PricingCard({ tier }: PricingCardProps) {
       {tier.isContactSales ? (
         <Link
           href="mailto:sales@reelvan.com?subject=Business%20Plan%20Inquiry"
-          className="bg-secondary text-foreground hover:bg-muted mt-5 block rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-lg"
+          className="bg-secondary text-foreground hover:bg-muted mt-4 block rounded-lg px-4 py-2 text-center text-sm font-semibold transition-colors"
         >
           {tier.ctaText}
         </Link>
@@ -217,8 +220,8 @@ export function PricingCard({ tier }: PricingCardProps) {
           disabled={isLoading}
           className={`${
             tier.popular
-              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-lg'
-              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block w-full rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors disabled:opacity-50 xl:mt-6 xl:py-3 xl:text-lg'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-4 block w-full rounded-lg px-4 py-2 text-center text-sm font-semibold transition-colors disabled:opacity-50'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-4 block w-full rounded-lg px-4 py-2 text-center text-sm font-semibold transition-colors disabled:opacity-50'
           }`}
         >
           {isLoading ? 'Loading...' : tier.ctaText}
@@ -228,11 +231,11 @@ export function PricingCard({ tier }: PricingCardProps) {
           href="/signup"
           className={
             tier.popular
-              ? 'text-primary-600 bg-background hover:bg-secondary mt-5 block rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-lg'
-              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-5 block rounded-lg px-4 py-2.5 text-center text-base font-semibold transition-colors xl:mt-6 xl:py-3 xl:text-lg'
+              ? 'text-primary-600 bg-background hover:bg-secondary mt-4 block rounded-lg px-4 py-2 text-center text-sm font-semibold transition-colors'
+              : 'bg-primary-600 hover:bg-primary-700 text-primary-foreground mt-4 block rounded-lg px-4 py-2 text-center text-sm font-semibold transition-colors'
           }
         >
-          Get started
+          {tier.signupCtaText || 'Get started'}
         </Link>
       )}
     </div>
@@ -245,14 +248,14 @@ function PricingCardSkeleton({ popular }: { popular?: boolean }) {
     <div
       className={
         popular
-          ? 'bg-primary-600 ring-border/10 relative flex min-w-[320px] flex-col rounded-3xl p-8 shadow-2xl ring-1'
-          : 'bg-card ring-border relative flex min-w-[320px] flex-col rounded-3xl p-8 ring-1'
+          ? 'bg-primary-600 ring-border/10 relative flex min-w-[320px] flex-col rounded-2xl p-4 shadow-2xl ring-1 xl:p-5'
+          : 'bg-card ring-border relative flex min-w-[320px] flex-col rounded-2xl p-4 ring-1 xl:p-5'
       }
     >
-      <div className="h-96 animate-pulse">
-        <div className="bg-muted h-6 w-32 rounded" />
-        <div className="bg-muted mt-4 h-12 w-24 rounded" />
-        <div className="bg-muted mt-6 h-4 w-48 rounded" />
+      <div className="h-80 animate-pulse">
+        <div className="bg-muted h-5 w-28 rounded" />
+        <div className="bg-muted mt-3 h-10 w-20 rounded" />
+        <div className="bg-muted mt-4 h-3 w-40 rounded" />
       </div>
     </div>
   )
