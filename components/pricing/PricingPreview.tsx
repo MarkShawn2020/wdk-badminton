@@ -27,10 +27,12 @@ export function PricingPreview() {
 
         {/* 3 Dynamic Pricing Cards */}
         <div className="mt-16 sm:mt-20">
-          <div className="mx-auto grid grid-cols-1 gap-8 lg:grid-cols-3 lg:gap-6">
-            {pricingPlans.map((plan) => (
-              <DynamicPricingCard key={plan.id} tier={plan} />
-            ))}
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+              {pricingPlans.map((plan) => (
+                <DynamicPricingCard key={plan.id} tier={plan} />
+              ))}
+            </div>
           </div>
         </div>
 
