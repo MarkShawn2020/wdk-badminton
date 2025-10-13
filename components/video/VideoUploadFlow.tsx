@@ -276,6 +276,7 @@ export function VideoUploadFlow({ userCredits }: UploadFlowProps) {
           enhanceQuality,
           generateCaptions,
           targetResolution,
+          targetFps,
           targetAspectRatio: undefined, // TODO: Add aspect ratio support
         },
       })

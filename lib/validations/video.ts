@@ -33,8 +33,7 @@ export const videoUploadSchema = z.object({
 
   duration: z
     .number()
-    .positive()
-    .min(PRICING.MIN_VIDEO_DURATION, `Video must be at least ${PRICING.MIN_VIDEO_DURATION} second`)
+    .positive('Video duration must be greater than 0')
     .max(
       PRICING.MAX_VIDEO_DURATION,
       `Video must not exceed ${PRICING.MAX_VIDEO_DURATION} seconds (2 minutes)`

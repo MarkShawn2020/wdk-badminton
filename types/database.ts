@@ -6,6 +6,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: '13.0.5'
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       coupon_redemptions: {
@@ -42,86 +67,6 @@ export type Database = {
             columns: ['coupon_id']
             isOneToOne: false
             referencedRelation: 'coupons'
-            referencedColumns: ['id']
-          },
-        ]
-      }
-      processing_pipeline: {
-        Row: {
-          id: string
-          video_id: string
-          step_order: number
-          step_type: string
-          step_name: string
-          status: string
-          progress: number | null
-          provider: string
-          external_job_id: string | null
-          input_video_url: string
-          output_video_url: string | null
-          estimated_cost_credits: number
-          actual_cost_credits: number | null
-          api_cost_usd: number | null
-          error_message: string | null
-          retry_count: number
-          max_retries: number
-          config: Json | null
-          created_at: string | null
-          started_at: string | null
-          completed_at: string | null
-        }
-        Insert: {
-          id?: string
-          video_id: string
-          step_order: number
-          step_type: string
-          step_name: string
-          status?: string
-          progress?: number | null
-          provider: string
-          external_job_id?: string | null
-          input_video_url: string
-          output_video_url?: string | null
-          estimated_cost_credits: number
-          actual_cost_credits?: number | null
-          api_cost_usd?: number | null
-          error_message?: string | null
-          retry_count?: number
-          max_retries?: number
-          config?: Json | null
-          created_at?: string | null
-          started_at?: string | null
-          completed_at?: string | null
-        }
-        Update: {
-          id?: string
-          video_id?: string
-          step_order?: number
-          step_type?: string
-          step_name?: string
-          status?: string
-          progress?: number | null
-          provider?: string
-          external_job_id?: string | null
-          input_video_url?: string
-          output_video_url?: string | null
-          estimated_cost_credits?: number
-          actual_cost_credits?: number | null
-          api_cost_usd?: number | null
-          error_message?: string | null
-          retry_count?: number
-          max_retries?: number
-          config?: Json | null
-          created_at?: string | null
-          started_at?: string | null
-          completed_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: 'processing_pipeline_video_id_fkey'
-            columns: ['video_id']
-            isOneToOne: false
-            referencedRelation: 'videos'
             referencedColumns: ['id']
           },
         ]
@@ -217,6 +162,86 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: 'credit_transactions_video_id_fkey'
+            columns: ['video_id']
+            isOneToOne: false
+            referencedRelation: 'videos'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      processing_pipeline: {
+        Row: {
+          actual_cost_credits: number | null
+          api_cost_usd: number | null
+          completed_at: string | null
+          config: Json | null
+          created_at: string | null
+          error_message: string | null
+          estimated_cost_credits: number
+          external_job_id: string | null
+          id: string
+          input_video_url: string
+          max_retries: number | null
+          output_video_url: string | null
+          progress: number | null
+          provider: string
+          retry_count: number | null
+          started_at: string | null
+          status: string
+          step_name: string
+          step_order: number
+          step_type: string
+          video_id: string
+        }
+        Insert: {
+          actual_cost_credits?: number | null
+          api_cost_usd?: number | null
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string | null
+          error_message?: string | null
+          estimated_cost_credits: number
+          external_job_id?: string | null
+          id?: string
+          input_video_url: string
+          max_retries?: number | null
+          output_video_url?: string | null
+          progress?: number | null
+          provider: string
+          retry_count?: number | null
+          started_at?: string | null
+          status?: string
+          step_name: string
+          step_order: number
+          step_type: string
+          video_id: string
+        }
+        Update: {
+          actual_cost_credits?: number | null
+          api_cost_usd?: number | null
+          completed_at?: string | null
+          config?: Json | null
+          created_at?: string | null
+          error_message?: string | null
+          estimated_cost_credits?: number
+          external_job_id?: string | null
+          id?: string
+          input_video_url?: string
+          max_retries?: number | null
+          output_video_url?: string | null
+          progress?: number | null
+          provider?: string
+          retry_count?: number | null
+          started_at?: string | null
+          status?: string
+          step_name?: string
+          step_order?: number
+          step_type?: string
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'processing_pipeline_video_id_fkey'
             columns: ['video_id']
             isOneToOne: false
             referencedRelation: 'videos'
@@ -402,6 +427,7 @@ export type Database = {
           started_processing_at: string | null
           status: string
           target_aspect_ratio: string | null
+          target_fps: number | null
           target_resolution: string | null
           total_pipeline_steps: number | null
           user_id: string
@@ -433,6 +459,7 @@ export type Database = {
           started_processing_at?: string | null
           status?: string
           target_aspect_ratio?: string | null
+          target_fps?: number | null
           target_resolution?: string | null
           total_pipeline_steps?: number | null
           user_id: string
@@ -464,6 +491,7 @@ export type Database = {
           started_processing_at?: string | null
           status?: string
           target_aspect_ratio?: string | null
+          target_fps?: number | null
           target_resolution?: string | null
           total_pipeline_steps?: number | null
           user_id?: string
@@ -504,7 +532,29 @@ export type Database = {
       }
       get_next_pipeline_step: {
         Args: { p_video_id: string }
-        Returns: Tables<'processing_pipeline'>
+        Returns: {
+          actual_cost_credits: number | null
+          api_cost_usd: number | null
+          completed_at: string | null
+          config: Json | null
+          created_at: string | null
+          error_message: string | null
+          estimated_cost_credits: number
+          external_job_id: string | null
+          id: string
+          input_video_url: string
+          max_retries: number | null
+          output_video_url: string | null
+          progress: number | null
+          provider: string
+          retry_count: number | null
+          started_at: string | null
+          status: string
+          step_name: string
+          step_order: number
+          step_type: string
+          video_id: string
+        }
       }
       get_pipeline_progress: {
         Args: { p_video_id: string }
@@ -679,6 +729,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

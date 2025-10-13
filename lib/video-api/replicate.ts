@@ -81,30 +81,67 @@ export class ReplicateClient {
   async createPrediction(input: CreatePredictionInput): Promise<ReplicatePrediction> {
     const url = `${this.baseUrl}/predictions`
 
+    // FIX: Use nullish coalescing (??) instead of logical AND (&&)
+    // This ensures parameters are ALWAYS sent, even if 0 or falsy
+    // NOTE: We default to 60fps (maximum quality), not Replicate's 30fps default
+    const apiInput = {
+      video: input.video,
+      target_resolution: input.target_resolution ?? '1080p',
+      target_fps: input.target_fps ?? 60, // Default to 60fps for maximum quality
+    }
+
+    const requestBody = {
+      version: this.version,
+      input: apiInput,
+    }
+
+    console.log('📤 Replicate API Request Body:', JSON.stringify(requestBody, null, 2))
+
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${this.apiToken}`,
       },
-      body: JSON.stringify({
-        version: this.version,
-        input: {
-          video: input.video,
-          ...(input.target_resolution && { target_resolution: input.target_resolution }),
-          ...(input.target_fps && { target_fps: input.target_fps }),
-        },
-      }),
+      body: JSON.stringify(requestBody),
     })
 
     if (!response.ok) {
       const errorText = await response.text()
+      console.error('❌ Replicate API Error Response:', errorText)
       throw new Error(`Replicate API error (${response.status}): ${errorText}`)
     }
 
     const data = await response.json()
 
+    console.log('📥 Replicate API Response:', JSON.stringify(data, null, 2))
     console.log('✅ Replicate prediction created:', data.id)
+
+    // VALIDATION: Verify API received correct parameters
+    const validation = {
+      fps_sent: apiInput.target_fps,
+      fps_received: data.input?.target_fps,
+      fps_match: apiInput.target_fps === data.input?.target_fps,
+      resolution_sent: apiInput.target_resolution,
+      resolution_received: data.input?.target_resolution,
+      resolution_match: apiInput.target_resolution === data.input?.target_resolution,
+    }
+
+    console.log('🔍 Parameter Validation:', validation)
+
+    if (!validation.fps_match) {
+      console.error('⚠️ FPS MISMATCH DETECTED!', {
+        expected: apiInput.target_fps,
+        received: data.input?.target_fps,
+      })
+    }
+
+    if (!validation.resolution_match) {
+      console.error('⚠️ RESOLUTION MISMATCH DETECTED!', {
+        expected: apiInput.target_resolution,
+        received: data.input?.target_resolution,
+      })
+    }
 
     return ReplicatePredictionSchema.parse(data)
   }

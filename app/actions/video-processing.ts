@@ -30,6 +30,7 @@ interface ProcessingOptions {
   enhanceQuality: boolean
   generateCaptions?: boolean
   targetResolution?: '720p' | '1080p' | '4k'
+  targetFps?: number
   targetAspectRatio?: '16:9' | '9:16' | '1:1' | '4:5'
 }
 
@@ -65,6 +66,7 @@ const createJobSchema = z.object({
     enhanceQuality: z.boolean(),
     generateCaptions: z.boolean().optional(),
     targetResolution: z.enum(['720p', '1080p', '4k']).optional(),
+    targetFps: z.number().int().min(15).max(60).optional(),
     targetAspectRatio: z.enum(['16:9', '9:16', '1:1', '4:5']).optional(),
   }),
 })
@@ -217,6 +219,7 @@ export async function createVideoJob(input: {
       remove_watermark: options.removeWatermark,
       enhance_quality: options.enhanceQuality,
       target_resolution: options.targetResolution,
+      target_fps: options.targetFps,
       target_aspect_ratio: options.targetAspectRatio,
       status: 'pending',
       estimated_cost_credits: estimatedCost,
@@ -427,7 +430,8 @@ function buildPipelineSteps(
       estimated_cost_credits: 50, // ~$0.50
       progress: 0,
     })
-    currentUrl = '' // Will be updated after completion
+    // Mark that subsequent steps depend on this step's output
+    currentUrl = null as never
   }
 
   if (options.enhanceQuality) {
@@ -438,6 +442,8 @@ function buildPipelineSteps(
       step_name: 'Enhance Quality',
       status: 'pending',
       provider: 'replicate',
+      // If currentUrl is null, it means this step depends on the previous step's output
+      // The actual input URL will be resolved at runtime in startQualityEnhance()
       input_video_url: currentUrl || videoUrl,
       estimated_cost_credits: 100, // ~$1.00
       progress: 0,
@@ -559,40 +565,80 @@ async function startQualityEnhance(step: PipelineStep, video: Video) {
   const serviceSupabase = createServiceClient()
 
   try {
-    // Get input URL (from previous step or original)
-    let inputUrl = step.input_video_url
+    // ALWAYS check for previous step's output first (for pipeline chaining)
+    // This ensures we use the watermark-removed video, not the original
+    console.log('🔍 Checking for previous pipeline step output...')
+    const { data: prevStep } = await serviceSupabase
+      .from('processing_pipeline')
+      .select('output_video_url, step_name, step_order')
+      .eq('video_id', video.id)
+      .eq('status', 'completed')
+      .lt('step_order', step.step_order) // Previous steps only
+      .order('step_order', { ascending: false })
+      .limit(1)
+      .single()
 
-    if (!inputUrl) {
-      // Get output from previous step
-      const { data: prevStep } = await serviceSupabase
-        .from('processing_pipeline')
-        .select('output_video_url')
-        .eq('video_id', video.id)
-        .eq('status', 'completed')
-        .order('step_order', { ascending: false })
-        .limit(1)
-        .single()
+    let inputUrl: string
 
-      inputUrl = prevStep?.output_video_url || video.original_url!
+    if (prevStep?.output_video_url) {
+      // Use output from previous step (e.g., watermark-removed video)
+      inputUrl = prevStep.output_video_url
+      console.log(
+        `✅ Using output from previous step "${prevStep.step_name}" (order ${prevStep.step_order})`
+      )
+      console.log(`   Input URL: ${inputUrl}`)
+    } else {
+      // No previous step or no output, use original video
+      inputUrl = video.original_url!
+      console.log('📹 No previous step output found, using original video')
+      console.log(`   Input URL: ${inputUrl}`)
     }
 
+    console.log('🎬 Starting Replicate quality enhancement...')
     const replicate = getReplicateClient()
-    const prediction = await replicate.createPrediction({
+
+    // Determine target FPS (default to 60fps for maximum quality)
+    const targetFps = video.target_fps || 60
+    const targetResolution = (video.target_resolution as '720p' | '1080p' | '4k') || '1080p'
+
+    console.log('📋 Replicate API Call Parameters:')
+    console.log(`   Video ID: ${video.id}`)
+    console.log(`   Input URL: ${inputUrl}`)
+    console.log(`   Target Resolution: ${targetResolution}`)
+    console.log(`   Target FPS: ${targetFps}`)
+    console.log(`   Video.target_fps (from DB): ${video.target_fps}`)
+    console.log(`   Video.target_resolution (from DB): ${video.target_resolution}`)
+
+    const apiInput = {
       video: inputUrl,
-      target_resolution: (video.target_resolution as '720p' | '1080p' | '4k') || '1080p',
+      target_resolution: targetResolution,
+      target_fps: targetFps,
+    }
+
+    console.log('📤 Sending to Replicate API:', JSON.stringify(apiInput, null, 2))
+
+    const prediction = await replicate.createPrediction(apiInput)
+
+    console.log('📥 Replicate API Response:', {
+      id: prediction.id,
+      status: prediction.status,
+      input: prediction.input,
+      created_at: prediction.created_at,
     })
 
-    // Save external job ID
+    // Save external job ID and the resolved input URL
     await serviceSupabase
       .from('processing_pipeline')
       .update({
         external_job_id: prediction.id,
-        input_video_url: inputUrl,
+        input_video_url: inputUrl, // Save the actual URL we used
         progress: 10,
       } as never)
       .eq('id', step.id)
 
-    console.log(`✅ Replicate job created: ${prediction.id}`)
+    console.log(`✅ Replicate prediction created: ${prediction.id}`)
+    console.log(`   Confirmed input.target_fps: ${prediction.input.target_fps}`)
+    console.log(`   Confirmed input.target_resolution: ${prediction.input.target_resolution}`)
   } catch (error) {
     console.error('Failed to start quality enhance:', error)
     throw error
@@ -672,7 +718,21 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
 
     case 'replicate': {
       const replicate = getReplicateClient()
+      console.log('🔍 Checking Replicate job:', step.external_job_id)
+
       const result = await replicate.getPrediction(step.external_job_id)
+
+      console.log('🔍 Replicate result summary:', {
+        id: result.id,
+        status: result.status,
+        has_output: !!result.output,
+      })
+
+      console.log('📋 Replicate input parameters (what we sent):', {
+        video: result.input.video,
+        target_resolution: result.input.target_resolution,
+        target_fps: result.input.target_fps,
+      })
 
       // Update progress
       const progressMap: Record<string, number> = {
@@ -687,6 +747,14 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
         .eq('id', step.id)
 
       if (result.status === 'succeeded') {
+        console.log('✅ Replicate completed!')
+        console.log('📥 Output URL:', result.output)
+        console.log('⏱️  Processing time:', {
+          created_at: result.created_at,
+          started_at: result.started_at,
+          completed_at: result.completed_at,
+        })
+
         // Save output URL
         await serviceSupabase
           .from('processing_pipeline')
@@ -699,9 +767,17 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
       }
 
       if (result.status === 'failed' || result.status === 'canceled') {
-        throw new Error(`Replicate processing ${result.status}`)
+        console.error('❌ Replicate processing failed/canceled:', {
+          id: result.id,
+          status: result.status,
+          error: result.error,
+          input: result.input,
+          full_result: JSON.stringify(result, null, 2),
+        })
+        throw new Error(`Replicate processing ${result.status}: ${result.error || 'Unknown error'}`)
       }
 
+      console.log('⏳ Replicate still processing...')
       return false
     }
 

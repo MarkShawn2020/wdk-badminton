@@ -20,7 +20,7 @@ export const PRICING = {
   // Universal technical limits (same for all users)
   MAX_VIDEO_DURATION: 120, // 2 minutes max
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB max
-  MIN_VIDEO_DURATION: 1, // 1 second minimum
+  MIN_VIDEO_DURATION: 0, // No minimum (must be > 0)
 
   // Rate limits by tier (anti-abuse)
   // Note: All users have SAME duration/filesize limits
@@ -111,11 +111,11 @@ export function validateVideoConstraints(
   durationSeconds: number,
   fileSizeBytes: number
 ): { valid: boolean; reason?: string } {
-  // Check duration
-  if (durationSeconds < PRICING.MIN_VIDEO_DURATION) {
+  // Check duration (must be positive, no specific minimum)
+  if (durationSeconds <= 0) {
     return {
       valid: false,
-      reason: `Video too short. Minimum ${PRICING.MIN_VIDEO_DURATION} second`,
+      reason: 'Video duration must be greater than 0',
     }
   }
 

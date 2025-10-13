@@ -134,8 +134,8 @@ export function VideoUploader({
           throw new Error(`Video too long (${Math.round(duration)}s). Maximum: ${maxDuration}s`)
         }
 
-        if (duration < PRICING.MIN_VIDEO_DURATION) {
-          throw new Error(`Video too short. Minimum: ${PRICING.MIN_VIDEO_DURATION}s`)
+        if (duration <= 0) {
+          throw new Error('Video duration must be greater than 0')
         }
 
         // Create preview URL
@@ -185,8 +185,8 @@ export function VideoUploader({
           throw new Error(`Video too long (${Math.round(duration)}s). Maximum: ${maxDuration}s`)
         }
 
-        if (duration < PRICING.MIN_VIDEO_DURATION) {
-          throw new Error(`Video too short. Minimum: ${PRICING.MIN_VIDEO_DURATION}s`)
+        if (duration <= 0) {
+          throw new Error('Video duration must be greater than 0')
         }
 
         // Extract filename from URL
