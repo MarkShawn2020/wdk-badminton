@@ -1,6 +1,7 @@
 import ListLayout from '@/layouts/ListLayoutWithTags'
 import { source } from '@/lib/source'
 import { notFound } from 'next/navigation'
+import type { BlogPageData } from '@/types/content'
 
 const POSTS_PER_PAGE = 5
 
@@ -18,17 +19,24 @@ export default async function Page(props: { params: Promise<{ page: string }> })
   // Get all posts and sort by date
   const posts = source
     .getPages()
-    .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
-    .map((post) => ({
-      slug: post.url.replace('/blog/', ''),
-      date: post.data.date || new Date().toISOString(),
-      title: post.data.title,
-      summary: post.data.description || '',
-      tags: post.data.tags || [],
-      images: [],
-      draft: false,
-      path: post.url,
-    }))
+    .sort((a, b) => {
+      const aData = a.data as unknown as BlogPageData
+      const bData = b.data as unknown as BlogPageData
+      return new Date(bData.date || 0).getTime() - new Date(aData.date || 0).getTime()
+    })
+    .map((post) => {
+      const postData = post.data as unknown as BlogPageData
+      return {
+        slug: post.url.replace('/blog/', ''),
+        date: postData.date || new Date().toISOString(),
+        title: postData.title || '',
+        summary: postData.description || '',
+        tags: postData.tags || [],
+        images: [],
+        draft: false,
+        path: post.url,
+      }
+    })
 
   const pageNumber = parseInt(params.page as string)
   const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE)

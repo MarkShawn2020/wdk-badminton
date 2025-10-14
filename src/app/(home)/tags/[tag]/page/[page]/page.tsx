@@ -1,3 +1,4 @@
+import type { BlogPageData } from '@/types/content'
 import { slug } from 'github-slugger'
 import ListLayout from '@/layouts/ListLayoutWithTags'
 import { source } from '@/lib/source'
@@ -27,18 +28,28 @@ export default async function TagPage(props: { params: Promise<{ tag: string; pa
   // Get all posts filtered by tag and sort by date
   const filteredPosts = source
     .getPages()
-    .filter((post) => post.data.tags && post.data.tags.map((t) => slug(t)).includes(tag))
-    .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
-    .map((post) => ({
-      slug: post.url.replace('/blog/', ''),
-      date: post.data.date || new Date().toISOString(),
-      title: post.data.title,
-      summary: post.data.description || '',
-      tags: post.data.tags || [],
-      images: [],
-      draft: false,
-      path: post.url,
-    }))
+    .filter((post) => {
+      const postData = post.data as unknown as BlogPageData
+      return postData.tags && postData.tags.map((t) => slug(t)).includes(tag)
+    })
+    .sort((a, b) => {
+      const aData = a.data as unknown as BlogPageData
+      const bData = b.data as unknown as BlogPageData
+      return new Date(bData.date || 0).getTime() - new Date(aData.date || 0).getTime()
+    })
+    .map((post) => {
+      const postData = post.data as unknown as BlogPageData
+      return {
+        slug: post.url.replace('/blog/', ''),
+        date: postData.date || new Date().toISOString(),
+        title: postData.title,
+        summary: postData.description || '',
+        tags: postData.tags || [],
+        images: [],
+        draft: false,
+        path: post.url,
+      }
+    })
 
   const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE)
 

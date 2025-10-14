@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { source } from '@/lib/source'
 import siteMetadata from '@/data/siteMetadata'
+import type { BlogPageData } from '@/types/content'
 
 export const dynamic = 'force-static'
 
@@ -8,12 +9,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = siteMetadata.siteUrl
 
   // Get all blog posts dynamically
-  const blogRoutes = source.getPages().map((post) => ({
-    url: `${siteUrl}${post.url}`,
-    lastModified: post.data.date || new Date().toISOString(),
-    changeFrequency: 'monthly' as const,
-    priority: 0.7,
-  }))
+  const blogRoutes = source.getPages().map((post) => {
+    const postData = post.data as unknown as BlogPageData
+    return {
+      url: `${siteUrl}${post.url}`,
+      lastModified: postData.date || new Date().toISOString(),
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    }
+  })
 
   // Core pages with highest priority - these appear in Sitelinks
   const corePages = [

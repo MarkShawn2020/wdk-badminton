@@ -1,3 +1,4 @@
+// @ts-ignore - Generated file may not exist yet
 import { blog, authors, docs as docsSource } from '@/.source'
 import { loader } from 'fumadocs-core/source'
 

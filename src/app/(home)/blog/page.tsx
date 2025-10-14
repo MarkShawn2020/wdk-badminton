@@ -3,13 +3,16 @@ import Card from '@/components/Card'
 import { generatePageMetadata, SITELINK_PAGES } from '@/lib/seo/generateMetadata'
 import { BreadcrumbStructuredData } from '@/components/seo/BreadcrumbStructuredData'
 import siteMetadata from '@/data/siteMetadata'
+import type { BlogPageData } from '@/types/content'
 
 export const metadata = generatePageMetadata(SITELINK_PAGES.blog)
 
 export default async function BlogListPage() {
-  const posts = source
-    .getPages()
-    .sort((a, b) => new Date(b.data.date || 0).getTime() - new Date(a.data.date || 0).getTime())
+  const posts = source.getPages().sort((a, b) => {
+    const aData = a.data as unknown as BlogPageData
+    const bData = b.data as unknown as BlogPageData
+    return new Date(bData.date || 0).getTime() - new Date(aData.date || 0).getTime()
+  })
 
   return (
     <>
