@@ -37,14 +37,15 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.tsx",
-    "**/*.js",
-    "**/*.json",
+    "data/**/*.ts",
+    "data/**/*.js",
+    "scripts/**/*.ts",
+    "scripts/**/*.mjs",
     "**/*.mjs",
     ".next/types/**/*.ts",
     ".source",
     ".source/**/*",
-    "next-env.d.ts",
-    "build/types/**/*.ts"
+    "next-env.d.ts"
   ],
   "exclude": ["node_modules", "eslint.config.mjs", ".next"]
 }
