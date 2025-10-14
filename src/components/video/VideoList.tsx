@@ -219,9 +219,38 @@ export function VideoList({ initialVideos, initialTotal }: VideoListProps) {
                 {/* Download Button (completed videos) */}
                 {video.status === 'completed' && video.processed_url && (
                   <Button
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.preventDefault()
-                      window.open(video.processed_url!, '_blank')
+
+                      try {
+                        // Try to download via API first (proper authentication & headers)
+                        const response = await fetch(`/api/videos/${video.id}/download`)
+
+                        if (response.ok) {
+                          // Success - create download link
+                          const blob = await response.blob()
+                          const url = window.URL.createObjectURL(blob)
+                          const a = document.createElement('a')
+                          a.href = url
+                          a.download = `${video.original_filename.replace(/\.[^/.]+$/, '')}_processed.mp4`
+                          document.body.appendChild(a)
+                          a.click()
+                          window.URL.revokeObjectURL(url)
+                          document.body.removeChild(a)
+                        } else {
+                          // API failed - fallback to direct URL
+                          console.warn('Download API failed, using direct URL')
+                          const errorData = await response.json()
+                          console.error('API error:', errorData)
+
+                          // Open direct URL as fallback
+                          window.open(video.processed_url!, '_blank')
+                        }
+                      } catch (error) {
+                        console.error('Download failed:', error)
+                        // Last resort - try direct URL
+                        window.open(video.processed_url!, '_blank')
+                      }
                     }}
                     variant="outline"
                     size="sm"

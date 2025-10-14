@@ -852,20 +852,31 @@ async function failJob(videoId: string, video: Video, errorMessage: string) {
 
 /**
  * Format job status for frontend
+ *
+ * Security: Hides sensitive upstream information:
+ * - Uses proxy URL instead of direct storage URL
+ * - Masks third-party provider names
  */
 function formatJobStatus(video: Video, steps: PipelineStep[]): JobStatus {
+  // Use download proxy URL instead of exposing direct storage URL
+  const finalVideoUrl =
+    video.status === 'completed' && video.processed_url
+      ? `/api/videos/${video.id}/download`
+      : undefined
+
   return {
     id: video.id,
     status: video.status,
     progress: calculateOverallProgress(steps),
     currentStep: steps.find((s) => s.status === 'processing')?.step_name,
-    finalVideoUrl: video.processed_url || undefined,
+    finalVideoUrl,
     errorMessage: video.error_message || undefined,
     steps: steps.map((s) => ({
       stepName: s.step_name,
       status: s.status,
       progress: s.progress || 0,
-      provider: s.provider,
+      // Hide third-party provider names from frontend
+      provider: 'AI Processing',
     })),
   }
 }

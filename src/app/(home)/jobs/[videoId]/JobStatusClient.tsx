@@ -115,13 +115,16 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
     const pollJobStatus = async () => {
       try {
         const status = await checkAndAdvanceJob(videoId)
-        console.log('📊 Job status update:', {
-          status: status.status,
-          progress: status.progress,
-          currentStep: status.currentStep,
-          hasFinalUrl: !!status.finalVideoUrl,
-          finalUrl: status.finalVideoUrl?.substring(0, 50) + '...',
-        })
+
+        // Only log in development, without sensitive URLs
+        if (process.env.NODE_ENV === 'development') {
+          console.log('📊 Job status update:', {
+            status: status.status,
+            progress: status.progress,
+            currentStep: status.currentStep,
+            hasFinalUrl: !!status.finalVideoUrl,
+          })
+        }
 
         setJobStatus(status)
         setRetryCount(0)
@@ -129,10 +132,11 @@ export function JobStatusClient({ videoId, initialVideo, initialSteps }: Props) 
 
         // Stop polling if completed or failed
         if (status.status === 'completed' || status.status === 'failed') {
-          console.log('🎉 Job finished!', {
-            status: status.status,
-            finalVideoUrl: status.finalVideoUrl,
-          })
+          if (process.env.NODE_ENV === 'development') {
+            console.log('🎉 Job finished!', {
+              status: status.status,
+            })
+          }
           setIsPolling(false)
         }
       } catch (err) {

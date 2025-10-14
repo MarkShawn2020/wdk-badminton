@@ -49,13 +49,29 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // 5. Fetch video from external URL
-    console.log(`📥 Downloading video ${videoId} from ${typedVideo.processed_url}`)
+    console.log(`📥 Downloading video ${videoId}`)
 
-    const videoResponse = await fetch(typedVideo.processed_url)
+    let videoResponse: Response
+    try {
+      videoResponse = await fetch(typedVideo.processed_url, {
+        method: 'GET',
+        redirect: 'follow',
+      })
 
-    if (!videoResponse.ok) {
-      console.error('Failed to fetch video from external URL:', videoResponse.status)
-      return errorResponse('Failed to download video', 500)
+      if (!videoResponse.ok) {
+        console.error(
+          `❌ Failed to fetch video from external URL: ${videoResponse.status} ${videoResponse.statusText}`
+        )
+        // Don't log the actual URL for security
+        return errorResponse(
+          `Failed to download video: External URL returned ${videoResponse.status}`,
+          500
+        )
+      }
+    } catch (fetchError) {
+      console.error('❌ Network error fetching video:', fetchError)
+      // Don't log the actual URL for security
+      return errorResponse('Failed to download video: Network error or URL expired', 500)
     }
 
     // 6. Get video blob
