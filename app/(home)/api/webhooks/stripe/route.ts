@@ -76,9 +76,39 @@ export async function POST(request: NextRequest) {
           break
         }
 
+        // Check for promotion code usage
+        let promotionInfo = null
+        if (session.total_details?.amount_discount && session.total_details.amount_discount > 0) {
+          // Fetch full session with line items to get promotion code details
+          const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
+            expand: ['total_details.breakdown'],
+          })
+
+          const originalAmount = session.amount_total + session.total_details.amount_discount
+          const discountPercent = Math.round(
+            (session.total_details.amount_discount / originalAmount) * 100
+          )
+
+          promotionInfo = {
+            discount_amount: session.total_details.amount_discount, // in cents
+            original_amount: originalAmount,
+            paid_amount: session.amount_total,
+            discount_percent: discountPercent,
+            // Note: Getting exact promo code requires expanded session
+            session_id: session.id,
+          }
+
+          console.log('🎟️  Promotion code applied:', {
+            discount: `$${(session.total_details.amount_discount / 100).toFixed(2)}`,
+            discount_percent: `${discountPercent}%`,
+            original: `$${(originalAmount / 100).toFixed(2)}`,
+            paid: `$${(session.amount_total / 100).toFixed(2)}`,
+          })
+        }
+
         // Add credits to user account
-        // Note: add_credits RPC function also handles tier upgrades automatically
-        // based on total_earned credits threshold
+        // IMPORTANT: User gets FULL credits regardless of discount (true promotion)
+        // The promotion code only affects payment amount, not credit amount
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { error: addCreditsError } = await (supabase.rpc as any)('add_credits', {
           p_user_id: userId,
@@ -94,7 +124,27 @@ export async function POST(request: NextRequest) {
           console.log('✅ Credits added successfully:', {
             user_id: userId,
             amount: credits,
+            promotion_applied: !!promotionInfo,
           })
+        }
+
+        // Update transaction record with promotion info if applicable
+        if (promotionInfo) {
+          const { error: updateError } = await supabase
+            .from('credit_transactions')
+            .update({
+              metadata: {
+                promotion: promotionInfo,
+                note: 'User received full credits with promotional discount on payment',
+              },
+            })
+            .eq('stripe_session_id', session.id)
+
+          if (updateError) {
+            console.error('Failed to update transaction with promotion info:', updateError)
+          } else {
+            console.log('✅ Transaction updated with promotion info')
+          }
         }
 
         // TODO: Send confirmation email
