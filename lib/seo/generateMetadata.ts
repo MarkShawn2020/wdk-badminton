@@ -5,7 +5,7 @@ interface PageMetadataOptions {
   title: string
   description: string
   path: string
-  keywords?: string[]
+  keywords?: readonly string[]
   image?: string
   noindex?: boolean
 }
