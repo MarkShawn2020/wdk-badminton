@@ -19,7 +19,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 /**
  * Coupon configurations
  */
-const COUPONS = [
+const COUPONS: Array<{
+  id: string
+  name: string
+  percent_off?: number
+  amount_off?: number
+  currency?: string
+  duration: 'forever' | 'once' | 'repeating'
+  max_redemptions?: number
+  metadata?: Record<string, string>
+}> = [
   {
     id: 'REELVAN90',
     name: 'ReelVan 90% Off',
@@ -162,7 +171,9 @@ async function listPromotionCodes() {
   console.log('\n📋 Current Promotion Codes:\n')
 
   try {
-    const codes = await stripe.promotionCodes.list({ limit: 20 })
+    const codes = await stripe.promotionCodes.list({
+      limit: 20,
+    })
 
     if (codes.data.length === 0) {
       console.log('No promotion codes found.')
@@ -172,17 +183,15 @@ async function listPromotionCodes() {
     for (const code of codes.data) {
       console.log(`Code: "${code.code}"`)
       console.log(`  ID: ${code.id}`)
-      console.log(`  Coupon: ${code.coupon.id}`)
-      if (code.coupon.percent_off) {
-        console.log(`  Discount: ${code.coupon.percent_off}% off`)
-      } else if (code.coupon.amount_off) {
-        console.log(`  Discount: $${(code.coupon.amount_off / 100).toFixed(2)} off`)
-      }
       console.log(`  Active: ${code.active}`)
       console.log(`  Times redeemed: ${code.times_redeemed}`)
       if (code.max_redemptions) {
         console.log(`  Max redemptions: ${code.max_redemptions}`)
       }
+
+      // Note: Coupon details require expanding, which has type issues with current Stripe SDK
+      // To see full coupon details, check in Stripe Dashboard or retrieve coupon separately
+      console.log(`  Note: Check Stripe Dashboard for full coupon details`)
       console.log()
     }
   } catch (error) {

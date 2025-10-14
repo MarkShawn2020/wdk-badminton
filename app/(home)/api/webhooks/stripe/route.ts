@@ -77,8 +77,19 @@ export async function POST(request: NextRequest) {
         }
 
         // Check for promotion code usage
-        let promotionInfo = null
-        if (session.total_details?.amount_discount && session.total_details.amount_discount > 0) {
+        let promotionInfo: {
+          discount_amount: number
+          original_amount: number
+          paid_amount: number
+          discount_percent: number
+          session_id: string
+        } | null = null
+
+        if (
+          session.total_details?.amount_discount &&
+          session.total_details.amount_discount > 0 &&
+          session.amount_total !== null
+        ) {
           // Fetch full session with line items to get promotion code details
           const fullSession = await stripe.checkout.sessions.retrieve(session.id, {
             expand: ['total_details.breakdown'],
