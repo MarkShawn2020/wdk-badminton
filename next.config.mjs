@@ -82,7 +82,7 @@ export default () => {
     trailingSlash: false,
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
-      dirs: ['app', 'components', 'layouts', 'scripts'],
+      dirs: ['src/app', 'src/components', 'src/layouts', 'scripts'],
     },
     experimental: {
       swcPlugins: [],

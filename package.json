@@ -10,7 +10,7 @@
     "generate-rss": "cross-env NODE_OPTIONS='--experimental-json-modules' node ./scripts/postbuild.mjs",
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
-    "lint": "next lint --fix --dir pages --dir app --dir components --dir lib --dir layouts --dir scripts",
+    "lint": "next lint --fix --dir src --dir scripts",
     "type-check": "tsc --noEmit",
     "prepare": "husky"
   },

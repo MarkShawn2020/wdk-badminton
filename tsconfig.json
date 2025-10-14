@@ -17,14 +17,14 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
+      "@/app/*": ["src/app/*"],
+      "@/components/*": ["src/components/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/layouts/*": ["src/layouts/*"],
+      "@/styles/*": ["src/styles/*"],
+      "@/types/*": ["src/types/*"],
       "@/data/*": ["data/*"],
-      "@/layouts/*": ["layouts/*"],
-      "@/css/*": ["css/*"],
-      "@/lib/*": ["lib/*"],
-      "@/types/*": ["types/*"],
-      "@/app/*": ["app/*"],
-      "@/*": ["./*"],
+      "@/*": ["src/*"],
       "pliny/*": ["node_modules/pliny/*"]
     },
     "plugins": [
@@ -35,11 +35,11 @@
     "strictNullChecks": true
   },
   "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "**/*.js",
     "**/*.json",
     "**/*.mjs",
-    "**/*.ts",
-    "**/*.tsx",
     ".next/types/**/*.ts",
     ".source",
     ".source/**/*",

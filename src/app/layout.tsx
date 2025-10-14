@@ -1,5 +1,5 @@
 import 'fumadocs-ui/style.css'
-import 'css/tailwind.css'
+import '@/styles/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
 
