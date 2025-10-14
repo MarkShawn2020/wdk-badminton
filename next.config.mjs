@@ -1,6 +1,11 @@
 import bundleAnalyzer from '@next/bundle-analyzer'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { createMDX } from 'fumadocs-mdx/next'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -128,6 +133,13 @@ export default () => {
         test: /\.svg$/,
         use: ['@svgr/webpack'],
       })
+
+      // Add path aliases to resolve @/public and @/.source
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@/public': path.resolve(__dirname, 'public'),
+        '@/.source': path.resolve(__dirname, '.source'),
+      }
 
       // Add code inspector plugin in development mode
       if (options.dev) {
