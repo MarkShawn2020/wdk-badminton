@@ -7,14 +7,57 @@
  * Discount only applies to payment amount, not credit amount.
  *
  * Usage:
- *   pnpm tsx --env-file=.env.local scripts/create-stripe-coupon.ts
+ *   pnpm tsx scripts/create-stripe-coupon.ts
+ *   or
+ *   STRIPE_SECRET_KEY=sk_test_xxx pnpm tsx scripts/create-stripe-coupon.ts
  */
 
 import Stripe from 'stripe'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+// Load environment variables from .env file
+function loadEnv() {
+  try {
+    const envPath = resolve(process.cwd(), '.env')
+    const envContent = readFileSync(envPath, 'utf-8')
+
+    envContent.split('\n').forEach((line) => {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) return
+
+      const [key, ...valueParts] = trimmed.split('=')
+      if (key && valueParts.length > 0) {
+        const value = valueParts.join('=').trim()
+        if (!process.env[key]) {
+          process.env[key] = value
+        }
+      }
+    })
+  } catch (error) {
+    console.warn('⚠️  Could not load .env file, using environment variables only')
+  }
+}
+
+loadEnv()
+
+if (!process.env.STRIPE_SECRET_KEY) {
+  console.error('❌ Error: STRIPE_SECRET_KEY not found in environment variables or .env file')
+  console.error('\nPlease set STRIPE_SECRET_KEY:')
+  console.error('  1. Add to .env file: STRIPE_SECRET_KEY=sk_test_...')
+  console.error(
+    '  2. Or run: STRIPE_SECRET_KEY=sk_test_xxx pnpm tsx scripts/create-stripe-coupon.ts'
+  )
+  console.error('\n⚠️  WARNING: Use test keys (sk_test_...) for development!')
+  process.exit(1)
+}
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2025-09-30.clover',
 })
+
+// Check which environment we're using
+const isTestMode = process.env.STRIPE_SECRET_KEY.startsWith('sk_test_')
 
 /**
  * Coupon configurations
@@ -204,6 +247,14 @@ async function main() {
   console.log('='.repeat(60))
   console.log()
 
+  // Log environment and warn if using live keys
+  console.log(`🔑 Using Stripe ${isTestMode ? 'TEST' : 'LIVE'} keys\n`)
+  if (!isTestMode) {
+    console.log('⚠️  WARNING: You are using LIVE keys! Coupons will affect production.')
+    console.log('   Press Ctrl+C to cancel, or wait 3 seconds to continue...\n')
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+  }
+
   await createCoupons()
   await createPromotionCodes()
   await listPromotionCodes()
@@ -212,7 +263,9 @@ async function main() {
   console.log('\n✨ Done! Users can now use these codes at checkout.')
   console.log('\n📝 Note: Users get FULL credits even with discount.')
   console.log('   The discount only applies to the payment amount.')
-  console.log('\n🔗 Test in Stripe Dashboard: https://dashboard.stripe.com/test/coupons')
+  console.log(
+    `\n🔗 ${isTestMode ? 'Test' : 'Live'} Dashboard: https://dashboard.stripe.com/${isTestMode ? 'test/' : ''}coupons`
+  )
 }
 
 main().catch(console.error)
