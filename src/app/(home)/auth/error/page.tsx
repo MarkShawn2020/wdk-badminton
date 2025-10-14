@@ -1,5 +1,5 @@
 import Link from '@/components/Link'
-import { genPageMetadata } from 'app/seo'
+import { genPageMetadata } from '@/app/seo'
 import { AlertCircle } from 'lucide-react'
 
 export const metadata = genPageMetadata({

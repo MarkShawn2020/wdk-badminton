@@ -2,8 +2,8 @@ import { slug } from 'github-slugger'
 import siteMetadata from '@/data/siteMetadata'
 import ListLayout from '@/layouts/ListLayoutWithTags'
 import { source } from '@/lib/source'
-import tagData from 'app/tag-data.json'
-import { genPageMetadata } from 'app/seo'
+import tagData from '@/app/tag-data.json'
+import { genPageMetadata } from '@/app/seo'
 import { Metadata } from 'next'
 
 const POSTS_PER_PAGE = 5

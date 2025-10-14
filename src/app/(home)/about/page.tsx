@@ -1,6 +1,6 @@
 import { authorsSource } from '@/lib/source'
 import AuthorLayout from '@/layouts/AuthorLayout'
-import { genPageMetadata } from 'app/seo'
+import { genPageMetadata } from '@/app/seo'
 import { notFound } from 'next/navigation'
 
 export const metadata = genPageMetadata({ title: 'About' })
