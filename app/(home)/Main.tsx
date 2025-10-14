@@ -1,6 +1,7 @@
 import Link from '@/components/Link'
 import siteMetadata from '@/data/siteMetadata'
 import { PricingPreview } from '@/components/pricing/PricingPreview'
+import { SitelinkNav } from '@/components/seo/SitelinkNav'
 
 export default function Home({ posts }) {
   return (
@@ -285,6 +286,9 @@ export default function Home({ posts }) {
           </div>
         </div>
       </section>
+
+      {/* Sitelink Navigation - Helps Google identify important pages */}
+      <SitelinkNav />
 
       {/* CTA Section */}
       <section className="py-24 sm:py-32">
