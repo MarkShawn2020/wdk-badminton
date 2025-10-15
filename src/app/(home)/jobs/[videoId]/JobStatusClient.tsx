@@ -462,9 +462,6 @@ function StepCard({ step }: { step: JobStatus['steps'][0] }) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-medium text-[#181818]">{step.stepName}</h3>
-            <span className="rounded-lg bg-white/60 px-2.5 py-1 text-xs font-medium text-[#87867F] backdrop-blur-sm">
-              {step.provider}
-            </span>
           </div>
           <div className={`mt-1.5 text-sm ${config.textColor}`}>{config.label}</div>
         </div>
