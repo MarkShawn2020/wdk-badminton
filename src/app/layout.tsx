@@ -175,12 +175,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               logo: `${siteMetadata.siteUrl}/static/images/logo.png`,
               description: siteMetadata.description,
               email: siteMetadata.email,
-              sameAs: [siteMetadata.x, siteMetadata.youtube],
+              sameAs: [
+                siteMetadata.x,
+                siteMetadata.youtube,
+                siteMetadata.siteRepo,
+                `${siteMetadata.siteUrl}/blog`,
+                `${siteMetadata.siteUrl}/docs`,
+              ],
               contactPoint: {
                 '@type': 'ContactPoint',
                 email: siteMetadata.email,
                 contactType: 'Customer Support',
               },
+              knowsAbout: [
+                'AI Video Enhancement',
+                'Watermark Removal',
+                'Video Quality Enhancement',
+                'Sora Videos',
+                'Veo Videos',
+                'Kling Videos',
+              ],
             }),
           }}
         />
@@ -235,6 +249,62 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 },
                 'query-input': 'required name=search_term_string',
               },
+            }),
+          }}
+        />
+        {/* ItemList Schema - Helps Google identify key pages for Sitelinks */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: 'ReelVan Main Navigation',
+              description: 'Key pages and features of ReelVan',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: 'Home',
+                  url: siteMetadata.siteUrl,
+                  description: 'Transform AI videos into shareable social content',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: 'Video Transformer',
+                  url: `${siteMetadata.siteUrl}/transformer`,
+                  description: 'Remove watermarks and enhance AI-generated videos',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 3,
+                  name: 'Pricing',
+                  url: `${siteMetadata.siteUrl}/pricing`,
+                  description: 'Simple, transparent pricing plans',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 4,
+                  name: 'Blog',
+                  url: `${siteMetadata.siteUrl}/blog`,
+                  description: 'AI video tutorials, tips, and guides',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 5,
+                  name: 'Documentation',
+                  url: `${siteMetadata.siteUrl}/docs`,
+                  description: 'Complete guides and API documentation',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 6,
+                  name: 'Discover',
+                  url: `${siteMetadata.siteUrl}/discover`,
+                  description: 'Explore AI-generated video showcase',
+                },
+              ],
             }),
           }}
         />
