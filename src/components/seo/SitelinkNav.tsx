@@ -20,54 +20,73 @@ interface NavLink {
 
 const coreLinks: NavLink[] = [
   {
+    href: '/transformer',
+    title: 'Video Transformer',
+    description: 'Remove watermarks & enhance quality instantly',
+    icon: '✨',
+  },
+  {
     href: '/pricing',
-    title: 'Pricing',
-    description: 'Simple, transparent plans. Pay-as-you-go starting at $2.99',
+    title: 'Pricing Plans',
+    description: 'Simple, transparent pricing. Pay-as-you-go from $2.99',
     icon: '💳',
   },
   {
     href: '/blog',
-    title: 'Blog',
-    description: 'AI video tips, tutorials, and guides',
+    title: 'Blog & Tutorials',
+    description: 'AI video tips, guides, and best practices',
     icon: '📝',
   },
   {
     href: '/docs',
     title: 'Documentation',
-    description: 'Learn how to use ReelVan effectively',
+    description: 'Complete API docs and usage guides',
     icon: '📚',
   },
   {
     href: '/discover',
-    title: 'Discover',
-    description: 'Browse community video examples',
+    title: 'Discover Gallery',
+    description: 'Browse community AI video examples',
     icon: '🎬',
+  },
+  {
+    href: '/dashboard',
+    title: 'Dashboard',
+    description: 'Manage your projects and credits',
+    icon: '⚡',
   },
 ]
 
 export function SitelinkNav() {
   return (
-    <nav aria-label="Core site navigation" className="py-16">
+    <section aria-label="Quick navigation to key pages" className="bg-secondary py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <h2 className="text-foreground mb-8 text-center text-2xl font-bold">Explore ReelVan</h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-10 text-center">
+          <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+            Quick Access
+          </h2>
+          <p className="text-muted-foreground mt-3 text-lg">
+            Everything you need to transform your AI videos
+          </p>
+        </div>
+        <nav className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {coreLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="border-border bg-card hover:border-primary-500 group flex flex-col rounded-lg border p-6 transition-all hover:shadow-lg"
+              className="border-border bg-card hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-950 group flex flex-col rounded-xl border p-5 transition-all hover:shadow-lg"
             >
-              <div className="mb-3 flex items-center gap-3">
-                <span className="text-2xl">{link.icon}</span>
-                <h3 className="text-foreground group-hover:text-primary-600 text-lg font-semibold">
+              <div className="mb-2 flex items-center gap-3">
+                <span className="text-3xl">{link.icon}</span>
+                <h3 className="text-foreground group-hover:text-primary-600 text-base font-bold sm:text-lg">
                   {link.title}
                 </h3>
               </div>
-              <p className="text-muted-foreground text-sm">{link.description}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">{link.description}</p>
             </Link>
           ))}
-        </div>
+        </nav>
       </div>
-    </nav>
+    </section>
   )
 }
