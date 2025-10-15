@@ -50,3 +50,5 @@ yarn-error.log*
 
 # Fumadocs auto-generated files
 .source
+*.env
+.temp

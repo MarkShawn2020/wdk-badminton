@@ -17,14 +17,17 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@/components/*": ["components/*"],
+      "@/app/*": ["src/app/*"],
+      "@/components/*": ["src/components/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/layouts/*": ["src/layouts/*"],
+      "@/styles/*": ["src/styles/*"],
+      "@/types/*": ["src/types/*"],
       "@/data/*": ["data/*"],
-      "@/layouts/*": ["layouts/*"],
-      "@/css/*": ["css/*"],
-      "@/lib/*": ["lib/*"],
-      "@/types/*": ["types/*"],
-      "@/app/*": ["app/*"],
-      "@/*": ["./*"],
+      "@/public/*": ["public/*"],
+      "@/.source": [".source"],
+      "@/.source/*": [".source/*"],
+      "@/*": ["src/*"],
       "pliny/*": ["node_modules/pliny/*"]
     },
     "plugins": [
@@ -35,15 +38,17 @@
     "strictNullChecks": true
   },
   "include": [
-    "**/*.js",
-    "**/*.json",
     "**/*.mjs",
-    "**/*.ts",
-    "**/*.tsx",
     ".next/types/**/*.ts",
     ".source",
     ".source/**/*",
+    "data/**/*.js",
+    "data/**/*.ts",
     "next-env.d.ts",
+    "scripts/**/*.mjs",
+    "scripts/**/*.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     "build/types/**/*.ts"
   ],
   "exclude": ["node_modules", "eslint.config.mjs", ".next"]

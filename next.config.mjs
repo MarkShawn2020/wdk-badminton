@@ -1,6 +1,11 @@
 import bundleAnalyzer from '@next/bundle-analyzer'
 import { codeInspectorPlugin } from 'code-inspector-plugin'
 import { createMDX } from 'fumadocs-mdx/next'
+import { fileURLToPath } from 'url'
+import path from 'path'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
@@ -13,7 +18,7 @@ const withMDX = createMDX({
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
   default-src 'self' https://*.clarity.ms https://c.bing.com;
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is https://www.googletagmanager.com https://www.google-analytics.com https://www.clarity.ms https://c.bing.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is https://www.googletagmanager.com https://www.google-analytics.com https://*.clarity.ms https://c.bing.com;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
   media-src 'self' blob: data: *.s3.amazonaws.com *.supabase.co *.cloudfront.net;
@@ -82,7 +87,7 @@ export default () => {
     trailingSlash: false,
     pageExtensions: ['ts', 'tsx', 'js', 'jsx', 'md', 'mdx'],
     eslint: {
-      dirs: ['app', 'components', 'layouts', 'scripts'],
+      dirs: ['src/app', 'src/components', 'src/layouts', 'scripts'],
     },
     experimental: {
       swcPlugins: [],
@@ -128,6 +133,13 @@ export default () => {
         test: /\.svg$/,
         use: ['@svgr/webpack'],
       })
+
+      // Add path aliases to resolve @/public and @/.source
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        '@/public': path.resolve(__dirname, 'public'),
+        '@/.source': path.resolve(__dirname, '.source'),
+      }
 
       // Add code inspector plugin in development mode
       if (options.dev) {

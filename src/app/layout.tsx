@@ -1,0 +1,320 @@
+import 'fumadocs-ui/style.css'
+import '@/styles/tailwind.css'
+import 'pliny/search/algolia.css'
+import 'remark-github-blockquote-alert/alert.css'
+
+import { Space_Grotesk } from 'next/font/google'
+import { Analytics, AnalyticsConfig } from 'pliny/analytics'
+import { SearchProvider, SearchConfig } from 'pliny/search'
+import Header from '@/components/Header'
+import SectionContainer from '@/components/SectionContainer'
+import Footer from '@/components/Footer'
+import siteMetadata from '@/data/siteMetadata'
+import { ThemeProviders } from './theme-providers'
+import { Metadata } from 'next'
+
+const space_grotesk = Space_Grotesk({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-space-grotesk',
+})
+
+export const metadata: Metadata = {
+  metadataBase: new URL(siteMetadata.siteUrl),
+  title: {
+    default: siteMetadata.title,
+    template: `%s | ReelVan`,
+  },
+  description: siteMetadata.description,
+  keywords: [
+    'AI video',
+    'remove watermark',
+    'Sora video',
+    'Veo video',
+    'Kling video',
+    'JiMeng video',
+    'video enhancement',
+    'AI video editor',
+    'watermark removal',
+    'video quality enhancement',
+    'AI caption generator',
+    'video caption generator',
+    'social media captions',
+    'Instagram caption AI',
+    'TikTok description generator',
+    'AI generated video',
+  ],
+  authors: [{ name: siteMetadata.author }],
+  creator: 'ReelVan',
+  publisher: 'ReelVan',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: siteMetadata.siteUrl,
+    title: 'ReelVan - Turn Your Video Instantly Shareable',
+    description: siteMetadata.description,
+    siteName: 'ReelVan',
+    images: [
+      {
+        url: siteMetadata.socialBanner,
+        width: 1200,
+        height: 630,
+        alt: 'ReelVan - Transform AI-Generated Videos',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ReelVan - Turn Your Video Instantly Shareable',
+    description: siteMetadata.description,
+    site: '@reelvan',
+    creator: '@reelvan',
+    images: [siteMetadata.socialBanner],
+  },
+  alternates: {
+    canonical: siteMetadata.siteUrl,
+    types: {
+      'application/rss+xml': `${siteMetadata.siteUrl}/feed.xml`,
+    },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+  },
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const basePath = process.env.BASE_PATH || ''
+
+  return (
+    <html
+      lang={siteMetadata.language}
+      className={`${space_grotesk.variable} scroll-smooth`}
+      suppressHydrationWarning
+    >
+      <head>
+        <link
+          rel="apple-touch-icon"
+          sizes="76x76"
+          href={`${basePath}/static/favicons/apple-touch-icon.png`}
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href={`${basePath}/static/favicons/favicon-32x32.png`}
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href={`${basePath}/static/favicons/favicon-16x16.png`}
+        />
+        <link rel="manifest" href={`${basePath}/static/favicons/site.webmanifest`} />
+        <link
+          rel="mask-icon"
+          href={`${basePath}/static/favicons/safari-pinned-tab.svg`}
+          color="#5bbad5"
+        />
+        <meta name="msapplication-TileColor" content="#CC785C" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#CC785C" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#CC785C" />
+        <link rel="alternate" type="application/rss+xml" href={`${basePath}/feed.xml`} />
+        {/* Microsoft Clarity */}
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "tp3x06ly71");
+            `,
+          }}
+        />
+        {/* Google tag (gtag.js) */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-8J73ZZ38TH"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-8J73ZZ38TH');
+            `,
+          }}
+        />
+        {/* Organization Schema for Logo in Google Search */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'ReelVan',
+              url: siteMetadata.siteUrl,
+              logo: `${siteMetadata.siteUrl}/static/images/logo.png`,
+              description: siteMetadata.description,
+              email: siteMetadata.email,
+              sameAs: [
+                siteMetadata.x,
+                siteMetadata.youtube,
+                siteMetadata.siteRepo,
+                `${siteMetadata.siteUrl}/blog`,
+                `${siteMetadata.siteUrl}/docs`,
+              ],
+              contactPoint: {
+                '@type': 'ContactPoint',
+                email: siteMetadata.email,
+                contactType: 'Customer Support',
+              },
+              knowsAbout: [
+                'AI Video Enhancement',
+                'Watermark Removal',
+                'Video Quality Enhancement',
+                'Sora Videos',
+                'Veo Videos',
+                'Kling Videos',
+              ],
+            }),
+          }}
+        />
+        {/* SoftwareApplication Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: 'ReelVan',
+              applicationCategory: 'MultimediaApplication',
+              operatingSystem: 'Web',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+                priceValidUntil: '2025-12-31',
+              },
+              description: siteMetadata.description,
+              url: siteMetadata.siteUrl,
+              image: siteMetadata.socialBanner,
+              author: {
+                '@type': 'Organization',
+                name: 'ReelVan',
+                url: siteMetadata.siteUrl,
+              },
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '4.8',
+                ratingCount: '127',
+                bestRating: '5',
+                worstRating: '1',
+              },
+            }),
+          }}
+        />
+        {/* WebSite SearchAction Schema - Enables search box sitelink */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'ReelVan',
+              url: siteMetadata.siteUrl,
+              potentialAction: {
+                '@type': 'SearchAction',
+                target: {
+                  '@type': 'EntryPoint',
+                  urlTemplate: `${siteMetadata.siteUrl}/search?q={search_term_string}`,
+                },
+                'query-input': 'required name=search_term_string',
+              },
+            }),
+          }}
+        />
+        {/* ItemList Schema - Helps Google identify key pages for Sitelinks */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'ItemList',
+              name: 'ReelVan Main Navigation',
+              description: 'Key pages and features of ReelVan',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: 'Home',
+                  url: siteMetadata.siteUrl,
+                  description: 'Transform AI videos into shareable social content',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: 'Video Transformer',
+                  url: `${siteMetadata.siteUrl}/transformer`,
+                  description: 'Remove watermarks and enhance AI-generated videos',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 3,
+                  name: 'Pricing',
+                  url: `${siteMetadata.siteUrl}/pricing`,
+                  description: 'Simple, transparent pricing plans',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 4,
+                  name: 'Blog',
+                  url: `${siteMetadata.siteUrl}/blog`,
+                  description: 'AI video tutorials, tips, and guides',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 5,
+                  name: 'Documentation',
+                  url: `${siteMetadata.siteUrl}/docs`,
+                  description: 'Complete guides and API documentation',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 6,
+                  name: 'Discover',
+                  url: `${siteMetadata.siteUrl}/discover`,
+                  description: 'Explore AI-generated video showcase',
+                },
+              ],
+            }),
+          }}
+        />
+      </head>
+      <body className="bg-background text-foreground pl-[calc(100vw-100%)] antialiased">
+        <ThemeProviders>
+          <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+          {children}
+        </ThemeProviders>
+      </body>
+    </html>
+  )
+}
