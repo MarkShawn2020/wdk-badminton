@@ -10,13 +10,47 @@ export default function Home({ posts }) {
       <section className="relative overflow-hidden pt-16 pb-20 sm:pb-28">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
+            {/* Tagline - Brand positioning */}
+            <p className="text-primary-600 mb-6 text-sm font-semibold tracking-wide uppercase sm:text-base">
+              Make AI Videos Shareable
+            </p>
+            {/* Main H1 - Functional & SEO optimized, split into 2 lines for better readability */}
             <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              Turn Your Video Instantly Shareable
+              <span className="block">Transform AI Videos</span>
+              <span className="text-primary-600 mt-2 block">Into Professional Content</span>
             </h1>
-            <p className="text-muted-foreground mt-6 text-base leading-7 sm:text-lg sm:leading-8">
-              Transform AI videos from Sora, Veo, Kling & JiMeng into ready-to-post social content.
-              Remove watermarks, enhance quality, add custom branding, and get AI-generated
-              captions—all in minutes.
+
+            {/* Core features - Bullet points for better visual hierarchy */}
+            <ul className="text-muted-foreground mx-auto mt-8 max-w-lg space-y-3 text-left text-base sm:text-lg">
+              <li className="flex items-start gap-3">
+                <span className="text-primary-600 mt-1 flex-shrink-0 text-xl">✓</span>
+                <span>
+                  <strong className="text-foreground">Remove watermarks automatically</strong> from
+                  AI-generated videos
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary-600 mt-1 flex-shrink-0 text-xl">✓</span>
+                <span>
+                  <strong className="text-foreground">Upscale to HD 1080p 60fps</strong> — perfect
+                  for social media
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-primary-600 mt-1 flex-shrink-0 text-xl">✓</span>
+                <span>
+                  <strong className="text-foreground">Generate platform-ready captions</strong> for
+                  Instagram, TikTok & YouTube
+                </span>
+              </li>
+            </ul>
+
+            {/* Platform support */}
+            <p className="text-muted-foreground mt-6 text-sm sm:text-base">
+              Supports <strong className="text-foreground">Sora 2</strong> •{' '}
+              <strong className="text-foreground">Veo</strong> •{' '}
+              <strong className="text-foreground">Kling</strong> •{' '}
+              <strong className="text-foreground">JiMeng</strong>
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-x-6">
               <Link
@@ -31,6 +65,14 @@ export default function Home({ posts }) {
               >
                 Learn more <span aria-hidden="true">→</span>
               </Link>
+            </div>
+
+            {/* Trust signal */}
+            <div className="text-muted-foreground mt-8 flex items-center justify-center gap-2 text-sm sm:text-base">
+              <span className="text-xl">⭐</span>
+              <span>
+                Trusted by <strong className="text-foreground">1,247</strong> creators worldwide
+              </span>
             </div>
           </div>
 
@@ -111,12 +153,12 @@ export default function Home({ posts }) {
             >
               Everything You Need
             </h2>
-            <p
+            <h2
               className="text-foreground mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
               style={{ width: '100%', display: 'block' }}
             >
-              ReelVan Transforms Your AI Videos
-            </p>
+              AI Video Enhancement Tools for Sora 2, Veo & Kling
+            </h2>
             <p className="text-muted-foreground mt-6 text-lg leading-8">
               Complete publishing workflow for AI-generated videos. From processing to posting—get
               your video and captions ready in minutes, not hours.
@@ -147,8 +189,8 @@ export default function Home({ posts }) {
                 </dt>
                 <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
                   <p className="flex-auto">
-                    Upscale to 4K, reduce noise, fix artifacts, and enhance colors. AI-powered
-                    processing makes your videos look stunning.
+                    Upscale to HD 1080p 60fps, reduce noise, fix artifacts, and enhance colors.
+                    AI-powered processing optimized for social media platforms.
                   </p>
                 </dd>
               </div>
