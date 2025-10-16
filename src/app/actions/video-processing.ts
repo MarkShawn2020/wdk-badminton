@@ -841,7 +841,7 @@ async function completeJob(videoId: string, video: Video, steps: PipelineStep[])
       status: 'completed',
       completed_at: new Date().toISOString(),
       processed_url: finalTempUrl, // Legacy field
-      final_storage_path: finalStoragePath, // New permanent path
+      processed_storage_path: finalStoragePath, // Permanent storage path
       progress: 100,
     } as never)
     .eq('id', videoId)

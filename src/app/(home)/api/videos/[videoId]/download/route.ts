@@ -14,9 +14,6 @@ import { NextRequest } from 'next/server'
 import { errorResponse } from '@/lib/api/response'
 import { requireAuth } from '@/lib/api/auth'
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
-import type { Database } from '@/types/database'
-
-type Video = Database['public']['Tables']['videos']['Row']
 
 interface RouteContext {
   params: Promise<{ videoId: string }>
@@ -34,7 +31,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const supabase = await createServerClient()
     const { data: video, error } = await supabase
       .from('videos')
-      .select('id, original_filename, final_storage_path, processed_url, status')
+      .select('id, original_filename, processed_storage_path, processed_url, status')
       .eq('id', videoId)
       .eq('user_id', user.id) // Ensure user owns this video
       .single()
@@ -43,10 +40,8 @@ export async function GET(request: NextRequest, context: RouteContext) {
       return errorResponse('Video not found', 404)
     }
 
-    const typedVideo = video as Video
-
     // 4. Verify video is completed
-    if (typedVideo.status !== 'completed') {
+    if (video.status !== 'completed') {
       return errorResponse('Video processing not completed', 400)
     }
 
@@ -55,39 +50,39 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     let videoBlob: Blob
 
-    // Prefer final_storage_path (new system) over processed_url (legacy)
-    if (typedVideo.final_storage_path) {
+    // Prefer processed_storage_path (new system) over processed_url (legacy)
+    if (video.processed_storage_path) {
       // New system: Download from Supabase Storage
       // Use service client because processed/ folder requires service role access
       const serviceSupabase = createServiceClient()
 
       console.log(
         '📥 Downloading from Supabase Storage with service role:',
-        typedVideo.final_storage_path
+        video.processed_storage_path
       )
 
       const { data: fileData, error: downloadError } = await serviceSupabase.storage
         .from('videos')
-        .download(typedVideo.final_storage_path)
+        .download(video.processed_storage_path)
 
       if (downloadError || !fileData) {
         console.error('❌ Failed to download from Supabase Storage:', downloadError)
-        console.error('   Path:', typedVideo.final_storage_path)
+        console.error('   Path:', video.processed_storage_path)
         console.error('   Error details:', JSON.stringify(downloadError, null, 2))
         return errorResponse('Failed to download video from storage', 500)
       }
 
       videoBlob = fileData
-      console.log(`✅ Downloaded from Supabase Storage: ${typedVideo.final_storage_path}`)
+      console.log(`✅ Downloaded from Supabase Storage: ${video.processed_storage_path}`)
       console.log(`   File size: ${(fileData.size / 1024 / 1024).toFixed(2)}MB`)
-    } else if (typedVideo.processed_url) {
+    } else if (video.processed_url) {
       // Legacy fallback: Download from external URL (may be expired)
       console.warn(
         `⚠️ Using legacy processed_url for video ${videoId} (may expire if Replicate URL)`
       )
 
       try {
-        const videoResponse = await fetch(typedVideo.processed_url, {
+        const videoResponse = await fetch(video.processed_url, {
           method: 'GET',
           redirect: 'follow',
         })
@@ -115,7 +110,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     }
 
     // 6. Generate download filename
-    const originalName = typedVideo.original_filename || 'video.mp4'
+    const originalName = video.original_filename || 'video.mp4'
     const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '')
     const downloadFilename = `${nameWithoutExt}_processed.mp4`
 

@@ -182,6 +182,7 @@ export type Database = {
           id: string
           input_video_url: string
           max_retries: number | null
+          output_storage_path: string | null
           output_video_url: string | null
           progress: number | null
           provider: string
@@ -205,6 +206,7 @@ export type Database = {
           id?: string
           input_video_url: string
           max_retries?: number | null
+          output_storage_path?: string | null
           output_video_url?: string | null
           progress?: number | null
           provider: string
@@ -228,6 +230,7 @@ export type Database = {
           id?: string
           input_video_url?: string
           max_retries?: number | null
+          output_storage_path?: string | null
           output_video_url?: string | null
           progress?: number | null
           provider?: string
