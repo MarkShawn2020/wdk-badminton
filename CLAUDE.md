@@ -2,9 +2,24 @@
 
 **Version:** 1.0.0
 **Project:** ReelVan - AI Video Enhancement Platform
-**Last Updated:** 2025-10-07
+**Last Updated:** 2025-10-13
 
 This document provides project-specific development guidelines for AI assistants (Claude, GitHub Copilot, etc.) working on the ReelVan codebase. These guidelines complement the global standards defined in `~/.claude/CLAUDE.md`.
+
+## 👥 Team Structure
+
+- **Jack (yuhaolu)**: Product & Business Lead - Focuses on SEO strategy, content optimization, and business growth
+- **Mark**: Technical Lead - Handles development, architecture, and implementation
+
+## 📁 Project Organization
+
+- `/memo`: Team memo and documentation space
+  - `/memo/jack`: Jack's workspace for business plans, SEO strategies, and todos
+  - `/memo/mark`: Mark's workspace for technical documentation and development todos
+- `/CLAUDE.md`: Main development guidelines (this file)
+- `/PRD.md`: Product Requirements Document
+
+**Note**: Use `/memo` command for quick access to daily planning and task management.
 
 ---
 

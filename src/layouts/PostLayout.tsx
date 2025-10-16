@@ -8,6 +8,7 @@ import Image from '@/components/Image'
 import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import ScrollTopAndComment from '@/components/ScrollTopAndComment'
+import Script from 'next/script'
 
 const editUrl = (path) => `${siteMetadata.siteRepo}/blob/main/data/${path}`
 const discussUrl = (path) =>
@@ -28,14 +29,148 @@ interface LayoutProps {
   children: ReactNode
 }
 
+// FAQ Schema generator for SEO
+function generateFAQSchema(slug: string, title: string) {
+  // FAQ data for each blog post
+  const faqData: Record<string, Array<{ question: string; answer: string }>> = {
+    'remove-sora-watermark': [
+      {
+        question: 'Is removing Sora watermarks legal?',
+        answer:
+          "Removing watermarks is legal if you own the content rights and comply with OpenAI's Terms of Service. Always ensure you have proper licensing for commercial use.",
+      },
+      {
+        question: 'Will removing watermarks affect video quality?',
+        answer:
+          'With professional AI-powered services like ReelVan, quality is preserved or even enhanced. Manual methods may risk quality degradation if not done carefully.',
+      },
+      {
+        question: 'How much does watermark removal cost?',
+        answer:
+          'Professional services like ReelVan cost $2-5 per video with pay-as-you-go pricing. Manual software ranges from $0-300 one-time or $12-50/month subscription. Free tools are available but require technical knowledge.',
+      },
+      {
+        question: 'Can I batch process multiple Sora videos?',
+        answer:
+          'Yes! ReelVan supports batch processing for efficient workflow. Upload multiple videos and process them simultaneously.',
+      },
+      {
+        question: "What's the typical processing time?",
+        answer:
+          'ReelVan processes videos in 5-10 minutes per video. Manual editing takes 1-4 hours per video. Other AI tools typically take 15-30 minutes per video.',
+      },
+      {
+        question: 'Do I need to disclose AI-generated content?',
+        answer:
+          "While not always legally required, it's best practice to disclose AI-generated content in video descriptions, especially on platforms like YouTube and for commercial use.",
+      },
+    ],
+    'remove-veo-watermark': [
+      {
+        question: 'Can I remove watermarks from Google Veo videos?',
+        answer:
+          'Yes, you can remove watermarks from Google Veo videos using professional services like ReelVan or manual editing tools, provided you own the content rights.',
+      },
+      {
+        question: 'Is it legal to remove Veo watermarks?',
+        answer:
+          "It's legal if you created the video using your Veo account and comply with Google's Terms of Service. Always check the latest TOS before removing watermarks.",
+      },
+      {
+        question: 'How long does Veo watermark removal take?',
+        answer:
+          'With ReelVan, the process takes 5-10 minutes per video. Manual editing with Adobe After Effects or similar tools can take 1-4 hours.',
+      },
+      {
+        question: 'Will removing the watermark reduce video quality?',
+        answer:
+          'No, professional AI-powered watermark removal services like ReelVan preserve and can even enhance the original video quality through upscaling and denoising.',
+      },
+    ],
+    'remove-kling-watermark': [
+      {
+        question: 'How do I remove Kling AI watermarks?',
+        answer:
+          'The easiest method is using AI-powered watermark removal services like ReelVan. Upload your Kling video, and the platform automatically detects and removes the watermark in minutes.',
+      },
+      {
+        question: 'Is removing Kling watermarks legal?',
+        answer:
+          'Yes, if you generated the video using your own Kling account and comply with their Terms of Service. Always ensure you have commercial rights if using for business.',
+      },
+      {
+        question: 'Can I remove Kling watermarks for free?',
+        answer:
+          'Free tools like Lama Cleaner exist but require technical setup. For beginners, services like ReelVan offer pay-as-you-go pricing starting at $2-5 per video with professional results.',
+      },
+      {
+        question: 'What quality can I expect after watermark removal?',
+        answer:
+          'Professional services maintain or enhance original quality. ReelVan can upscale Kling videos to 4K while removing watermarks, ensuring no quality loss.',
+      },
+    ],
+    'enhance-ai-video-quality': [
+      {
+        question: 'Can AI really enhance video quality?',
+        answer:
+          'Yes, modern AI video enhancement tools can upscale resolution, reduce noise, improve sharpness, and restore details in AI-generated videos, often achieving 4K quality from lower resolution sources.',
+      },
+      {
+        question: 'How much does AI video enhancement cost?',
+        answer:
+          'Costs vary widely. ReelVan offers pay-as-you-go pricing at approximately $2-5 per video. Subscription services range from $12-95/month. One-time software purchases like Topaz Video AI cost around $299.',
+      },
+      {
+        question: 'Will enhancement work on all AI video platforms?',
+        answer:
+          'Yes, AI video enhancement works on videos from Sora, Veo, Kling, JiMeng, and other AI video generators. The process is platform-agnostic and focuses on improving the underlying video data.',
+      },
+      {
+        question: 'Can I enhance quality and remove watermarks simultaneously?',
+        answer:
+          'Yes! Services like ReelVan allow you to enhance video quality (upscaling, denoising) and remove watermarks in a single processing workflow, saving time and maintaining consistency.',
+      },
+    ],
+  }
+
+  const faqs = faqData[slug]
+  if (!faqs || faqs.length === 0) return null
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  }
+
+  return schema
+}
+
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
   const { path, slug, date, title, tags } = content
   const basePath = path.split('/')[1] || 'blog' // Get 'blog' from '/blog/slug'
   const filePath = `content${path}.mdx` // Reconstruct filePath from path
 
+  // Generate FAQ Schema for SEO
+  const faqSchema = generateFAQSchema(slug, title)
+
   return (
     <SectionContainer>
       <ScrollTopAndComment />
+      {/* FAQ Schema for SEO - Not visible to users */}
+      {faqSchema && (
+        <Script
+          id={`faq-schema-${slug}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
       <article>
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
           <header className="pt-6 xl:pb-6">
