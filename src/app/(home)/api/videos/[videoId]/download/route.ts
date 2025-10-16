@@ -4,14 +4,16 @@
  * GET /api/videos/[videoId]/download
  * Downloads the processed video with proper Content-Disposition header
  *
- * This endpoint proxies the video download from CloudFront/S3
- * to force browser download instead of opening in new tab
+ * CRITICAL: Uses Supabase Storage for permanent video access
+ * - No URL expiration issues (Replicate URLs expire after 1 hour)
+ * - Hides upstream provider information from users
+ * - Provides consistent download experience
  */
 
 import { NextRequest } from 'next/server'
 import { errorResponse } from '@/lib/api/response'
 import { requireAuth } from '@/lib/api/auth'
-import { createServerClient } from '@/lib/supabase/server'
+import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database'
 
 type Video = Database['public']['Tables']['videos']['Row']
@@ -32,7 +34,7 @@ export async function GET(request: NextRequest, context: RouteContext) {
     const supabase = await createServerClient()
     const { data: video, error } = await supabase
       .from('videos')
-      .select('id, original_filename, processed_url, status')
+      .select('id, original_filename, final_storage_path, processed_url, status')
       .eq('id', videoId)
       .eq('user_id', user.id) // Ensure user owns this video
       .single()
@@ -43,48 +45,83 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
     const typedVideo = video as Video
 
-    // 4. Verify video is completed and has processed URL
-    if (typedVideo.status !== 'completed' || !typedVideo.processed_url) {
+    // 4. Verify video is completed
+    if (typedVideo.status !== 'completed') {
       return errorResponse('Video processing not completed', 400)
     }
 
-    // 5. Fetch video from external URL
-    console.log(`📥 Downloading video ${videoId}`)
+    // 5. Download from Supabase Storage (permanent, no expiration)
+    console.log(`📥 Downloading video ${videoId} from Supabase Storage`)
 
-    let videoResponse: Response
-    try {
-      videoResponse = await fetch(typedVideo.processed_url, {
-        method: 'GET',
-        redirect: 'follow',
-      })
+    let videoBlob: Blob
 
-      if (!videoResponse.ok) {
-        console.error(
-          `❌ Failed to fetch video from external URL: ${videoResponse.status} ${videoResponse.statusText}`
-        )
-        // Don't log the actual URL for security
+    // Prefer final_storage_path (new system) over processed_url (legacy)
+    if (typedVideo.final_storage_path) {
+      // New system: Download from Supabase Storage
+      // Use service client because processed/ folder requires service role access
+      const serviceSupabase = createServiceClient()
+
+      console.log(
+        '📥 Downloading from Supabase Storage with service role:',
+        typedVideo.final_storage_path
+      )
+
+      const { data: fileData, error: downloadError } = await serviceSupabase.storage
+        .from('videos')
+        .download(typedVideo.final_storage_path)
+
+      if (downloadError || !fileData) {
+        console.error('❌ Failed to download from Supabase Storage:', downloadError)
+        console.error('   Path:', typedVideo.final_storage_path)
+        console.error('   Error details:', JSON.stringify(downloadError, null, 2))
+        return errorResponse('Failed to download video from storage', 500)
+      }
+
+      videoBlob = fileData
+      console.log(`✅ Downloaded from Supabase Storage: ${typedVideo.final_storage_path}`)
+      console.log(`   File size: ${(fileData.size / 1024 / 1024).toFixed(2)}MB`)
+    } else if (typedVideo.processed_url) {
+      // Legacy fallback: Download from external URL (may be expired)
+      console.warn(
+        `⚠️ Using legacy processed_url for video ${videoId} (may expire if Replicate URL)`
+      )
+
+      try {
+        const videoResponse = await fetch(typedVideo.processed_url, {
+          method: 'GET',
+          redirect: 'follow',
+        })
+
+        if (!videoResponse.ok) {
+          console.error(
+            `❌ Failed to fetch video from external URL: ${videoResponse.status} ${videoResponse.statusText}`
+          )
+          return errorResponse(
+            `Failed to download video: External URL returned ${videoResponse.status}. Video may have expired.`,
+            500
+          )
+        }
+
+        videoBlob = await videoResponse.blob()
+      } catch (fetchError) {
+        console.error('❌ Network error fetching video:', fetchError)
         return errorResponse(
-          `Failed to download video: External URL returned ${videoResponse.status}`,
+          'Failed to download video: Network error or URL expired. Please contact support.',
           500
         )
       }
-    } catch (fetchError) {
-      console.error('❌ Network error fetching video:', fetchError)
-      // Don't log the actual URL for security
-      return errorResponse('Failed to download video: Network error or URL expired', 500)
+    } else {
+      return errorResponse('Video has no download URL available', 500)
     }
 
-    // 6. Get video blob
-    const videoBlob = await videoResponse.blob()
-
-    // 7. Generate download filename
+    // 6. Generate download filename
     const originalName = typedVideo.original_filename || 'video.mp4'
     const nameWithoutExt = originalName.replace(/\.[^/.]+$/, '')
     const downloadFilename = `${nameWithoutExt}_processed.mp4`
 
     console.log(`✅ Serving video download: ${downloadFilename}`)
 
-    // 8. Return video with download headers
+    // 7. Return video with download headers
     return new Response(videoBlob, {
       status: 200,
       headers: {

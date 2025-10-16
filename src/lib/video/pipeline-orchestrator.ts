@@ -17,6 +17,7 @@ import { createServiceClient } from '@/lib/supabase/server'
 import { Database } from '@/types/database'
 import { calculateCreditsRequired as calculateWatermarkCost } from '@/lib/video/cost'
 import { estimateReplicateCost } from '@/lib/video-api/replicate'
+import { getSignedUrl } from '@/lib/storage/video-transfer'
 
 type ProcessingPipeline = Database['public']['Tables']['processing_pipeline']['Row']
 type ProcessingPipelineInsert = Database['public']['Tables']['processing_pipeline']['Insert']
@@ -175,6 +176,9 @@ export async function getNextPipelineStep(videoId: string): Promise<ProcessingPi
 
 /**
  * Get previous completed step's output URL
+ *
+ * CRITICAL: Returns Supabase Storage signed URL instead of temporary upstream URLs
+ * This ensures the video is accessible even if upstream URLs expire
  */
 export async function getPreviousStepOutput(
   videoId: string,
@@ -190,7 +194,7 @@ export async function getPreviousStepOutput(
 
   const { data, error } = await supabase
     .from('processing_pipeline')
-    .select('output_video_url')
+    .select('output_storage_path, output_video_url')
     .eq('video_id', videoId)
     .eq('step_order', previousStepOrder)
     .eq('status', 'completed')
@@ -200,6 +204,13 @@ export async function getPreviousStepOutput(
     throw new Error(`Failed to get previous step output: ${error.message}`)
   }
 
+  // Prefer storage path (permanent) over temporary URL
+  if (data?.output_storage_path) {
+    // Generate signed URL with 24-hour expiration (enough time for next step)
+    return await getSignedUrl(data.output_storage_path, 86400)
+  }
+
+  // Fallback to temporary URL (legacy videos before migration)
   return data?.output_video_url || null
 }
 
@@ -223,14 +234,19 @@ export async function isPipelineCompleted(videoId: string): Promise<boolean> {
 }
 
 /**
- * Get final output URL from last completed step
+ * Get final output storage path from last completed step
+ *
+ * CRITICAL: Returns Supabase Storage path instead of temporary upstream URL
+ * This path is permanent and should be used for all user-facing features
+ *
+ * @returns Storage path (e.g., "processed/quality_enhanced/{videoId}_{timestamp}.mp4")
  */
 export async function getFinalOutputUrl(videoId: string): Promise<string | null> {
   const supabase = createServiceClient()
 
   const { data, error } = await supabase
     .from('processing_pipeline')
-    .select('output_video_url')
+    .select('output_storage_path, output_video_url')
     .eq('video_id', videoId)
     .eq('status', 'completed')
     .order('step_order', { ascending: false })
@@ -241,6 +257,13 @@ export async function getFinalOutputUrl(videoId: string): Promise<string | null>
     throw new Error(`Failed to get final output URL: ${error.message}`)
   }
 
+  // Prefer storage path (permanent) over temporary URL
+  if (data?.output_storage_path) {
+    return data.output_storage_path
+  }
+
+  // Fallback to temporary URL (legacy videos before migration)
+  // WARNING: This may expire if using Replicate (1-hour expiration)
   return data?.output_video_url || null
 }
 

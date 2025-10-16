@@ -12,6 +12,7 @@
 import { createServerClient, createServiceClient } from '@/lib/supabase/server'
 import { getWaveSpeedClient } from '@/lib/video-api/wavespeed'
 import { getReplicateClient } from '@/lib/video-api/replicate'
+import { transferVideoToStorage } from '@/lib/storage/video-transfer'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import type { Database } from '@/types/database'
@@ -690,13 +691,24 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
           throw new Error('WaveSpeed completed but no output video URL')
         }
 
-        console.log('✅ WaveSpeed completed, output URL:', result.outputs[0])
+        const temporaryUrl = result.outputs[0]
+        console.log('✅ WaveSpeed completed, temporary URL:', temporaryUrl)
 
-        // Save output URL
+        // CRITICAL: Transfer to Supabase Storage immediately
+        console.log('🔄 Transferring WaveSpeed output to Supabase Storage...')
+        const storagePath = await transferVideoToStorage(
+          temporaryUrl,
+          step.video_id,
+          'watermark_removed'
+        )
+        console.log('✅ Transferred to Supabase Storage:', storagePath)
+
+        // Save both URLs (temporary for reference, storage path for permanence)
         await serviceSupabase
           .from('processing_pipeline')
           .update({
-            output_video_url: result.outputs[0],
+            output_video_url: temporaryUrl, // Keep for reference
+            output_storage_path: storagePath, // Permanent storage
           } as never)
           .eq('id', step.id)
 
@@ -747,19 +759,32 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
         .eq('id', step.id)
 
       if (result.status === 'succeeded') {
+        const temporaryUrl = result.output as string
         console.log('✅ Replicate completed!')
-        console.log('📥 Output URL:', result.output)
+        console.log('📥 Temporary output URL:', temporaryUrl)
         console.log('⏱️  Processing time:', {
           created_at: result.created_at,
           started_at: result.started_at,
           completed_at: result.completed_at,
         })
 
-        // Save output URL
+        // CRITICAL: Transfer to Supabase Storage immediately (1-hour expiration!)
+        console.log(
+          '🔄 Transferring Replicate output to Supabase Storage (before 1-hour expiration)...'
+        )
+        const storagePath = await transferVideoToStorage(
+          temporaryUrl,
+          step.video_id,
+          'quality_enhanced'
+        )
+        console.log('✅ Transferred to Supabase Storage:', storagePath)
+
+        // Save both URLs (temporary for reference, storage path for permanence)
         await serviceSupabase
           .from('processing_pipeline')
           .update({
-            output_video_url: result.output as string,
+            output_video_url: temporaryUrl, // Keep for reference
+            output_storage_path: storagePath, // Permanent storage
           } as never)
           .eq('id', step.id)
 
@@ -792,16 +817,20 @@ async function checkExternalJobStatus(step: PipelineStep): Promise<boolean> {
 async function completeJob(videoId: string, video: Video, steps: PipelineStep[]) {
   const serviceSupabase = createServiceClient()
 
-  // Get final output URL from last completed step
+  // Get final output from last completed step
   const completedSteps = steps.filter((s) => s.status === 'completed')
   console.log('📊 Completed steps:', completedSteps.length)
 
   const lastStep = completedSteps.sort((a, b) => b.step_order - a.step_order)[0]
 
-  const finalUrl = lastStep?.output_video_url || video.original_url
-  console.log('🔗 Final video URL:', finalUrl)
+  // Prefer storage path (permanent) over temporary URL
+  const finalStoragePath = lastStep?.output_storage_path
+  const finalTempUrl = lastStep?.output_video_url || video.original_url
 
-  if (!finalUrl) {
+  console.log('🔗 Final temporary URL:', finalTempUrl)
+  console.log('📦 Final storage path:', finalStoragePath || '(none - legacy video)')
+
+  if (!finalStoragePath && !finalTempUrl) {
     console.error('❌ No final video URL found!')
     throw new Error('No final video URL available')
   }
@@ -811,7 +840,8 @@ async function completeJob(videoId: string, video: Video, steps: PipelineStep[])
     .update({
       status: 'completed',
       completed_at: new Date().toISOString(),
-      processed_url: finalUrl,
+      processed_url: finalTempUrl, // Legacy field
+      final_storage_path: finalStoragePath, // New permanent path
       progress: 100,
     } as never)
     .eq('id', videoId)
@@ -822,7 +852,9 @@ async function completeJob(videoId: string, video: Video, steps: PipelineStep[])
   }
 
   revalidatePath(`/jobs/${videoId}`)
-  console.log(`✅ Job ${videoId} completed with URL: ${finalUrl}`)
+  console.log(`✅ Job ${videoId} completed!`)
+  console.log(`   📦 Supabase Storage: ${finalStoragePath || 'N/A (legacy)'}`)
+  console.log(`   🔗 Temporary URL: ${finalTempUrl} (for reference only)`)
 }
 
 /**

@@ -14,6 +14,7 @@ import {
   getFinalOutputUrl,
   isPipelineCompleted,
 } from '@/lib/video/pipeline-orchestrator'
+import { transferVideoToStorage } from '@/lib/storage/video-transfer'
 
 type ProcessingPipeline = Database['public']['Tables']['processing_pipeline']['Row']
 
@@ -129,25 +130,27 @@ export async function startNextPipelineStep(videoId: string): Promise<boolean> {
 export async function finalizePipeline(videoId: string): Promise<void> {
   const supabase = createServiceClient()
 
-  // Get final output URL from last completed step
-  const finalUrl = await getFinalOutputUrl(videoId)
+  // Get final storage path from last completed step
+  const finalStoragePath = await getFinalOutputUrl(videoId)
 
-  if (!finalUrl) {
-    throw new Error(`Final output URL not found for video ${videoId}`)
+  if (!finalStoragePath) {
+    throw new Error(`Final storage path not found for video ${videoId}`)
   }
 
-  // Update video record
+  // Update video record with permanent storage path
   await supabase
     .from('videos')
     .update({
       status: 'completed',
-      processed_url: finalUrl,
+      final_storage_path: finalStoragePath, // Permanent Supabase Storage path
+      processed_url: finalStoragePath, // Legacy field, keep for backward compatibility
       completed_at: new Date().toISOString(),
       progress: 100,
     } as never)
     .eq('id', videoId)
 
   console.log(`✅ Pipeline completed for video ${videoId}`)
+  console.log(`📦 Final storage path: ${finalStoragePath}`)
 }
 
 /**
@@ -165,18 +168,28 @@ export async function pollPipelineStep(step: ProcessingPipeline): Promise<boolea
     console.log(`🔄 WaveSpeed step ${step.step_order} status:`, result.status)
 
     if (result.status === 'completed') {
-      const outputUrl = result.outputs?.[0]
+      const temporaryUrl = result.outputs?.[0]
 
-      if (!outputUrl) {
+      if (!temporaryUrl) {
         throw new Error(`No output URL for completed step ${step.id}`)
       }
 
-      // Update step as completed
+      // CRITICAL: Transfer video to Supabase Storage immediately
+      // WaveSpeed URLs may be temporary and could expire
+      console.log(`🔄 Transferring WaveSpeed output to Supabase Storage for video ${step.video_id}`)
+      const storagePath = await transferVideoToStorage(
+        temporaryUrl,
+        step.video_id,
+        'watermark_removed'
+      )
+
+      // Update step as completed with storage path
       await supabase
         .from('processing_pipeline')
         .update({
           status: 'completed',
-          output_video_url: outputUrl,
+          output_video_url: temporaryUrl, // Keep original URL for reference
+          output_storage_path: storagePath, // Permanent storage path
           completed_at: new Date().toISOString(),
           progress: 100,
         } as never)
@@ -205,18 +218,29 @@ export async function pollPipelineStep(step: ProcessingPipeline): Promise<boolea
     console.log(`🔄 Replicate step ${step.step_order} status:`, result.status)
 
     if (result.status === 'succeeded') {
-      const outputUrl = result.output
+      const temporaryUrl = result.output
 
-      if (!outputUrl) {
+      if (!temporaryUrl) {
         throw new Error(`No output URL for completed step ${step.id}`)
       }
 
-      // Update step as completed
+      // CRITICAL: Transfer video to Supabase Storage immediately
+      // Replicate output URLs expire after 1 hour!
+      // See: https://replicate.com/docs/topics/predictions/output-files.md
+      console.log(`🔄 Transferring Replicate output to Supabase Storage for video ${step.video_id}`)
+      const storagePath = await transferVideoToStorage(
+        temporaryUrl,
+        step.video_id,
+        'quality_enhanced'
+      )
+
+      // Update step as completed with storage path
       await supabase
         .from('processing_pipeline')
         .update({
           status: 'completed',
-          output_video_url: outputUrl,
+          output_video_url: temporaryUrl, // Keep original URL for reference
+          output_storage_path: storagePath, // Permanent storage path
           completed_at: new Date().toISOString(),
           progress: 100,
         } as never)
