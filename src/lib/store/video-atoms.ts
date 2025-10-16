@@ -51,22 +51,24 @@ export const videoInputSourceAtom = atomWithStorage<VideoInputSource>(
 
 /**
  * Persistent atom for watermark removal option
+ * Default: true (core feature, should be enabled by default)
  * getOnInit: true - Eagerly read from localStorage on initialization to prevent flash
  */
 export const removeWatermarkAtom = atomWithStorage<boolean>(
   'reelvan:remove-watermark',
-  false,
+  true,
   undefined,
   { getOnInit: true }
 )
 
 /**
  * Persistent atom for quality enhancement option
+ * Default: true (premium feature, recommended for best results)
  * getOnInit: true - Eagerly read from localStorage on initialization to prevent flash
  */
 export const enhanceQualityAtom = atomWithStorage<boolean>(
   'reelvan:enhance-quality',
-  false,
+  true,
   undefined,
   { getOnInit: true }
 )

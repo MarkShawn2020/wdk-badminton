@@ -17,7 +17,7 @@ interface FeatureToggleCardProps {
   title: string
   description: string
   badge?: string
-  badgeVariant?: 'new' | 'popular' | 'coming-soon'
+  badgeVariant?: 'new' | 'popular' | 'recommend' | 'coming-soon'
   enabled: boolean
   onToggle: (enabled: boolean) => void
   disabled?: boolean
@@ -37,7 +37,8 @@ export function FeatureToggleCard({
 }: FeatureToggleCardProps) {
   const badgeStyles = {
     new: 'bg-primary/10 text-primary',
-    popular: 'bg-amber-500/10 text-amber-700 dark:text-amber-500',
+    popular: 'bg-primary/10 text-primary',
+    recommend: 'bg-amber-500/10 text-amber-700 dark:text-amber-500',
     'coming-soon': 'bg-muted text-muted-foreground',
   }
 

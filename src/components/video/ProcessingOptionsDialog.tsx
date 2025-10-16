@@ -101,6 +101,8 @@ export function ProcessingOptionsDialog({
             icon={BadgeCheck}
             title="Remove Watermark"
             description="Remove AI platform watermarks from your video"
+            badge="Popular"
+            badgeVariant="popular"
             enabled={removeWatermark}
             onToggle={setRemoveWatermark}
             disabled={disabled}
@@ -111,8 +113,8 @@ export function ProcessingOptionsDialog({
             icon={Zap}
             title="Enhance Quality"
             description="Boost quality for perfect social sharing (1080p, 60fps)"
-            badge="Popular"
-            badgeVariant="popular"
+            badge="Recommend"
+            badgeVariant="recommend"
             enabled={enhanceQuality}
             onToggle={handleEnhanceQualityToggle}
             disabled={disabled}
@@ -140,11 +142,11 @@ export function ProcessingOptionsDialog({
             icon={Sparkles}
             title="AI Caption Generation"
             description="Get platform-optimized captions for your video"
-            badge="NEW"
-            badgeVariant="new"
+            badge="Coming Soon"
+            badgeVariant="coming-soon"
             enabled={generateCaptions}
             onToggle={setGenerateCaptions}
-            disabled={disabled}
+            disabled={true}
           >
             <div className="space-y-4">
               {/* Platform Selection */}

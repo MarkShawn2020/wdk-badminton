@@ -45,7 +45,8 @@ const PRESETS: PresetOption[] = [
     name: 'Clean Video',
     description: 'Remove watermark only',
     icon: <Sparkles className="h-5 w-5" />,
-    badge: 'Fastest',
+    badge: 'Popular',
+    popular: true,
     options: {
       removeWatermark: true,
       enhanceQuality: false,
@@ -58,8 +59,7 @@ const PRESETS: PresetOption[] = [
     name: 'Premium',
     description: 'Watermark + quality boost',
     icon: <Zap className="h-5 w-5" />,
-    badge: 'Popular',
-    popular: true,
+    badge: 'Recommend',
     options: {
       removeWatermark: true,
       enhanceQuality: true,
@@ -85,7 +85,7 @@ const PRESETS: PresetOption[] = [
     description: 'Choose your options',
     icon: <Settings2 className="h-5 w-5" />,
     options: {
-      removeWatermark: false,
+      removeWatermark: true,
       enhanceQuality: false,
       targetResolution: undefined,
       targetAspectRatio: undefined,
@@ -120,7 +120,7 @@ export function ProcessingOptionsPresets({
   const [selectedPreset, setSelectedPreset] = useState<string>('full-enhancement')
   const [showCustomOptions, setShowCustomOptions] = useState(false)
   const [customOptions, setCustomOptions] = useState<ProcessingOptionsType>({
-    removeWatermark: false,
+    removeWatermark: true,
     enhanceQuality: false,
     targetResolution: undefined,
     targetAspectRatio: undefined,
