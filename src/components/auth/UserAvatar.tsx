@@ -37,20 +37,45 @@ export function UserAvatar() {
   const supabase = createClient()
 
   useEffect(() => {
+    console.log('[UserAvatar] Component mounted, checking session...')
+
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null)
-      setLoading(false)
-    })
+    supabase.auth
+      .getSession()
+      .then(({ data: { session }, error }) => {
+        console.log('[UserAvatar] Initial session check:', {
+          hasSession: !!session,
+          hasError: !!error,
+          userId: session?.user?.id,
+          userEmail: session?.user?.email,
+          expiresAt: session?.expires_at,
+          error,
+        })
+        setUser(session?.user ?? null)
+        setLoading(false)
+      })
+      .catch((err) => {
+        console.error('[UserAvatar] Failed to get session:', err)
+        setLoading(false)
+      })
 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[UserAvatar] Auth state changed:', {
+        event,
+        hasSession: !!session,
+        userId: session?.user?.id,
+        userEmail: session?.user?.email,
+      })
       setUser(session?.user ?? null)
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      console.log('[UserAvatar] Component unmounting, unsubscribing...')
+      subscription.unsubscribe()
+    }
   }, [supabase.auth])
 
   const handleSignOut = async () => {

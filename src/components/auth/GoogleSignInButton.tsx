@@ -39,16 +39,37 @@ export function GoogleSignInButton({
       setIsLoading(true)
       setError(null)
 
+      console.log('[GoogleSignIn] Starting Google sign-in flow...')
+
       const supabase = createClient()
 
       // Get current origin for redirect
       const origin = typeof window !== 'undefined' ? window.location.origin : ''
+      const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`
+
+      console.log('[GoogleSignIn] Redirect configuration:', {
+        origin,
+        redirectTo,
+        callbackUrl,
+        currentUrl: window.location.href,
+      })
+
+      // WARNING: Check if Supabase Site URL matches current origin
+      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
+        console.warn(
+          '[GoogleSignIn] ⚠️  Local development detected! Ensure Supabase Site URL is set to:',
+          origin
+        )
+        console.warn(
+          '[GoogleSignIn] ⚠️  Go to Supabase Dashboard → Authentication → URL Configuration'
+        )
+      }
 
       const { data, error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           // PKCE flow: redirect to callback route for code exchange
-          redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+          redirectTo: callbackUrl,
           // Request offline access to get refresh token
           queryParams: {
             access_type: 'offline',
@@ -57,7 +78,15 @@ export function GoogleSignInButton({
         },
       })
 
+      console.log('[GoogleSignIn] signInWithOAuth result:', {
+        hasData: !!data,
+        hasError: !!signInError,
+        data,
+      })
+
       if (signInError) throw signInError
+
+      console.log('[GoogleSignIn] Redirecting to Google consent screen...')
 
       // Success callback
       if (onSuccess) {
@@ -69,7 +98,7 @@ export function GoogleSignInButton({
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to sign in with Google'
       setError(errorMessage)
-      console.error('Google sign-in error:', err)
+      console.error('[GoogleSignIn] Error:', err)
 
       if (onError && err instanceof Error) {
         onError(err)

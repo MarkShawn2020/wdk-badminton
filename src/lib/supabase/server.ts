@@ -12,26 +12,53 @@ import { Database } from '@/types/database'
 export async function createServerClient() {
   const cookieStore = await cookies()
 
+  console.log('[ServerClient] Creating server client...')
+
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return cookieStore.get(name)?.value
+          const value = cookieStore.get(name)?.value
+          console.log('[ServerClient] Cookie GET:', {
+            name,
+            hasValue: !!value,
+            valueLength: value?.length,
+          })
+          return value
         },
         set(name: string, value: string, options) {
           try {
+            console.log('[ServerClient] Cookie SET:', {
+              name,
+              valueLength: value?.length,
+              options: {
+                ...options,
+                expires: options?.expires?.toString(),
+              },
+            })
             cookieStore.set({ name, value, ...options })
           } catch (error) {
-            // Handle cookie setting errors (can happen in Server Components)
+            // EXPECTED: Cookie writes fail in Server Components
+            // This is normal behavior - Supabase will handle session management client-side
+            console.log(
+              '[ServerClient] Cookie SET skipped (Server Component - expected behavior):',
+              { name }
+            )
+            // No need to log the full error as this is not an error condition
           }
         },
         remove(name: string, options) {
           try {
+            console.log('[ServerClient] Cookie REMOVE:', { name })
             cookieStore.set({ name, value: '', ...options })
           } catch (error) {
-            // Handle cookie removal errors
+            // EXPECTED: Cookie removal fails in Server Components
+            console.log(
+              '[ServerClient] Cookie REMOVE skipped (Server Component - expected behavior):',
+              { name }
+            )
           }
         },
       },
