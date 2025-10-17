@@ -18,38 +18,21 @@ export async function createServerClient() {
     {
       cookies: {
         get(name: string) {
-          const value = cookieStore.get(name)?.value
-          // Only log auth token chunks that have values (reduces noise from chunk probing)
-          if (value && process.env.NODE_ENV === 'development') {
-            console.log(
-              `[Supabase] 🔑 Auth token chunk: ${name.split('.').pop()} (${value.length} bytes)`
-            )
-          }
-          return value
+          return cookieStore.get(name)?.value
         },
         set(name: string, value: string, options) {
           try {
             cookieStore.set({ name, value, ...options })
-            if (process.env.NODE_ENV === 'development') {
-              console.log(`[Supabase] ✅ Cookie set: ${name.split('-').pop()}`)
-            }
-          } catch (error) {
-            // Expected in Server Components - Supabase handles session client-side
-            if (process.env.NODE_ENV === 'development') {
-              console.log(
-                `[Supabase] ⏭️  Cookie set skipped (server component): ${name.split('-').pop()}`
-              )
-            }
+          } catch {
+            // Expected: Cookie writes fail in Server Components
+            // Supabase handles session management client-side
           }
         },
         remove(name: string, options) {
           try {
             cookieStore.set({ name, value: '', ...options })
-            if (process.env.NODE_ENV === 'development') {
-              console.log(`[Supabase] 🗑️  Cookie removed: ${name.split('-').pop()}`)
-            }
-          } catch (error) {
-            // Expected in Server Components
+          } catch {
+            // Expected: Cookie removal fails in Server Components
           }
         },
       },

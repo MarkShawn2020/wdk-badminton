@@ -14,18 +14,26 @@ let client: ReturnType<typeof createBrowserClient<Database>> | undefined
 export function createClient() {
   // Singleton pattern to reuse client instance
   if (client) {
-    console.log('[BrowserClient] Returning existing client instance')
     return client
   }
-
-  console.log('[BrowserClient] Creating new browser client instance')
 
   client = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  console.log('[BrowserClient] Client created successfully')
+  // Optional: Log meaningful auth events (not cookie I/O)
+  if (process.env.NODE_ENV === 'development') {
+    client.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN') {
+        console.log(`[Auth] ✅ Signed in: ${session?.user.email}`)
+      } else if (event === 'SIGNED_OUT') {
+        console.log('[Auth] 👋 Signed out')
+      } else if (event === 'TOKEN_REFRESHED') {
+        console.log('[Auth] 🔄 Token refreshed')
+      }
+    })
+  }
 
   return client
 }
