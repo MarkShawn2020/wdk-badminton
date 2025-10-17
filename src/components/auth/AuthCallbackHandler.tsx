@@ -56,19 +56,17 @@ export function AuthCallbackHandler() {
           userId: data.user?.id,
         })
 
-        // Clean the URL by removing code and next parameters
-        const url = new URL(window.location.href)
-        url.searchParams.delete('code')
-        url.searchParams.delete('next')
+        // Give browser a moment to ensure cookies are set in storage
+        await new Promise((resolve) => setTimeout(resolve, 100))
 
-        // Replace the URL without the code (don't add to history)
-        window.history.replaceState({}, '', url.pathname)
+        console.log(
+          '[AuthCallback] ✅ Authentication complete! Reloading page to apply auth state...'
+        )
 
-        // Force router refresh to update server components with new auth state
-        console.log('[AuthCallback] Refreshing router to update auth state...')
-        router.refresh()
-
-        console.log('[AuthCallback] ✅ Authentication complete!')
+        // Use full page reload instead of router.refresh() to ensure
+        // the server components re-render with the new auth cookies
+        // This is more reliable than router.refresh() for auth state changes
+        window.location.href = next
       } catch (err) {
         console.error('[AuthCallback] Unexpected error:', err)
         router.push('/')
