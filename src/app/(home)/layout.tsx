@@ -31,13 +31,13 @@ export default async function HomeLayout({ children }: { children: React.ReactNo
   // Authenticated users: Show workspace directly from layout
   if (user) {
     // Fetch user credits
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('credits')
-      .eq('id', user.id)
+    const { data: userCredit } = await supabase
+      .from('user_credits')
+      .select('balance')
+      .eq('user_id', user.id)
       .single()
 
-    const credits = profile?.credits || 0
+    const credits = userCredit?.balance || 0
 
     // Render workspace view (bypassing children/page component)
     return <WorkspaceView credits={credits} userEmail={user.email || ''} />

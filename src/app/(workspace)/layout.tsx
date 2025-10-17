@@ -25,13 +25,13 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
   }
 
   // Fetch user credits
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('credits')
-    .eq('id', user.id)
+  const { data: userCredit } = await supabase
+    .from('user_credits')
+    .select('balance')
+    .eq('user_id', user.id)
     .single()
 
-  const credits = profile?.credits || 0
+  const credits = userCredit?.balance || 0
 
   return (
     <div className="bg-background flex h-screen overflow-hidden">

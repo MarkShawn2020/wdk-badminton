@@ -14,10 +14,13 @@ import { Switch } from '@/components/components/ui/switch'
 import { User, Bell, Key, CreditCard, AlertTriangle, LogOut } from 'lucide-react'
 
 interface Profile {
-  id: string
-  full_name?: string | null
-  timezone?: string | null
-  credits?: number
+  user_id: string
+  balance: number
+  tier: string
+  total_earned: number
+  total_spent: number
+  created_at: string | null
+  updated_at: string | null
 }
 
 /**
@@ -52,11 +55,11 @@ export default function SettingsPage() {
 
       setUser(currentUser)
 
-      // Fetch user profile
+      // Fetch user credits
       const { data: profileData } = await supabase
-        .from('profiles')
+        .from('user_credits')
         .select('*')
-        .eq('id', currentUser.id)
+        .eq('user_id', currentUser.id)
         .single()
 
       setProfile(profileData)
@@ -125,13 +128,17 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="name">Display Name</Label>
-                <Input id="name" placeholder="Your name" defaultValue={profile?.full_name || ''} />
+                <Label htmlFor="credits">Account Balance</Label>
+                <Input id="credits" value={`${profile?.balance || 0} credits`} disabled />
+                <p className="text-muted-foreground text-xs">
+                  View your credit balance and history
+                </p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
-                <Input id="timezone" placeholder="UTC" defaultValue={profile?.timezone || 'UTC'} />
+                <Label htmlFor="tier">Account Tier</Label>
+                <Input id="tier" value={profile?.tier || 'free'} disabled />
+                <p className="text-muted-foreground text-xs">Upgrade your tier for more benefits</p>
               </div>
 
               <Button>Save Changes</Button>

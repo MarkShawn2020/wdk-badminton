@@ -38,14 +38,14 @@ export default async function CreditsPage() {
 
   // Fetch user profile and credits
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('credits, created_at')
-    .eq('id', user.id)
+    .from('user_credits')
+    .select('balance, created_at')
+    .eq('user_id', user.id)
     .single()
 
   // Fetch transaction history
   const { data: transactions } = await supabase
-    .from('transactions')
+    .from('credit_transactions')
     .select('*')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
@@ -53,16 +53,12 @@ export default async function CreditsPage() {
 
   // Calculate stats
   const totalEarned =
-    transactions
-      ?.filter((t) => t.amount_credits > 0)
-      .reduce((sum, t) => sum + t.amount_credits, 0) || 0
+    transactions?.filter((t) => t.amount > 0).reduce((sum, t) => sum + t.amount, 0) || 0
 
   const totalSpent =
-    transactions
-      ?.filter((t) => t.amount_credits < 0)
-      .reduce((sum, t) => sum + Math.abs(t.amount_credits), 0) || 0
+    transactions?.filter((t) => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0) || 0
 
-  const estimatedVideosRemaining = Math.floor((profile?.credits || 0) / 150)
+  const estimatedVideosRemaining = Math.floor((profile?.balance || 0) / 150)
 
   // Credit packages (matching pricing page)
   const packages = [
@@ -106,7 +102,7 @@ export default async function CreditsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-white/80">Current Balance</p>
-                <p className="text-4xl font-bold">{formatCredits(profile?.credits || 0)}</p>
+                <p className="text-4xl font-bold">{formatCredits(profile?.balance || 0)}</p>
                 <p className="text-sm text-white/60">
                   ≈ {estimatedVideosRemaining} videos remaining
                 </p>
@@ -198,7 +194,7 @@ export default async function CreditsPage() {
             <CardContent className="p-0">
               <div className="divide-y">
                 {transactions.map((transaction) => {
-                  const isCredit = transaction.amount_credits > 0
+                  const isCredit = transaction.amount > 0
                   return (
                     <div key={transaction.id} className="flex items-center justify-between p-4">
                       <div className="flex items-center gap-3">
@@ -221,7 +217,11 @@ export default async function CreditsPage() {
                           </p>
                           <div className="text-muted-foreground flex items-center gap-2 text-sm">
                             <Clock className="h-3 w-3" />
-                            <span>{new Date(transaction.created_at).toLocaleString()}</span>
+                            <span>
+                              {transaction.created_at
+                                ? new Date(transaction.created_at).toLocaleString()
+                                : 'N/A'}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -234,11 +234,13 @@ export default async function CreditsPage() {
                           }`}
                         >
                           {isCredit ? '+' : ''}
-                          {formatCredits(transaction.amount_credits)}
+                          {formatCredits(transaction.amount)}
                         </p>
-                        {transaction.metadata?.video_id && (
-                          <p className="text-muted-foreground text-xs">Video processing</p>
-                        )}
+                        {transaction.metadata &&
+                          typeof transaction.metadata === 'object' &&
+                          'video_id' in transaction.metadata && (
+                            <p className="text-muted-foreground text-xs">Video processing</p>
+                          )}
                       </div>
                     </div>
                   )

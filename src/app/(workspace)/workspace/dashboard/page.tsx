@@ -28,9 +28,9 @@ export default async function DashboardPage() {
 
   // Fetch user profile and credits
   const { data: profile } = await supabase
-    .from('profiles')
-    .select('credits, created_at')
-    .eq('id', user.id)
+    .from('user_credits')
+    .select('balance, created_at')
+    .eq('user_id', user.id)
     .single()
 
   // Fetch processing videos
@@ -58,16 +58,16 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
 
   const { data: creditStats } = await supabase
-    .from('transactions')
-    .select('amount_credits, type')
+    .from('credit_transactions')
+    .select('amount, type')
     .eq('user_id', user.id)
 
   const totalSpent =
     creditStats
       ?.filter((t) => t.type === 'video_processing')
-      .reduce((sum, t) => sum + Math.abs(t.amount_credits), 0) || 0
+      .reduce((sum, t) => sum + Math.abs(t.amount), 0) || 0
 
-  const estimatedVideosRemaining = Math.floor((profile?.credits || 0) / 150)
+  const estimatedVideosRemaining = Math.floor((profile?.balance || 0) / 150)
 
   return (
     <div className="space-y-6">
@@ -78,7 +78,7 @@ export default async function DashboardPage() {
             Welcome back, {user.email?.split('@')[0]}!
           </h1>
           <p className="text-muted-foreground">
-            You have {formatCredits(profile?.credits || 0)} credits remaining (≈{' '}
+            You have {formatCredits(profile?.balance || 0)} credits remaining (≈{' '}
             {estimatedVideosRemaining} videos)
           </p>
         </div>
@@ -168,24 +168,17 @@ export default async function DashboardPage() {
             {recentVideos.map((video) => (
               <Card key={video.id} className="overflow-hidden">
                 <div className="bg-muted relative aspect-video">
-                  {video.thumbnail_url ? (
-                    <Image
-                      src={video.thumbnail_url}
-                      alt={video.original_filename}
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center">
-                      <Video className="text-muted-foreground h-12 w-12" />
-                    </div>
-                  )}
+                  <div className="flex h-full items-center justify-center">
+                    <Video className="text-muted-foreground h-12 w-12" />
+                  </div>
                 </div>
                 <CardContent className="p-4">
                   <p className="truncate font-medium">{video.original_filename}</p>
                   <div className="text-muted-foreground mt-2 flex items-center justify-between text-sm">
-                    <span>{new Date(video.created_at).toLocaleDateString()}</span>
-                    <span>{formatCredits(video.cost_credits || 0)}</span>
+                    <span>
+                      {video.created_at ? new Date(video.created_at).toLocaleDateString() : 'N/A'}
+                    </span>
+                    <span>{formatCredits(video.actual_cost_credits || 0)}</span>
                   </div>
                 </CardContent>
               </Card>

@@ -115,11 +115,7 @@ export default function UploadPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <ProcessingOptionsCompact
-                value={options}
-                onChange={setOptions}
-                disabled={isProcessing}
-              />
+              <ProcessingOptionsCompact onChange={setOptions} disabled={isProcessing} />
             </CardContent>
           </Card>
 

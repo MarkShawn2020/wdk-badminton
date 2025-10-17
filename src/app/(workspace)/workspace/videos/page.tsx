@@ -26,11 +26,11 @@ import { formatCredits } from '@/lib/video/cost'
  */
 
 interface PageProps {
-  searchParams: {
+  searchParams: Promise<{
     status?: string
     sort?: string
     page?: string
-  }
+  }>
 }
 
 export default async function VideosPage({ searchParams }: PageProps) {
@@ -41,10 +41,11 @@ export default async function VideosPage({ searchParams }: PageProps) {
 
   if (!user) return null
 
-  // Parse search params
-  const status = searchParams.status || 'all'
-  const sort = searchParams.sort || 'recent'
-  const page = parseInt(searchParams.page || '1')
+  // Parse search params (Next.js 15: searchParams is now async)
+  const params = await searchParams
+  const status = params.status || 'all'
+  const sort = params.sort || 'recent'
+  const page = parseInt(params.page || '1')
   const pageSize = 12
 
   // Build query
@@ -61,7 +62,7 @@ export default async function VideosPage({ searchParams }: PageProps) {
   } else if (sort === 'oldest') {
     query = query.order('created_at', { ascending: true })
   } else if (sort === 'cost') {
-    query = query.order('cost_credits', { ascending: false })
+    query = query.order('actual_cost_credits', { ascending: false })
   }
 
   // Pagination
@@ -145,18 +146,9 @@ export default async function VideosPage({ searchParams }: PageProps) {
             <Card key={video.id} className="group overflow-hidden">
               {/* Thumbnail */}
               <div className="bg-muted relative aspect-video overflow-hidden">
-                {video.thumbnail_url ? (
-                  <Image
-                    src={video.thumbnail_url}
-                    alt={video.original_filename}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center">
-                    <Video className="text-muted-foreground h-12 w-12" />
-                  </div>
-                )}
+                <div className="flex h-full items-center justify-center">
+                  <Video className="text-muted-foreground h-12 w-12" />
+                </div>
 
                 {/* Status Badge */}
                 <div className="absolute top-2 left-2">
@@ -227,8 +219,10 @@ export default async function VideosPage({ searchParams }: PageProps) {
                 </div>
 
                 <div className="text-muted-foreground flex items-center justify-between text-sm">
-                  <span>{new Date(video.created_at).toLocaleDateString()}</span>
-                  <span>{formatCredits(video.cost_credits || 0)}</span>
+                  <span>
+                    {video.created_at ? new Date(video.created_at).toLocaleDateString() : 'N/A'}
+                  </span>
+                  <span>{formatCredits(video.actual_cost_credits || 0)}</span>
                 </div>
               </CardContent>
             </Card>
