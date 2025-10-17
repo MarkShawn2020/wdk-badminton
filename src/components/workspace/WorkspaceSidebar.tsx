@@ -1,11 +1,19 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/components/ui/button'
 import { Separator } from '@/components/components/ui/separator'
 import { ScrollArea } from '@/components/components/ui/scroll-area'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/components/ui/dropdown-menu'
 import {
   Home,
   Upload,
@@ -15,8 +23,11 @@ import {
   Settings,
   HelpCircle,
   ChevronRight,
+  LogOut,
+  User,
 } from 'lucide-react'
 import { formatCredits } from '@/lib/video/cost'
+import { createClient } from '@/lib/supabase/client'
 
 /**
  * Workspace Sidebar - Main navigation for authenticated users
@@ -53,6 +64,19 @@ interface WorkspaceSidebarProps {
 
 export function WorkspaceSidebar({ credits, userEmail }: WorkspaceSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut({ scope: 'local' })
+    router.push('/')
+    router.refresh()
+  }
+
+  // Get first character safely
+  const getInitial = (email: string) => {
+    return email && email.length > 0 ? email[0].toUpperCase() : '?'
+  }
 
   return (
     <aside className="bg-muted/10 hidden w-60 flex-col border-r lg:flex">
@@ -159,18 +183,61 @@ export function WorkspaceSidebar({ credits, userEmail }: WorkspaceSidebarProps) 
 
       {/* User Profile */}
       <div className="border-t p-3">
-        <Link href="/workspace/settings">
-          <Button variant="ghost" className="w-full justify-start gap-3 px-3">
-            <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
-              {userEmail[0].toUpperCase()}
-            </div>
-            <div className="flex-1 overflow-hidden text-left">
-              <p className="truncate text-sm font-medium">{userEmail}</p>
-              <p className="text-muted-foreground text-xs">View profile</p>
-            </div>
-            <ChevronRight className="text-muted-foreground h-4 w-4" />
-          </Button>
-        </Link>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="w-full justify-start gap-3 px-3"
+              aria-label="Open account menu"
+            >
+              <div className="bg-primary text-primary-foreground flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium">
+                {getInitial(userEmail)}
+              </div>
+              <div className="flex-1 overflow-hidden text-left">
+                <p className="truncate text-sm font-medium">{userEmail}</p>
+                <p className="text-muted-foreground text-xs">Account</p>
+              </div>
+              <ChevronRight className="text-muted-foreground h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-56" side="top">
+            <DropdownMenuLabel>
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm leading-none font-medium">{userEmail}</p>
+                <p className="text-muted-foreground text-xs leading-none">
+                  {formatCredits(credits)} credits
+                </p>
+              </div>
+            </DropdownMenuLabel>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link href="/workspace/settings" className="flex cursor-pointer items-center">
+                <User className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem asChild>
+              <Link href="/docs" className="flex cursor-pointer items-center">
+                <HelpCircle className="mr-2 h-4 w-4" />
+                <span>Help & Support</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="text-destructive focus:text-destructive cursor-pointer"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Sign Out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </aside>
   )

@@ -1,4 +1,9 @@
-import { createServerClient } from '@/lib/supabase/server'
+'use client'
+
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
+import { User as SupabaseUser } from '@supabase/supabase-js'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/components/ui/card'
 import { Button } from '@/components/components/ui/button'
 import { Input } from '@/components/components/ui/input'
@@ -6,7 +11,14 @@ import { Label } from '@/components/components/ui/label'
 import { Separator } from '@/components/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/components/ui/tabs'
 import { Switch } from '@/components/components/ui/switch'
-import { User, Bell, Key, CreditCard, AlertTriangle } from 'lucide-react'
+import { User, Bell, Key, CreditCard, AlertTriangle, LogOut } from 'lucide-react'
+
+interface Profile {
+  id: string
+  full_name?: string | null
+  timezone?: string | null
+  credits?: number
+}
 
 /**
  * Settings Page - User preferences and account management
@@ -17,18 +29,57 @@ import { User, Bell, Key, CreditCard, AlertTriangle } from 'lucide-react'
  * - API keys (future)
  * - Billing information
  * - Account deletion
+ * - Sign out
  */
 
-export default async function SettingsPage() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+export default function SettingsPage() {
+  const router = useRouter()
+  const supabase = createClient()
+  const [user, setUser] = useState<SupabaseUser | null>(null)
+  const [profile, setProfile] = useState<Profile | null>(null)
+  const [loading, setLoading] = useState(true)
 
-  if (!user) return null
+  useEffect(() => {
+    async function loadData() {
+      const {
+        data: { user: currentUser },
+      } = await supabase.auth.getUser()
 
-  // Fetch user profile
-  const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      if (!currentUser) {
+        router.push('/login')
+        return
+      }
+
+      setUser(currentUser)
+
+      // Fetch user profile
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser.id)
+        .single()
+
+      setProfile(profileData)
+      setLoading(false)
+    }
+
+    loadData()
+  }, [supabase, router])
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut({ scope: 'local' })
+    router.push('/')
+    router.refresh()
+  }
+
+  if (loading || !user) {
+    return (
+      <div className="mx-auto max-w-4xl space-y-6">
+        <div className="h-8 w-48 animate-pulse rounded bg-gray-200"></div>
+        <div className="h-64 animate-pulse rounded bg-gray-200"></div>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
@@ -200,6 +251,21 @@ export default async function SettingsPage() {
 
         {/* Account Tab */}
         <TabsContent value="account" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Sign Out</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground mb-4 text-sm">
+                Sign out from your ReelVan account on this device.
+              </p>
+              <Button variant="outline" onClick={handleSignOut}>
+                <LogOut className="mr-2 h-4 w-4" />
+                Sign Out
+              </Button>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Change Password</CardTitle>

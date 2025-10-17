@@ -48,7 +48,7 @@ export default async function WorkspaceLayout({ children }: { children: React.Re
       </div>
 
       {/* Mobile Navigation - Bottom */}
-      <WorkspaceMobileNav credits={credits} />
+      <WorkspaceMobileNav credits={credits} userEmail={user.email || ''} />
     </div>
   )
 }

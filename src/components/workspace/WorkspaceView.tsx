@@ -38,7 +38,7 @@ export function WorkspaceView({ credits, userEmail }: WorkspaceViewProps) {
       </div>
 
       {/* Mobile Navigation - Bottom */}
-      <WorkspaceMobileNav credits={credits} />
+      <WorkspaceMobileNav credits={credits} userEmail={userEmail} />
     </div>
   )
 }
