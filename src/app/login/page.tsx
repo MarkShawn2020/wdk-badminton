@@ -39,7 +39,7 @@ export default function Login() {
           <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 dark:bg-gray-900">
             <div className="space-y-6">
               {/* Google Sign In */}
-              <GoogleSignInButton redirectTo="/dashboard" />
+              <GoogleSignInButton />
 
               {/* Security Notice */}
               <div className="text-muted-foreground text-center text-xs">

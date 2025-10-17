@@ -12,8 +12,6 @@ import { Database } from '@/types/database'
 export async function createServerClient() {
   const cookieStore = await cookies()
 
-  console.log('[ServerClient] Creating server client...')
-
   return createClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -21,44 +19,37 @@ export async function createServerClient() {
       cookies: {
         get(name: string) {
           const value = cookieStore.get(name)?.value
-          console.log('[ServerClient] Cookie GET:', {
-            name,
-            hasValue: !!value,
-            valueLength: value?.length,
-          })
+          // Only log auth token chunks that have values (reduces noise from chunk probing)
+          if (value && process.env.NODE_ENV === 'development') {
+            console.log(
+              `[Supabase] 🔑 Auth token chunk: ${name.split('.').pop()} (${value.length} bytes)`
+            )
+          }
           return value
         },
         set(name: string, value: string, options) {
           try {
-            console.log('[ServerClient] Cookie SET:', {
-              name,
-              valueLength: value?.length,
-              options: {
-                ...options,
-                expires: options?.expires?.toString(),
-              },
-            })
             cookieStore.set({ name, value, ...options })
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`[Supabase] ✅ Cookie set: ${name.split('-').pop()}`)
+            }
           } catch (error) {
-            // EXPECTED: Cookie writes fail in Server Components
-            // This is normal behavior - Supabase will handle session management client-side
-            console.log(
-              '[ServerClient] Cookie SET skipped (Server Component - expected behavior):',
-              { name }
-            )
-            // No need to log the full error as this is not an error condition
+            // Expected in Server Components - Supabase handles session client-side
+            if (process.env.NODE_ENV === 'development') {
+              console.log(
+                `[Supabase] ⏭️  Cookie set skipped (server component): ${name.split('-').pop()}`
+              )
+            }
           }
         },
         remove(name: string, options) {
           try {
-            console.log('[ServerClient] Cookie REMOVE:', { name })
             cookieStore.set({ name, value: '', ...options })
+            if (process.env.NODE_ENV === 'development') {
+              console.log(`[Supabase] 🗑️  Cookie removed: ${name.split('-').pop()}`)
+            }
           } catch (error) {
-            // EXPECTED: Cookie removal fails in Server Components
-            console.log(
-              '[ServerClient] Cookie REMOVE skipped (Server Component - expected behavior):',
-              { name }
-            )
+            // Expected in Server Components
           }
         },
       },

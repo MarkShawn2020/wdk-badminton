@@ -22,7 +22,7 @@ import { createServerClient } from '@/lib/supabase/server'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = searchParams.get('next') ?? '/'
 
   console.log('[AuthCallback] Callback route triggered:', {
     hasCode: !!code,
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   })
 
   // Security: Only allow relative URLs for redirect
-  const redirectTo = next.startsWith('/') ? next : '/dashboard'
+  const redirectTo = next.startsWith('/') ? next : '/'
 
   if (code) {
     try {

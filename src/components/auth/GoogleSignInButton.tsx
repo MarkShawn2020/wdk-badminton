@@ -26,7 +26,7 @@ interface GoogleSignInButtonProps {
 }
 
 export function GoogleSignInButton({
-  redirectTo = '/dashboard',
+  redirectTo = '/',
   onSuccess,
   onError,
   className = '',
@@ -45,7 +45,9 @@ export function GoogleSignInButton({
 
       // Get current origin for redirect
       const origin = typeof window !== 'undefined' ? window.location.origin : ''
-      const callbackUrl = `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`
+      // Note: We redirect to root with 'code' parameter, not /auth/callback
+      // because Supabase uses the Site URL configured in dashboard
+      const callbackUrl = `${origin}/?next=${encodeURIComponent(redirectTo)}`
 
       console.log('[GoogleSignIn] Redirect configuration:', {
         origin,
@@ -68,7 +70,8 @@ export function GoogleSignInButton({
       const { data, error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          // PKCE flow: redirect to callback route for code exchange
+          // PKCE flow: redirect to homepage for code exchange
+          // The AuthCallbackHandler component will handle the code exchange
           redirectTo: callbackUrl,
           // Request offline access to get refresh token
           queryParams: {

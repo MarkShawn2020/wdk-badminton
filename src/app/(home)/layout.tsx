@@ -4,6 +4,7 @@ import Header from '@/components/Header'
 import SectionContainer from '@/components/SectionContainer'
 import Footer from '@/components/Footer'
 import { WorkspaceView } from '@/components/workspace/WorkspaceView'
+import { AuthCallbackHandler } from '@/components/auth/AuthCallbackHandler'
 import siteMetadata from '@/data/siteMetadata'
 
 /**
@@ -26,6 +27,8 @@ export default async function HomeLayout({ children }: { children: React.ReactNo
     data: { user },
   } = await supabase.auth.getUser()
 
+  console.log('HomeLayout: ', { user })
+
   // Authenticated users: Show workspace directly from layout
   if (user) {
     // Fetch user credits
@@ -44,6 +47,8 @@ export default async function HomeLayout({ children }: { children: React.ReactNo
   // Anonymous users: Wrap children (landing page) with Header + Footer
   return (
     <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
+      {/* Handle OAuth callback if code is present in URL */}
+      <AuthCallbackHandler />
       <Header />
       <SectionContainer>
         <main className="mb-auto">{children}</main>
