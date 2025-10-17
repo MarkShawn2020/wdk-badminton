@@ -1,28 +1,21 @@
 import { source } from '@/lib/source'
-import { redirect } from 'next/navigation'
-import { createServerClient } from '@/lib/supabase/server'
 import Main from './Main'
 import type { BlogPageData } from '@/types/content'
 
 /**
- * Homepage - Smart routing based on authentication
+ * Homepage - Landing page content
  *
- * - Authenticated users → Redirect to /workspace/dashboard
- * - Anonymous users → Show landing page
+ * Note: This component is ONLY rendered for anonymous users.
+ * Authenticated users never reach this component because the Layout
+ * intercepts and renders WorkspaceView directly.
+ *
+ * This elegant design means:
+ * - No auth check needed here
+ * - No conditional rendering
+ * - Single responsibility: render landing page
  */
 export default async function Page() {
-  // Check if user is authenticated
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  // Redirect authenticated users to workspace
-  if (user) {
-    redirect('/workspace/dashboard')
-  }
-
-  // Show landing page for anonymous users
+  // Fetch blog posts for landing page
   const posts = source.getPages().map((page) => {
     const pageData = page.data as unknown as BlogPageData
     return {
