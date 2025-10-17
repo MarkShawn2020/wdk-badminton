@@ -42,6 +42,15 @@ export default function SignUp() {
               {/* Google Sign In */}
               <GoogleSignInButton redirectTo="/dashboard" />
 
+              {/* Security Notice */}
+              <div className="text-muted-foreground text-center text-xs">
+                <p>
+                  Secure authentication powered by Google.
+                  <br />
+                  You'll be redirected to Google's login page.
+                </p>
+              </div>
+
               {/* Divider */}
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">

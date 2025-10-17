@@ -143,21 +143,21 @@ export function UserAvatar() {
 
         {/* Navigation Items */}
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="flex cursor-pointer items-center">
-            <Video className="mr-2 h-4 w-4" />
-            <span>Dashboard</span>
+          <Link href="/workspace/dashboard" className="flex cursor-pointer items-center">
+            <UserIcon className="mr-2 h-4 w-4" />
+            <span>Workspace</span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/transformer" className="flex cursor-pointer items-center">
+          <Link href="/workspace/upload" className="flex cursor-pointer items-center">
             <Video className="mr-2 h-4 w-4" />
             <span>Upload Video</span>
           </Link>
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/settings" className="flex cursor-pointer items-center">
+          <Link href="/workspace/settings" className="flex cursor-pointer items-center">
             <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </Link>

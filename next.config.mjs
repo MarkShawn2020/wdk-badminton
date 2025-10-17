@@ -98,6 +98,18 @@ export default () => {
           protocol: 'https',
           hostname: 'picsum.photos',
         },
+        {
+          protocol: 'https',
+          hostname: '*.supabase.co',
+        },
+        {
+          protocol: 'https',
+          hostname: '*.amazonaws.com',
+        },
+        {
+          protocol: 'https',
+          hostname: '*.cloudfront.net',
+        },
       ],
       unoptimized,
     },
