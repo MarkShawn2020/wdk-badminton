@@ -1,6 +1,8 @@
 {
-  "name": "tailwind-nextjs-starter-blog",
-  "version": "2.4.0",
+  "name": "wdk-badminton-club",
+  "version": "1.0.0",
+  "description": "五道口AI创业羽毛球俱乐部管理平台 - Wudaokou AI Badminton Club Management Platform",
+  "author": "WDK Badminton Club",
   "private": true,
   "scripts": {
     "start": "next dev",
