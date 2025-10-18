@@ -57,10 +57,10 @@ export default function Home({ posts }) {
             {/* CTA 按钮 */}
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
               <Link
-                href="/reservations"
+                href="/register"
                 className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 w-full rounded-lg px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
               >
-                查看活动
+                立即加入
               </Link>
               <Link
                 href="/members"
@@ -504,16 +504,16 @@ export default function Home({ posts }) {
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
               <Link
-                href="/signup"
+                href="/register"
                 className="hover:bg-primary-700 text-primary-600 w-full rounded-lg bg-white px-8 py-3.5 text-base font-semibold shadow-lg transition-all hover:shadow-xl sm:w-auto"
               >
                 立即加入
               </Link>
               <Link
-                href="/about"
+                href="/members"
                 className="w-full rounded-lg border-2 border-white px-8 py-3.5 text-center text-base font-semibold text-white transition-all hover:bg-white/10 sm:w-auto"
               >
-                了解更多
+                浏览会员
               </Link>
             </div>
           </div>
