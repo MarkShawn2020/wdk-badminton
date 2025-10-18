@@ -3,17 +3,22 @@ import '@/styles/tailwind.css'
 import 'pliny/search/algolia.css'
 import 'remark-github-blockquote-alert/alert.css'
 
-import { Space_Grotesk } from 'next/font/google'
+import { Noto_Sans_SC, Space_Grotesk } from 'next/font/google'
 import { Analytics, AnalyticsConfig } from 'pliny/analytics'
-import { SearchProvider, SearchConfig } from 'pliny/search'
-import Header from '@/components/Header'
-import SectionContainer from '@/components/SectionContainer'
-import Footer from '@/components/Footer'
 import siteMetadata from '@/data/siteMetadata'
 import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
 
-const space_grotesk = Space_Grotesk({
+// 中文字体：思源黑体（Noto Sans SC）
+const notoSansSC = Noto_Sans_SC({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  display: 'swap',
+  variable: '--font-noto-sans-sc',
+})
+
+// 英文字体：Space Grotesk（保留，用于英文和数字）
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-space-grotesk',
@@ -23,30 +28,26 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteMetadata.siteUrl),
   title: {
     default: siteMetadata.title,
-    template: `%s | ReelVan`,
+    template: `%s | 五道口羽毛球`,
   },
   description: siteMetadata.description,
   keywords: [
-    'AI video',
-    'remove watermark',
-    'Sora video',
-    'Veo video',
-    'Kling video',
-    'JiMeng video',
-    'video enhancement',
-    'AI video editor',
-    'watermark removal',
-    'video quality enhancement',
-    'AI caption generator',
-    'video caption generator',
-    'social media captions',
-    'Instagram caption AI',
-    'TikTok description generator',
-    'AI generated video',
+    '五道口羽毛球',
+    'AI创业',
+    '羽毛球俱乐部',
+    'badminton club',
+    '北京羽毛球',
+    '海淀羽毛球',
+    '清华羽毛球',
+    '北大羽毛球',
+    'AI entrepreneurs',
+    'startup community',
+    '创业者社区',
+    '羽毛球活动',
   ],
-  authors: [{ name: siteMetadata.author }],
-  creator: 'ReelVan',
-  publisher: 'ReelVan',
+  authors: [{ name: 'WDK Badminton Club' }],
+  creator: '五道口AI创业羽毛球俱乐部',
+  publisher: '五道口AI创业羽毛球俱乐部',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
@@ -57,33 +58,28 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    locale: 'en_US',
+    locale: 'zh_CN',
     url: siteMetadata.siteUrl,
-    title: 'ReelVan - Turn Your Video Instantly Shareable',
+    title: '五道口AI创业羽毛球俱乐部 - 连接创业者，享受羽毛球',
     description: siteMetadata.description,
-    siteName: 'ReelVan',
+    siteName: '五道口羽毛球',
     images: [
       {
         url: siteMetadata.socialBanner,
         width: 1200,
         height: 630,
-        alt: 'ReelVan - Transform AI-Generated Videos',
+        alt: '五道口AI创业羽毛球俱乐部',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ReelVan - Turn Your Video Instantly Shareable',
+    title: '五道口AI创业羽毛球俱乐部',
     description: siteMetadata.description,
-    site: '@reelvan',
-    creator: '@reelvan',
     images: [siteMetadata.socialBanner],
   },
   alternates: {
     canonical: siteMetadata.siteUrl,
-    types: {
-      'application/rss+xml': `${siteMetadata.siteUrl}/feed.xml`,
-    },
   },
   robots: {
     index: true,
@@ -96,9 +92,6 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
-  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -106,11 +99,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html
-      lang={siteMetadata.language}
-      className={`${space_grotesk.variable} scroll-smooth`}
+      lang="zh-CN"
+      className={`${notoSansSC.variable} ${spaceGrotesk.variable} scroll-smooth`}
       suppressHydrationWarning
     >
       <head>
+        {/* Favicons */}
         <link
           rel="apple-touch-icon"
           sizes="76x76"
@@ -129,117 +123,97 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           href={`${basePath}/static/favicons/favicon-16x16.png`}
         />
         <link rel="manifest" href={`${basePath}/static/favicons/site.webmanifest`} />
-        <link
-          rel="mask-icon"
-          href={`${basePath}/static/favicons/safari-pinned-tab.svg`}
-          color="#5bbad5"
-        />
-        <meta name="msapplication-TileColor" content="#CC785C" />
-        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#CC785C" />
-        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#CC785C" />
-        <link rel="alternate" type="application/rss+xml" href={`${basePath}/feed.xml`} />
-        {/* Microsoft Clarity */}
-        <script
-          type="text/javascript"
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function(c,l,a,r,i,t,y){
-                c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-                t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-                y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-              })(window, document, "clarity", "script", "tp3x06ly71");
-            `,
-          }}
-        />
-        {/* Google tag (gtag.js) */}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-8J73ZZ38TH"></script>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-8J73ZZ38TH');
-            `,
-          }}
-        />
-        {/* Organization Schema for Logo in Google Search */}
+
+        {/* Theme Colors - 羽毛球主题色（橙色/绿色） */}
+        <meta name="msapplication-TileColor" content="#FF6B35" />
+        <meta name="theme-color" media="(prefers-color-scheme: light)" content="#FF6B35" />
+        <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1A1A1A" />
+
+        {/* Organization Schema for SEO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'Organization',
-              name: 'ReelVan',
+              '@type': 'SportsOrganization',
+              name: '五道口AI创业羽毛球俱乐部',
+              alternateName: 'Wudaokou AI Badminton Club',
               url: siteMetadata.siteUrl,
               logo: `${siteMetadata.siteUrl}/static/images/logo.png`,
               description: siteMetadata.description,
               email: siteMetadata.email,
-              sameAs: [
-                siteMetadata.x,
-                siteMetadata.youtube,
-                siteMetadata.siteRepo,
-                `${siteMetadata.siteUrl}/blog`,
-                `${siteMetadata.siteUrl}/docs`,
-              ],
-              contactPoint: {
-                '@type': 'ContactPoint',
-                email: siteMetadata.email,
-                contactType: 'Customer Support',
+              areaServed: {
+                '@type': 'City',
+                name: '北京',
+                alternateName: 'Beijing',
+              },
+              sport: 'Badminton',
+              memberOf: {
+                '@type': 'Organization',
+                name: 'AI创业者社区',
               },
               knowsAbout: [
-                'AI Video Enhancement',
-                'Watermark Removal',
-                'Video Quality Enhancement',
-                'Sora Videos',
-                'Veo Videos',
-                'Kling Videos',
+                'Badminton',
+                'AI Entrepreneurship',
+                'Community Building',
+                'Sports & Networking',
               ],
             }),
           }}
         />
-        {/* SoftwareApplication Schema */}
+
+        {/* LocalBusiness Schema for Location-based SEO */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
-              '@type': 'SoftwareApplication',
-              name: 'ReelVan',
-              applicationCategory: 'MultimediaApplication',
-              operatingSystem: 'Web',
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'USD',
-                priceValidUntil: '2025-12-31',
-              },
-              description: siteMetadata.description,
+              '@type': 'LocalBusiness',
+              name: '五道口AI创业羽毛球俱乐部',
+              image: `${siteMetadata.siteUrl}/static/images/og-badminton.png`,
+              '@id': siteMetadata.siteUrl,
               url: siteMetadata.siteUrl,
-              image: siteMetadata.socialBanner,
-              author: {
-                '@type': 'Organization',
-                name: 'ReelVan',
-                url: siteMetadata.siteUrl,
+              telephone: '', // 可选：添加联系电话
+              priceRange: '¥',
+              address: {
+                '@type': 'PostalAddress',
+                streetAddress: '五道口',
+                addressLocality: '北京市海淀区',
+                addressRegion: '北京',
+                postalCode: '100084',
+                addressCountry: 'CN',
               },
-              aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '4.8',
-                ratingCount: '127',
-                bestRating: '5',
-                worstRating: '1',
+              geo: {
+                '@type': 'GeoCoordinates',
+                latitude: 39.9925,
+                longitude: 116.3387,
               },
+              openingHoursSpecification: [
+                {
+                  '@type': 'OpeningHoursSpecification',
+                  dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                  opens: '18:00',
+                  closes: '22:00',
+                },
+                {
+                  '@type': 'OpeningHoursSpecification',
+                  dayOfWeek: ['Saturday', 'Sunday'],
+                  opens: '09:00',
+                  closes: '22:00',
+                },
+              ],
             }),
           }}
         />
-        {/* WebSite SearchAction Schema - Enables search box sitelink */}
+
+        {/* WebSite Schema with Search */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              name: 'ReelVan',
+              name: '五道口AI创业羽毛球俱乐部',
               url: siteMetadata.siteUrl,
               potentialAction: {
                 '@type': 'SearchAction',
@@ -252,64 +226,58 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             }),
           }}
         />
-        {/* ItemList Schema - Helps Google identify key pages for Sitelinks */}
+
+        {/* Navigation Pages for Sitelinks */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'ItemList',
-              name: 'ReelVan Main Navigation',
-              description: 'Key pages and features of ReelVan',
+              name: '五道口羽毛球俱乐部主要页面',
+              description: '俱乐部核心功能导航',
               itemListElement: [
                 {
                   '@type': 'ListItem',
                   position: 1,
-                  name: 'Home',
+                  name: '首页',
                   url: siteMetadata.siteUrl,
-                  description: 'Transform AI videos into shareable social content',
+                  description: '五道口AI创业羽毛球俱乐部主页',
                 },
                 {
                   '@type': 'ListItem',
                   position: 2,
-                  name: 'Video Transformer',
-                  url: `${siteMetadata.siteUrl}/transformer`,
-                  description: 'Remove watermarks and enhance AI-generated videos',
+                  name: '会员列表',
+                  url: `${siteMetadata.siteUrl}/members`,
+                  description: '浏览所有活跃会员',
                 },
                 {
                   '@type': 'ListItem',
                   position: 3,
-                  name: 'Pricing',
-                  url: `${siteMetadata.siteUrl}/pricing`,
-                  description: 'Simple, transparent pricing plans',
+                  name: '积分排名',
+                  url: `${siteMetadata.siteUrl}/rankings`,
+                  description: '查看会员积分排行榜',
                 },
                 {
                   '@type': 'ListItem',
                   position: 4,
-                  name: 'Blog',
-                  url: `${siteMetadata.siteUrl}/blog`,
-                  description: 'AI video tutorials, tips, and guides',
+                  name: '场地预约',
+                  url: `${siteMetadata.siteUrl}/reservations`,
+                  description: '查看和报名羽毛球活动',
                 },
                 {
                   '@type': 'ListItem',
                   position: 5,
-                  name: 'Documentation',
-                  url: `${siteMetadata.siteUrl}/docs`,
-                  description: 'Complete guides and API documentation',
-                },
-                {
-                  '@type': 'ListItem',
-                  position: 6,
-                  name: 'Discover',
-                  url: `${siteMetadata.siteUrl}/discover`,
-                  description: 'Explore AI-generated video showcase',
+                  name: '关于我们',
+                  url: `${siteMetadata.siteUrl}/about`,
+                  description: '了解俱乐部历史和规则',
                 },
               ],
             }),
           }}
         />
       </head>
-      <body className="bg-background text-foreground pl-[calc(100vw-100%)] antialiased">
+      <body className="bg-background text-foreground pl-[calc(100vw-100%)] font-sans antialiased">
         <ThemeProviders>
           <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
           {children}
