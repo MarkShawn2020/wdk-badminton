@@ -6,7 +6,14 @@
  * npx prisma db seed
  */
 
-import { PrismaClient, SkillLevel, MemberStatus, ReservationStatus } from '@prisma/client'
+import {
+  PrismaClient,
+  SkillLevel,
+  MemberStatus,
+  ReservationStatus,
+  Member,
+  Reservation,
+} from '@prisma/client'
 import { sampleMembers } from '../src/data/sample-members'
 import { sampleReservations } from '../src/data/sample-reservations'
 
@@ -27,7 +34,7 @@ async function main() {
 
   // Seed members
   console.log('👥 Seeding members...')
-  const createdMembers = []
+  const createdMembers: Member[] = []
   for (const member of sampleMembers) {
     const created = await prisma.member.create({
       data: {
@@ -52,7 +59,7 @@ async function main() {
 
   // Seed reservations
   console.log('🏟️  Seeding reservations...')
-  const createdReservations = []
+  const createdReservations: Reservation[] = []
   for (const reservation of sampleReservations) {
     // Find organizer by name
     const organizer = createdMembers.find((m) => m.name === reservation.organizerName)
