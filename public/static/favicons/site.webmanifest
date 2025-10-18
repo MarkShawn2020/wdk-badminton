@@ -1,6 +1,6 @@
 {
-  "name": "ReelVan",
-  "short_name": "ReelVan",
+  "name": "五道口AI创业羽毛球俱乐部",
+  "short_name": "五道口羽毛球",
   "icons": [
     {
       "src": "/android-chrome-96x96.png",
@@ -8,7 +8,7 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#CC785C",
+  "theme_color": "#FF6B35",
   "background_color": "#ffffff",
   "display": "standalone"
 }

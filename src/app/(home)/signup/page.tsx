@@ -1,11 +1,10 @@
 import Link from '@/components/Link'
 import { genPageMetadata } from '@/app/seo'
-import { GoogleSignInButton } from '@/components/auth/GoogleSignInButton'
 
 export const metadata = genPageMetadata({
-  title: 'Sign Up - ReelVan',
+  title: '加入我们 - 五道口AI创业羽毛球俱乐部',
   description:
-    'Create your free ReelVan account and start enhancing your AI-generated videos today. No credit card required.',
+    '加入五道口AI创业羽毛球俱乐部，结识优秀的AI创业者，享受羽毛球运动的乐趣。Phase 1 MVP版本免费开放。',
 })
 
 export default function SignUp() {
@@ -13,56 +12,20 @@ export default function SignUp() {
     <>
       <div className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <div className="bg-primary-100 dark:bg-primary-900 mx-auto flex h-12 w-12 items-center justify-center rounded-full">
-            <svg
-              className="text-primary-600 dark:text-primary-400 h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
+          <div className="bg-primary-100 dark:bg-primary-900 mx-auto flex h-16 w-16 items-center justify-center rounded-full text-3xl">
+            🏸
           </div>
           <h2 className="text-foreground mt-6 text-center text-3xl font-bold tracking-tight">
-            Create Your Account
+            加入五道口AI创业羽毛球俱乐部
           </h2>
           <p className="text-muted-foreground mt-2 text-center text-sm">
-            Start enhancing your AI videos today. No credit card required.
+            Phase 1 MVP版本完全免费，无需注册即可浏览内容
           </p>
         </div>
 
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10 dark:bg-gray-900">
             <div className="space-y-6">
-              {/* Google Sign In */}
-              <GoogleSignInButton />
-
-              {/* Security Notice */}
-              <div className="text-muted-foreground text-center text-xs">
-                <p>
-                  Secure authentication powered by Google.
-                  <br />
-                  You'll be redirected to Google's login page.
-                </p>
-              </div>
-
-              {/* Divider */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="border-border w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="bg-background text-muted-foreground px-2">
-                    Email coming soon
-                  </span>
-                </div>
-              </div>
-
               <div className="bg-info/10 rounded-md p-4">
                 <div className="flex">
                   <div className="flex-shrink-0">
@@ -77,123 +40,85 @@ export default function SignUp() {
                   <div className="ml-3 flex-1">
                     <div>
                       <p className="text-info-foreground text-sm">
-                        <strong>What you get with your free account:</strong>
+                        <strong>Phase 1 MVP - 当前功能：</strong>
                       </p>
                       <ul className="text-info-foreground mt-2 list-inside list-disc space-y-1 text-sm">
-                        <li>1 free video enhancement per day</li>
-                        <li>Instant access to all features</li>
-                        <li>Secure authentication with Google</li>
-                        <li>No credit card required</li>
+                        <li>浏览会员列表</li>
+                        <li>查看积分排名</li>
+                        <li>查看活动预约</li>
+                        <li>了解俱乐部信息</li>
+                        <li>完全免费，无需注册</li>
                       </ul>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-800">
-                <h3 className="text-foreground text-sm font-medium">
-                  Want to be notified when we launch?
-                </h3>
+              <div className="rounded-md bg-gradient-to-br from-orange-50 to-red-50 p-4 dark:from-orange-950 dark:to-red-950">
+                <h3 className="text-foreground text-sm font-medium">Phase 2 计划 - 用户认证功能</h3>
                 <p className="text-muted-foreground mt-2 text-sm">
-                  Follow our development progress on GitHub or check back soon.
+                  Phase 2将推出完整的用户系统：微信登录、手机验证、会员权限管理等功能。
+                </p>
+                <div className="text-muted-foreground mt-3 space-y-1 text-xs">
+                  <p>✅ 微信快捷登录</p>
+                  <p>✅ 手机号验证</p>
+                  <p>✅ 个人资料管理</p>
+                  <p>✅ 活动报名系统</p>
+                  <p>✅ 积分自动累积</p>
+                </div>
+              </div>
+
+              <div className="rounded-md bg-gray-50 p-4 dark:bg-gray-800">
+                <h3 className="text-foreground text-sm font-medium">现在开始探索</h3>
+                <p className="text-muted-foreground mt-2 text-sm">
+                  无需等待，立即浏览俱乐部内容，了解会员风采和活动信息。
                 </p>
                 <div className="mt-4 flex gap-4">
                   <Link
-                    href="https://github.com/markshawn2020/reelvan-web"
-                    className="bg-primary-600 hover:bg-primary-500 inline-flex items-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm"
+                    href="/"
+                    className="bg-primary-600 hover:bg-primary-500 inline-flex items-center rounded-md px-4 py-2 text-sm font-semibold text-white shadow-sm"
                   >
-                    <svg className="mr-2 h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                    View on GitHub
+                    🏠 返回首页
                   </Link>
                   <Link
-                    href="/"
-                    className="inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:ring-gray-700 dark:hover:bg-gray-700"
+                    href="/about"
+                    className="inline-flex items-center rounded-md bg-white px-4 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 ring-inset hover:bg-gray-50 dark:bg-gray-800 dark:text-gray-100 dark:ring-gray-700 dark:hover:bg-gray-700"
                   >
-                    Back to Home
+                    ℹ️ 关于我们
                   </Link>
                 </div>
               </div>
 
               <div className="border-t border-gray-200 pt-6 dark:border-gray-700">
-                <h3 className="text-foreground text-sm font-medium">In the meantime, explore:</h3>
-                <div className="mt-4 grid grid-cols-2 gap-4">
+                <h3 className="text-foreground mb-4 text-sm font-medium">立即探索：</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <Link
+                    href="/members"
+                    className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                  >
+                    <span className="text-2xl">👥</span>
+                    <span className="text-foreground mt-2 text-sm font-medium">会员风采</span>
+                  </Link>
+                  <Link
+                    href="/rankings"
+                    className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                  >
+                    <span className="text-2xl">🏆</span>
+                    <span className="text-foreground mt-2 text-sm font-medium">积分排名</span>
+                  </Link>
+                  <Link
+                    href="/reservations"
+                    className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
+                  >
+                    <span className="text-2xl">📅</span>
+                    <span className="text-foreground mt-2 text-sm font-medium">活动预约</span>
+                  </Link>
                   <Link
                     href="/pricing"
                     className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
                   >
-                    <svg
-                      className="text-primary-600 dark:text-primary-400 h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="text-foreground mt-2 text-sm font-medium">Pricing</span>
-                  </Link>
-                  <Link
-                    href="/docs"
-                    className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-                  >
-                    <svg
-                      className="text-primary-600 dark:text-primary-400 h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    <span className="text-foreground mt-2 text-sm font-medium">Documentation</span>
-                  </Link>
-                  <Link
-                    href="/blog"
-                    className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-                  >
-                    <svg
-                      className="text-primary-600 dark:text-primary-400 h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
-                      />
-                    </svg>
-                    <span className="text-foreground mt-2 text-sm font-medium">Blog</span>
-                  </Link>
-                  <Link
-                    href="/about"
-                    className="flex flex-col items-center rounded-lg border border-gray-200 p-4 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800"
-                  >
-                    <svg
-                      className="text-primary-600 dark:text-primary-400 h-6 w-6"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                    <span className="text-foreground mt-2 text-sm font-medium">About</span>
+                    <span className="text-2xl">💰</span>
+                    <span className="text-foreground mt-2 text-sm font-medium">会员权益</span>
                   </Link>
                 </div>
               </div>
@@ -203,9 +128,9 @@ export default function SignUp() {
 
         <div className="mt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            Building a product takes time, but we're moving fast.
+            🏸 五道口AI创业羽毛球俱乐部
             <br />
-            Expected launch: Q2 2025
+            Phase 1 MVP - 浏览模式 | Phase 2 - 完整用户系统 (开发中)
           </p>
         </div>
       </div>

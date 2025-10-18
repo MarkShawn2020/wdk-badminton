@@ -1,11 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 27.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="图层_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 986.05 1080" style="enable-background:new 0 0 986.05 1080;" xml:space="preserve">
-<g fill="currentColor">
-	<path d="M281.73,892.18V281.73C281.73,126.13,155.6,0,0,0l0,0v610.44C0,766.04,126.13,892.18,281.73,892.18z"/>
-	<path d="M633.91,1080V469.56c0-155.6-126.13-281.73-281.73-281.73l0,0v610.44C352.14,953.87,478.31,1080,633.91,1080L633.91,1080z"
-		/>
-	<path d="M704.32,91.16L704.32,91.16v563.47l0,0c155.6,0,281.73-126.13,281.73-281.73S859.92,91.16,704.32,91.16z"/>
-</g>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <!-- Simple Badminton Shuttlecock Icon -->
+  <g transform="translate(60, 40)">
+    <!-- Cork (top sphere) -->
+    <circle cx="0" cy="0" r="15" fill="currentColor"/>
+
+    <!-- Feather cone -->
+    <path d="M -10,15 Q -15,35 -12,55 L 0,65 L 12,55 Q 15,35 10,15 Z"
+          fill="currentColor"
+          opacity="0.8"/>
+
+    <!-- Feather lines -->
+    <line x1="-6" y1="15" x2="-8" y2="55" stroke="white" stroke-width="1.5" opacity="0.6"/>
+    <line x1="0" y1="15" x2="0" y2="65" stroke="white" stroke-width="1.5" opacity="0.6"/>
+    <line x1="6" y1="15" x2="8" y2="55" stroke="white" stroke-width="1.5" opacity="0.6"/>
+  </g>
 </svg>
