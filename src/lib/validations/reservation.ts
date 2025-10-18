@@ -33,7 +33,7 @@ export const createReservationSchema = z
     // 要求与备注
     notes: z.string().max(1000, '备注不能超过1000字符').optional().or(z.literal('')),
     skillLevelRequirement: z.enum(['BEGINNER', 'INTERMEDIATE', 'ADVANCED', 'EXPERT']).optional(),
-    isCompetition: z.boolean().default(false),
+    isCompetition: z.boolean().optional(),
   })
   .refine(
     (data) => {

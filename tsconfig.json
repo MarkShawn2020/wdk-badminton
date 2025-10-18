@@ -50,7 +50,8 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "build/types/**/*.ts",
-    "vitest.config.ts"
+    "vitest.config.ts",
+    "prisma/**/*.ts"
   ],
   "exclude": ["node_modules", "eslint.config.mjs", ".next"]
 }

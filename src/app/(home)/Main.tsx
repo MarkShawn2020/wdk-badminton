@@ -27,12 +27,12 @@ export default function Home({ posts }) {
           <div className="mx-auto max-w-3xl text-center">
             {/* 主标题 */}
             <h1 className="text-foreground mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-              🏸 五道口AI创业羽毛球俱乐部
+              🏸 五道口AI羽毛球俱乐部
             </h1>
 
             {/* 副标题 */}
             <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
-              连接AI创业者，享受羽毛球乐趣。在这里，你能找到志同道合的球友，参加高质量活动，提升技术水平。
+              连接AI从业者，享受羽毛球乐趣。在这里，你能找到志同道合的球友，参加高质量活动，提升技术水平。
             </p>
 
             {/* 核心数据 */}
@@ -93,7 +93,7 @@ export default function Home({ posts }) {
               </div>
               <h3 className="text-foreground mb-3 text-xl font-bold">结识同行</h3>
               <p className="text-muted-foreground leading-relaxed">
-                与来自智谱AI、商汤科技、月之暗面、百川智能等公司的AI创业者交流。在球场上建立真实的连接，探讨技术与创业话题。
+                与来自智谱AI、商汤科技、红杉资本、清华AIR等机构的AI从业者交流。工程师、产品经理、投资人、创始人齐聚球场，在运动中建立真实连接。
               </p>
             </div>
 

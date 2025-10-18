@@ -3,7 +3,7 @@
  */
 
 import { prisma } from './prisma'
-import type { Member, Prisma } from '@prisma/client'
+import type { Member, Prisma, TransactionType } from '@prisma/client'
 
 /**
  * 获取所有活跃会员
@@ -145,7 +145,7 @@ export async function addPoints(
   memberId: string,
   points: number,
   reason: string,
-  transactionType: Prisma.TransactionType,
+  transactionType: TransactionType,
   options?: {
     matchId?: string
     adminId?: string

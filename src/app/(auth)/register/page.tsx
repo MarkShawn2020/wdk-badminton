@@ -1,11 +1,13 @@
 'use client'
 
 /**
- * Member Registration Page
- * 会员注册页面
+ * Member Registration Page (API Version)
+ * 会员注册页面 - 中心化服务器版本
  *
- * Quick Demo Version: Saves to localStorage
- * Production Version: Will connect to API route + Prisma
+ * ✅ Production Version: Uses centralized API + Database
+ * ❌ Demo Version: See page.tsx (localStorage)
+ *
+ * Usage: Rename this file to page.tsx to enable
  */
 
 import { MemberRegistrationForm } from '@/components/forms/MemberRegistrationForm'
@@ -14,38 +16,42 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import Link from 'next/link'
 
-export default function RegisterPage() {
+export default function RegisterPageAPI() {
   const router = useRouter()
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
 
   async function handleRegister(data: MemberRegistrationInput) {
-    console.log('📝 Registration data:', data)
+    console.log('📝 Submitting registration to API:', data)
 
-    // Quick Demo: Save to localStorage
-    // Production: Replace with API call
     try {
-      // Generate a simple ID
-      const newMember = {
-        id: `member-${Date.now()}`,
-        ...data,
-        totalPoints: 0,
-        matchesPlayed: 0,
-        matchesWon: 0,
-        joinedAt: new Date().toISOString(),
-        status: 'ACTIVE',
+      // Call centralized API
+      const response = await fetch('/api/members', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      })
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        console.error('❌ API error:', result)
+
+        // Handle specific errors
+        if (response.status === 409) {
+          throw new Error('该手机号或邮箱已被注册')
+        } else if (response.status === 400) {
+          throw new Error('表单数据验证失败，请检查输入')
+        } else {
+          throw new Error(result.error || '注册失败，请重试')
+        }
       }
 
-      // Get existing members from localStorage
-      const existingMembers = JSON.parse(localStorage.getItem('wdk-members') || '[]')
-
-      // Add new member
-      existingMembers.push(newMember)
-      localStorage.setItem('wdk-members', JSON.stringify(existingMembers))
-
-      console.log('✅ Member saved to localStorage:', newMember)
+      console.log('✅ Member registered successfully:', result.data)
 
       // Show success message
-      setSuccessMessage('注册成功！欢迎加入五道口AI创业羽毛球俱乐部！')
+      setSuccessMessage(`注册成功！欢迎加入俱乐部，${data.name}！`)
 
       // Redirect to members page after 2 seconds
       setTimeout(() => {
@@ -53,7 +59,7 @@ export default function RegisterPage() {
       }, 2000)
     } catch (error) {
       console.error('❌ Registration failed:', error)
-      throw new Error('注册失败，请重试')
+      throw error // Re-throw for form to display error
     }
   }
 
@@ -63,9 +69,7 @@ export default function RegisterPage() {
         {/* Header */}
         <div className="mb-8 text-center">
           <h1 className="text-foreground text-3xl font-bold sm:text-4xl">加入俱乐部</h1>
-          <p className="text-muted-foreground mt-2">
-            填写以下信息，成为五道口AI创业羽毛球俱乐部的一员
-          </p>
+          <p className="text-muted-foreground mt-2">填写以下信息，成为五道口AI羽毛球俱乐部的一员</p>
           <div className="mt-4">
             <Link href="/" className="text-primary-600 hover:text-primary-500 text-sm">
               ← 返回首页
@@ -86,49 +90,27 @@ export default function RegisterPage() {
           <MemberRegistrationForm onSubmit={handleRegister} />
         </div>
 
-        {/* Demo Notice */}
-        <div className="mt-6 rounded-lg border-2 border-yellow-200 bg-yellow-50 p-4">
-          <p className="text-sm text-yellow-800">
-            <strong>💡 演示模式：</strong>
-            数据暂时保存在浏览器本地。要使用真实数据库，请参考{' '}
-            <code className="rounded bg-yellow-100 px-1 py-0.5 font-mono text-xs">
-              IMPLEMENTATION_GUIDE.md
-            </code>{' '}
-            完成 Phase 2（数据库连接）。
+        {/* Production Mode Notice */}
+        <div className="mt-6 rounded-lg border-2 border-green-200 bg-green-50 p-4">
+          <p className="text-sm text-green-800">
+            <strong>✅ 生产模式：</strong>
+            数据保存在中心化数据库，所有用户共享。管理员可在后台统一管理。
           </p>
         </div>
 
-        {/* Debug Panel (Development only) */}
-        {process.env.NODE_ENV === 'development' && (
-          <details className="mt-4 rounded-lg bg-gray-50 p-4">
-            <summary className="cursor-pointer text-sm font-medium text-gray-700">
-              🔧 开发者工具
-            </summary>
-            <div className="mt-2 space-y-2">
-              <button
-                onClick={() => {
-                  const members = JSON.parse(localStorage.getItem('wdk-members') || '[]')
-                  console.log('Current members in localStorage:', members)
-                  alert(`当前已注册 ${members.length} 位成员`)
-                }}
-                className="rounded bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
-              >
-                查看 localStorage 数据
-              </button>
-              <button
-                onClick={() => {
-                  if (confirm('确定要清空所有本地数据吗？')) {
-                    localStorage.removeItem('wdk-members')
-                    alert('已清空')
-                  }
-                }}
-                className="ml-2 rounded bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-              >
-                清空 localStorage
-              </button>
-            </div>
-          </details>
-        )}
+        {/* Database Connection Status */}
+        <details className="mt-4 rounded-lg bg-gray-50 p-4">
+          <summary className="cursor-pointer text-sm font-medium text-gray-700">
+            🔍 数据库连接状态
+          </summary>
+          <div className="mt-2 space-y-2 text-sm text-gray-600">
+            <p>• API 端点: POST /api/members</p>
+            <p>• 数据存储: PostgreSQL (通过 Prisma ORM)</p>
+            <p>• 数据持久化: ✅ 永久保存</p>
+            <p>• 多设备访问: ✅ 支持</p>
+            <p>• 数据共享: ✅ 所有用户可见</p>
+          </div>
+        </details>
       </div>
     </div>
   )

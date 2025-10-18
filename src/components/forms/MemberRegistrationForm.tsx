@@ -143,52 +143,40 @@ export function MemberRegistrationForm({ onSubmit, defaultValues }: MemberRegist
         </div>
       </div>
 
-      {/* AI创业信息 */}
+      {/* 职业信息 */}
       <div className="space-y-4">
-        <h3 className="text-lg font-semibold">AI创业信息</h3>
+        <h3 className="text-lg font-semibold">职业信息</h3>
+        <p className="text-muted-foreground text-sm">
+          帮助我们了解你的背景，方便组织更合适的活动和配对球友
+        </p>
 
         <div>
           <label htmlFor="companyName" className="mb-1 block text-sm font-medium">
-            公司名称
+            公司/组织
           </label>
           <input
             {...register('companyName')}
             type="text"
             id="companyName"
             className="w-full rounded-md border px-3 py-2"
-            placeholder="智谱AI"
+            placeholder="智谱AI / 红杉资本 / 清华大学"
           />
           {errors.companyName && (
             <p className="mt-1 text-sm text-red-600">{errors.companyName.message}</p>
           )}
-        </div>
-
-        <div>
-          <label htmlFor="companyNameEn" className="mb-1 block text-sm font-medium">
-            公司英文名
-          </label>
-          <input
-            {...register('companyNameEn')}
-            type="text"
-            id="companyNameEn"
-            className="w-full rounded-md border px-3 py-2"
-            placeholder="Zhipu AI"
-          />
-          {errors.companyNameEn && (
-            <p className="mt-1 text-sm text-red-600">{errors.companyNameEn.message}</p>
-          )}
+          <p className="mt-1 text-xs text-gray-500">公司、投资机构、高校或研究机构</p>
         </div>
 
         <div>
           <label htmlFor="jobTitle" className="mb-1 block text-sm font-medium">
-            职位
+            职位/角色
           </label>
           <input
             {...register('jobTitle')}
             type="text"
             id="jobTitle"
             className="w-full rounded-md border px-3 py-2"
-            placeholder="算法工程师"
+            placeholder="算法工程师 / 产品经理 / 投资经理 / 创始人"
           />
           {errors.jobTitle && (
             <p className="mt-1 text-sm text-red-600">{errors.jobTitle.message}</p>
@@ -197,39 +185,17 @@ export function MemberRegistrationForm({ onSubmit, defaultValues }: MemberRegist
 
         <div>
           <label htmlFor="aiSector" className="mb-1 block text-sm font-medium">
-            AI领域
+            AI相关领域 (可选)
           </label>
           <input
             {...register('aiSector')}
             type="text"
             id="aiSector"
             className="w-full rounded-md border px-3 py-2"
-            placeholder="大语言模型 / 计算机视觉 / NLP"
+            placeholder="大模型 / CV / NLP / 机器人 / AI应用"
           />
           {errors.aiSector && (
             <p className="mt-1 text-sm text-red-600">{errors.aiSector.message}</p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="companyStage" className="mb-1 block text-sm font-medium">
-            公司阶段
-          </label>
-          <select
-            {...register('companyStage')}
-            id="companyStage"
-            className="w-full rounded-md border px-3 py-2"
-          >
-            <option value="">请选择</option>
-            <option value="SEED">种子轮</option>
-            <option value="SERIES_A">A轮</option>
-            <option value="SERIES_B">B轮</option>
-            <option value="SERIES_C">C轮及以后</option>
-            <option value="GROWTH">成长期</option>
-            <option value="MATURE">成熟期</option>
-          </select>
-          {errors.companyStage && (
-            <p className="mt-1 text-sm text-red-600">{errors.companyStage.message}</p>
           )}
         </div>
       </div>
