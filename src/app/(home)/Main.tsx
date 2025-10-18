@@ -1,360 +1,519 @@
 import Link from '@/components/Link'
-import siteMetadata from '@/data/siteMetadata'
-import { PricingPreview } from '@/components/pricing/PricingPreview'
-import { SitelinkNav } from '@/components/seo/SitelinkNav'
+import { sampleMembers, getRankings } from '@/data/sample-members'
+import { sampleReservations, getUpcomingReservations } from '@/data/sample-reservations'
 
 export default function Home({ posts }) {
+  // 获取前5名会员用于展示
+  const featuredMembers = sampleMembers.slice(0, 6)
+
+  // 获取排名前5
+  const rankings = getRankings(sampleMembers).slice(0, 5)
+
+  // 获取即将到来的3个活动
+  const upcomingActivities = getUpcomingReservations(sampleReservations).slice(0, 3)
+
+  // 统计数据
+  const stats = {
+    totalMembers: sampleMembers.length,
+    monthlyActivities: 50,
+    aiCompanies: 30,
+  }
+
   return (
     <>
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-20 sm:pb-28">
+      {/* Hero Section - 英雄区 */}
+      <section className="from-primary-50 dark:from-primary-950 dark:to-background relative overflow-hidden bg-gradient-to-b to-white pt-20 pb-16 sm:pt-24 sm:pb-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            {/* Tagline - Brand positioning */}
-            <p className="text-primary-600 mb-6 text-sm font-semibold tracking-wide uppercase sm:text-base">
-              Make AI Videos Shareable
-            </p>
-            {/* Main H1 - Functional & SEO optimized, split into 2 lines for better readability */}
-            <h1 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              <span className="block">Transform AI Videos</span>
-              <span className="text-primary-600 mt-2 block">Into Professional Content</span>
+          <div className="mx-auto max-w-3xl text-center">
+            {/* 主标题 */}
+            <h1 className="text-foreground mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+              🏸 五道口AI创业羽毛球俱乐部
             </h1>
 
-            {/* Core features - Bullet points for better visual hierarchy */}
-            <ul className="text-muted-foreground mx-auto mt-8 max-w-lg space-y-3 text-left text-base sm:text-lg">
-              <li className="flex items-start gap-3">
-                <span className="text-primary-600 mt-1 flex-shrink-0 text-xl">✓</span>
-                <span>
-                  <strong className="text-foreground">Remove watermarks automatically</strong> from
-                  AI-generated videos
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary-600 mt-1 flex-shrink-0 text-xl">✓</span>
-                <span>
-                  <strong className="text-foreground">Upscale to HD 1080p 60fps</strong> — perfect
-                  for social media
-                </span>
-              </li>
-              <li className="flex items-start gap-3">
-                <span className="text-primary-600 mt-1 flex-shrink-0 text-xl">✓</span>
-                <span>
-                  <strong className="text-foreground">Generate platform-ready captions</strong> for
-                  Instagram, TikTok & YouTube
-                </span>
-              </li>
-            </ul>
-
-            {/* Platform support */}
-            <p className="text-muted-foreground mt-6 text-sm sm:text-base">
-              Supports <strong className="text-foreground">Sora 2</strong> •{' '}
-              <strong className="text-foreground">Veo</strong> •{' '}
-              <strong className="text-foreground">Kling</strong> •{' '}
-              <strong className="text-foreground">JiMeng</strong>
+            {/* 副标题 */}
+            <p className="text-muted-foreground mx-auto mb-8 max-w-2xl text-lg sm:text-xl">
+              连接AI创业者，享受羽毛球乐趣。在这里，你能找到志同道合的球友，参加高质量活动，提升技术水平。
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-x-6">
+
+            {/* 核心数据 */}
+            <div className="mb-10 flex flex-wrap items-center justify-center gap-6 text-sm sm:gap-8 sm:text-base">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">👥</span>
+                <span className="text-foreground font-semibold">{stats.totalMembers}+</span>
+                <span className="text-muted-foreground">活跃会员</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🏟️</span>
+                <span className="text-foreground font-semibold">{stats.monthlyActivities}+</span>
+                <span className="text-muted-foreground">每月活动</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🤖</span>
+                <span className="text-foreground font-semibold">{stats.aiCompanies}+</span>
+                <span className="text-muted-foreground">AI公司</span>
+              </div>
+            </div>
+
+            {/* CTA 按钮 */}
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
               <Link
-                href="/transformer"
-                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 w-full rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
+                href="/reservations"
+                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 w-full rounded-lg px-8 py-3.5 text-base font-semibold text-white shadow-lg transition-all hover:shadow-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
               >
-                Get Started
+                查看活动
               </Link>
               <Link
-                href="#features"
-                className="text-foreground w-full text-center text-base leading-7 font-semibold sm:w-auto"
+                href="/members"
+                className="border-primary-600 text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-950 w-full rounded-lg border-2 px-8 py-3.5 text-center text-base font-semibold transition-all sm:w-auto"
               >
-                Learn more <span aria-hidden="true">→</span>
+                浏览会员
               </Link>
             </div>
-
-            {/* Trust signal */}
-            <div className="text-muted-foreground mt-8 flex items-center justify-center gap-2 text-sm sm:text-base">
-              <span className="text-xl">⭐</span>
-              <span>
-                Trusted by <strong className="text-foreground">1,247</strong> creators worldwide
-              </span>
-            </div>
-          </div>
-
-          {/* How It Works - Visual Process */}
-          <div className="mt-16 sm:mt-24">
-            <div className="mx-auto max-w-5xl">
-              <div className="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-y-12">
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-6">
-                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
-                      <span className="text-2xl font-bold text-white sm:text-3xl">1</span>
-                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
-                    </div>
-                    <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
-                  </div>
-                  <div>
-                    <p className="text-foreground text-base font-semibold sm:text-lg">
-                      Upload Video
-                    </p>
-                    <p className="text-muted-foreground mt-2 text-sm">
-                      Drag and drop your AI video
-                    </p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-6">
-                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
-                      <span className="text-2xl font-bold text-white sm:text-3xl">2</span>
-                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
-                    </div>
-                    <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
-                  </div>
-                  <div>
-                    <p className="text-foreground text-base font-semibold sm:text-lg">
-                      Select Features
-                    </p>
-                    <p className="text-muted-foreground mt-2 text-sm">Choose enhancements</p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-6">
-                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
-                      <span className="text-2xl font-bold text-white sm:text-3xl">3</span>
-                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
-                    </div>
-                    <div className="bg-primary-600/20 absolute top-1/2 left-[calc(50%+2.5rem)] hidden h-0.5 w-[calc(100%+4rem)] -translate-y-1/2 lg:block"></div>
-                  </div>
-                  <div>
-                    <p className="text-foreground text-base font-semibold sm:text-lg">We Process</p>
-                    <p className="text-muted-foreground mt-2 text-sm">AI works in 2-5 minutes</p>
-                  </div>
-                </div>
-                <div className="flex flex-col items-center text-center">
-                  <div className="relative mb-6">
-                    <div className="bg-primary-600 relative z-10 flex h-16 w-16 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20 sm:h-20 sm:w-20">
-                      <span className="text-2xl font-bold text-white sm:text-3xl">4</span>
-                      <div className="bg-primary-600/20 absolute inset-0 rounded-full blur-lg"></div>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-foreground text-base font-semibold sm:text-lg">Download</p>
-                    <p className="text-muted-foreground mt-2 text-sm">Get enhanced video</p>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-24 sm:py-32">
+      {/* Why Join Us - 为什么加入我们 */}
+      <section className="dark:bg-background bg-white py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl lg:text-center" style={{ width: '100%' }}>
-            <h2
-              className="text-primary-600 text-base leading-7 font-semibold"
-              style={{ width: '100%', display: 'block' }}
-            >
-              Everything You Need
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <h2 className="text-primary-600 mb-4 text-base font-semibold tracking-wide uppercase sm:text-lg">
+              为什么加入我们
             </h2>
-            <h2
-              className="text-foreground mt-2 text-3xl font-bold tracking-tight sm:text-4xl"
-              style={{ width: '100%', display: 'block' }}
-            >
-              AI Video Enhancement Tools for Sora 2, Veo & Kling
-            </h2>
-            <p className="text-muted-foreground mt-6 text-lg leading-8">
-              Complete publishing workflow for AI-generated videos. From processing to posting—get
-              your video and captions ready in minutes, not hours.
+            <p className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
+              不仅仅是打球，更是连接与成长
             </p>
           </div>
-          <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-            <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 md:grid-cols-2 lg:max-w-none lg:grid-cols-3">
-              <div className="flex flex-col">
-                <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
-                  <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">🎬</span>
-                  </div>
-                  Watermark Removal
-                </dt>
-                <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
-                  <p className="flex-auto">
-                    Automatically detect and remove watermarks from Sora, Veo, Kling, JiMeng, and
-                    other AI platforms. Get clean, professional videos.
-                  </p>
-                </dd>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 lg:gap-12">
+            {/* 结识同行 */}
+            <div className="text-center">
+              <div className="bg-primary-100 dark:bg-primary-900 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+                <span className="text-4xl">🤝</span>
               </div>
-              <div className="flex flex-col">
-                <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
-                  <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">✨</span>
-                  </div>
-                  Quality Enhancement
-                </dt>
-                <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
-                  <p className="flex-auto">
-                    Upscale to HD 1080p 60fps, reduce noise, fix artifacts, and enhance colors.
-                    AI-powered processing optimized for social media platforms.
-                  </p>
-                </dd>
+              <h3 className="text-foreground mb-3 text-xl font-bold">结识同行</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                与来自智谱AI、商汤科技、月之暗面、百川智能等公司的AI创业者交流。在球场上建立真实的连接，探讨技术与创业话题。
+              </p>
+            </div>
+
+            {/* 健康运动 */}
+            <div className="text-center">
+              <div className="bg-primary-100 dark:bg-primary-900 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+                <span className="text-4xl">💪</span>
               </div>
-              <div className="flex flex-col">
-                <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
-                  <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">📝</span>
-                  </div>
-                  AI Caption Generation
-                </dt>
-                <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
-                  <p className="flex-auto">
-                    Get platform-optimized captions instantly. Instagram, TikTok, YouTube,
-                    LinkedIn—each with perfect tone, hashtags, and CTAs. Ready to copy and post.
-                  </p>
-                </dd>
+              <h3 className="text-foreground mb-3 text-xl font-bold">健康运动</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                工作之余放松身心，保持健康体魄。每周多场活动，随时约球。在五道口附近的优质场馆，方便快捷。
+              </p>
+            </div>
+
+            {/* 竞技成长 */}
+            <div className="text-center">
+              <div className="bg-primary-100 dark:bg-primary-900 mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full">
+                <span className="text-4xl">🏆</span>
               </div>
-              <div className="flex flex-col">
-                <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
-                  <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">🎨</span>
-                  </div>
-                  Custom Branding
-                </dt>
-                <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
-                  <p className="flex-auto">
-                    Add your own logo or watermark. Full control over position, size, and opacity.
-                    Save templates for reuse.
-                  </p>
-                </dd>
-              </div>
-              <div className="flex flex-col">
-                <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
-                  <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">⚡</span>
-                  </div>
-                  Fast Processing
-                </dt>
-                <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
-                  <p className="flex-auto">
-                    Cloud-based processing with real-time status updates. Most videos done in under
-                    5 minutes. No software to install.
-                  </p>
-                </dd>
-              </div>
-              <div className="flex flex-col">
-                <dt className="text-foreground flex items-center gap-x-3 text-base leading-7 font-semibold">
-                  <div className="bg-primary-600 flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-xl text-white">💳</span>
-                  </div>
-                  Pay As You Go
-                </dt>
-                <dd className="text-muted-foreground mt-4 flex flex-auto flex-col text-base leading-7">
-                  <p className="flex-auto">
-                    No subscriptions required. Buy credits when you need them. Free tier available
-                    to try. Only pay for what you process.
-                  </p>
-                </dd>
-              </div>
-            </dl>
+              <h3 className="text-foreground mb-3 text-xl font-bold">竞技成长</h3>
+              <p className="text-muted-foreground leading-relaxed">
+                参与友谊赛，提升技术水平。积分排名系统激励进步，从初学者到高手，总有适合你的对手和伙伴。
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Preview Section */}
-      <PricingPreview />
-
-      {/* Social Proof Section */}
-      <section className="bg-secondary py-24 sm:py-32">
+      {/* Featured Members - 会员展示 */}
+      <section className="bg-secondary dark:bg-background py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-xl text-center" style={{ minWidth: '100%', width: '100%' }}>
-            <h2
-              className="text-primary-600 text-base leading-7 font-semibold tracking-tight sm:text-lg sm:leading-8"
-              style={{ width: '100%', display: 'block' }}
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <h2 className="text-primary-600 mb-2 text-base font-semibold tracking-wide uppercase">
+                会员风采
+              </h2>
+              <p className="text-foreground text-3xl font-bold">认识我们的球友</p>
+            </div>
+            <Link
+              href="/members"
+              className="text-primary-600 hover:text-primary-500 hidden text-base font-semibold sm:block"
             >
-              Trusted by AI creators
-            </h2>
-            <p
-              className="text-foreground mt-2 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl"
-              style={{ width: '100%', display: 'block' }}
-            >
-              Join thousands enhancing their AI videos
-            </p>
+              查看全部 →
+            </Link>
           </div>
-          <div className="mx-auto mt-12 grid max-w-2xl grid-cols-1 gap-6 sm:mt-16 sm:gap-8 md:grid-cols-2 xl:mx-0 xl:max-w-none xl:grid-cols-3">
-            <div className="bg-card flex flex-col rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-x-3 sm:gap-x-4">
-                <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
-                  JD
-                </div>
-                <div className="min-w-0">
-                  <div className="text-foreground text-sm font-semibold sm:text-base">John Doe</div>
-                  <div className="text-muted-foreground text-xs sm:text-sm">AI Content Creator</div>
-                </div>
-              </div>
-              <p className="text-muted-foreground mt-4 text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7">
-                "ReelVan saved me hours of manual editing. The watermark removal is flawless and the
-                quality enhancement made my Sora videos look incredible. Highly recommend!"
-              </p>
-            </div>
-            <div className="bg-card flex flex-col rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-x-3 sm:gap-x-4">
-                <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
-                  SM
-                </div>
-                <div className="min-w-0">
-                  <div className="text-foreground text-sm font-semibold sm:text-base">
-                    Sarah Miller
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredMembers.map((member) => {
+              const skillLevelMap = {
+                beginner: { label: '初学', color: 'bg-gray-500' },
+                intermediate: { label: '进阶', color: 'bg-blue-500' },
+                advanced: { label: '高级', color: 'bg-purple-500' },
+                expert: { label: '专家', color: 'bg-orange-500' },
+              }
+              const skill = skillLevelMap[member.skillLevel]
+
+              return (
+                <div
+                  key={member.id}
+                  className="bg-card flex flex-col rounded-xl p-6 transition-all hover:shadow-lg"
+                >
+                  <div className="mb-4 flex items-start gap-4">
+                    {/* 头像占位 */}
+                    <div className="bg-primary-600 flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-full text-2xl font-bold text-white">
+                      {member.name[0]}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-foreground mb-1 text-lg font-bold">
+                        {member.name}
+                        {member.nameEn && (
+                          <span className="text-muted-foreground ml-2 text-sm font-normal">
+                            {member.nameEn}
+                          </span>
+                        )}
+                      </h3>
+                      {member.companyName && (
+                        <p className="text-muted-foreground text-sm">
+                          {member.companyName} · {member.jobTitle}
+                        </p>
+                      )}
+                      {member.aiSector && (
+                        <p className="text-muted-foreground mt-1 text-xs">{member.aiSector}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="text-muted-foreground text-xs sm:text-sm">
-                    Marketing Professional
+
+                  <div className="mb-3 flex items-center gap-2">
+                    <span
+                      className={`${skill.color} rounded-full px-3 py-1 text-xs font-semibold text-white`}
+                    >
+                      {skill.label}
+                    </span>
+                  </div>
+
+                  {member.bio && (
+                    <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">{member.bio}</p>
+                  )}
+
+                  <div className="mt-auto flex gap-6 border-t pt-4 text-sm">
+                    <div>
+                      <span className="text-foreground font-semibold">{member.totalPoints}</span>
+                      <span className="text-muted-foreground ml-1">积分</span>
+                    </div>
+                    <div>
+                      <span className="text-foreground font-semibold">{member.matchesPlayed}</span>
+                      <span className="text-muted-foreground ml-1">场次</span>
+                    </div>
+                    {member.matchesPlayed > 0 && (
+                      <div>
+                        <span className="text-foreground font-semibold">
+                          {Math.round((member.matchesWon / member.matchesPlayed) * 100)}%
+                        </span>
+                        <span className="text-muted-foreground ml-1">胜率</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </div>
-              <p className="text-muted-foreground mt-4 text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7">
-                "The aspect ratio converter is a game-changer. I can now repurpose AI videos for all
-                our social channels in minutes. The pricing is fair and transparent."
-              </p>
-            </div>
-            <div className="bg-card flex flex-col rounded-2xl p-6 sm:p-8">
-              <div className="flex items-center gap-x-3 sm:gap-x-4">
-                <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white sm:h-12 sm:w-12 sm:text-base">
-                  MK
-                </div>
-                <div className="min-w-0">
-                  <div className="text-foreground text-sm font-semibold sm:text-base">Mike Kim</div>
-                  <div className="text-muted-foreground text-xs sm:text-sm">Video Producer</div>
-                </div>
-              </div>
-              <p className="text-muted-foreground mt-4 text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7">
-                "Finally, a tool built specifically for AI videos! The quality is top-notch and
-                processing is lightning fast. This is exactly what I needed for my workflow."
-              </p>
-            </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/members"
+              className="text-primary-600 hover:text-primary-500 text-base font-semibold"
+            >
+              查看全部会员 →
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Sitelink Navigation - Helps Google identify important pages */}
-      <SitelinkNav />
+      {/* Upcoming Activities - 即将到来的活动 */}
+      <section className="dark:bg-background bg-white py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <h2 className="text-primary-600 mb-2 text-base font-semibold tracking-wide uppercase">
+                近期活动
+              </h2>
+              <p className="text-foreground text-3xl font-bold">即将开始的羽毛球局</p>
+            </div>
+            <Link
+              href="/reservations"
+              className="text-primary-600 hover:text-primary-500 hidden text-base font-semibold sm:block"
+            >
+              查看全部 →
+            </Link>
+          </div>
 
-      {/* CTA Section */}
-      <section className="py-24 sm:py-32">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {upcomingActivities.map((activity) => {
+              const statusMap = {
+                open: { label: '可报名', color: 'bg-green-500' },
+                full: { label: '已满', color: 'bg-red-500' },
+                confirmed: { label: '已确认', color: 'bg-blue-500' },
+              }
+              const status = statusMap[activity.status] || statusMap.open
+
+              return (
+                <div
+                  key={activity.id}
+                  className="bg-card flex flex-col rounded-xl p-6 transition-all hover:shadow-lg"
+                >
+                  <div className="mb-4 flex items-start justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-foreground mb-2 text-lg font-bold">
+                        {activity.venueName}
+                      </h3>
+                      <p className="text-muted-foreground text-sm">{activity.venueAddress}</p>
+                    </div>
+                    <span
+                      className={`${status.color} ml-2 flex-shrink-0 rounded-full px-3 py-1 text-xs font-semibold text-white`}
+                    >
+                      {status.label}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">日期</span>
+                      <span className="text-foreground font-medium">{activity.date}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">时间</span>
+                      <span className="text-foreground font-medium">
+                        {activity.startTime} - {activity.endTime}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">组织者</span>
+                      <span className="text-foreground font-medium">{activity.organizerName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">人数</span>
+                      <span className="text-foreground font-medium">
+                        {activity.currentParticipants}/{activity.maxParticipants}
+                      </span>
+                    </div>
+                    {activity.costPerPerson && (
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">费用</span>
+                        <span className="text-foreground font-medium">
+                          ¥{activity.costPerPerson}/人
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mt-6">
+                    <Link
+                      href={`/reservations/${activity.id}`}
+                      className="bg-primary-600 hover:bg-primary-500 block w-full rounded-lg px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors"
+                    >
+                      {activity.status === 'open' ? '查看详情 & 报名' : '查看详情'}
+                    </Link>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/reservations"
+              className="text-primary-600 hover:text-primary-500 text-base font-semibold"
+            >
+              查看全部活动 →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Ranking Preview - 排名预览 */}
+      <section className="bg-secondary dark:bg-background py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <h2 className="text-primary-600 mb-2 text-base font-semibold tracking-wide uppercase">
+                积分排名
+              </h2>
+              <p className="text-foreground text-3xl font-bold">2025赛季排行榜</p>
+            </div>
+            <Link
+              href="/rankings"
+              className="text-primary-600 hover:text-primary-500 hidden text-base font-semibold sm:block"
+            >
+              查看完整榜单 →
+            </Link>
+          </div>
+
+          <div className="bg-card overflow-hidden rounded-xl shadow-lg">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">排名</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">会员</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold">公司</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">积分</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold">胜率</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y">
+                  {rankings.map((ranking) => (
+                    <tr key={ranking.id} className="hover:bg-muted/50 transition-colors">
+                      <td className="px-6 py-4">
+                        {ranking.rank <= 3 ? (
+                          <span className="text-2xl">
+                            {ranking.rank === 1 && '🥇'}
+                            {ranking.rank === 2 && '🥈'}
+                            {ranking.rank === 3 && '🥉'}
+                          </span>
+                        ) : (
+                          <span className="text-foreground font-semibold">{ranking.rank}</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary-600 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white">
+                            {ranking.name[0]}
+                          </div>
+                          <span className="text-foreground font-medium">{ranking.name}</span>
+                        </div>
+                      </td>
+                      <td className="text-muted-foreground px-6 py-4 text-sm">
+                        {ranking.companyName}
+                      </td>
+                      <td className="text-primary-600 px-6 py-4 text-right text-lg font-bold">
+                        {ranking.totalPoints}
+                      </td>
+                      <td className="text-foreground px-6 py-4 text-right font-medium">
+                        {ranking.winRate}%
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center sm:hidden">
+            <Link
+              href="/rankings"
+              className="text-primary-600 hover:text-primary-500 text-base font-semibold"
+            >
+              查看完整排行榜 →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - 如何参与 */}
+      <section className="dark:bg-background bg-white py-16 sm:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <h2 className="text-primary-600 mb-4 text-base font-semibold tracking-wide uppercase">
+              如何参与
+            </h2>
+            <p className="text-foreground text-3xl font-bold">四步开始你的羽毛球之旅</p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                step: 1,
+                title: '注册账号',
+                description: '使用微信或手机号快速注册',
+                icon: '📱',
+              },
+              {
+                step: 2,
+                title: '完善资料',
+                description: '填写公司、技能等级等信息',
+                icon: '✏️',
+              },
+              {
+                step: 3,
+                title: '浏览活动',
+                description: '查看即将到来的羽毛球局',
+                icon: '🔍',
+              },
+              {
+                step: 4,
+                title: '报名参加',
+                description: '一键报名，准时到场开打',
+                icon: '✅',
+              },
+            ].map((item) => (
+              <div key={item.step} className="text-center">
+                <div className="relative mb-6 inline-block">
+                  <div className="bg-primary-600 relative z-10 flex h-20 w-20 items-center justify-center rounded-full shadow-xl ring-4 ring-white/20">
+                    <span className="text-3xl font-bold text-white">{item.step}</span>
+                  </div>
+                </div>
+                <div className="mb-4 text-4xl">{item.icon}</div>
+                <h3 className="text-foreground mb-2 text-lg font-bold">{item.title}</h3>
+                <p className="text-muted-foreground text-sm">{item.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Company Wall - AI公司墙 */}
+      <section className="bg-secondary dark:bg-background py-16">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <h2 className="text-primary-600 mb-2 text-base font-semibold tracking-wide uppercase">
+              来自这些优秀公司
+            </h2>
+            <p className="text-foreground text-3xl font-bold">会员公司一览</p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-8 text-center">
+            {[
+              '智谱AI',
+              '商汤科技',
+              '月之暗面',
+              '百川智能',
+              '零一万物',
+              '面壁智能',
+              'Minimax',
+              '昆仑万维',
+              '深度求索',
+              'Stepfun',
+              '星尘智能',
+              'Recurrent AI',
+            ].map((company) => (
+              <div
+                key={company}
+                className="bg-card flex h-20 w-36 items-center justify-center rounded-lg px-4 text-center transition-all hover:shadow-md"
+              >
+                <span className="text-foreground text-sm font-semibold">{company}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA - 最终行动召唤 */}
+      <section className="bg-primary-600 dark:bg-primary-900 py-16 sm:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
-              Ready to transform your AI videos?
-            </h2>
-            <p className="text-muted-foreground mx-auto mt-6 text-lg leading-8">
-              Start with our free tier. No credit card required. Process your first video in under 5
-              minutes.
+            <h2 className="mb-6 text-3xl font-bold text-white sm:text-4xl">准备好开始打球了吗？</h2>
+            <p className="mb-10 text-lg text-white/90">
+              加入五道口AI创业羽毛球俱乐部，结识优秀的AI创业者，享受运动的乐趣。
             </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-x-6">
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
               <Link
                 href="/signup"
-                className="bg-primary-600 hover:bg-primary-500 focus-visible:outline-primary-600 w-full rounded-md px-6 py-3 text-base font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 sm:w-auto"
+                className="hover:bg-primary-700 text-primary-600 w-full rounded-lg bg-white px-8 py-3.5 text-base font-semibold shadow-lg transition-all hover:shadow-xl sm:w-auto"
               >
-                Get started for free
+                立即加入
               </Link>
               <Link
-                href="/pricing"
-                className="text-foreground w-full text-center text-base leading-7 font-semibold sm:w-auto"
+                href="/about"
+                className="w-full rounded-lg border-2 border-white px-8 py-3.5 text-center text-base font-semibold text-white transition-all hover:bg-white/10 sm:w-auto"
               >
-                View pricing <span aria-hidden="true">→</span>
+                了解更多
               </Link>
             </div>
           </div>

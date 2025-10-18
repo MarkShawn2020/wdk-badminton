@@ -1,0 +1,316 @@
+// ============================================================================
+// Prisma Schema - 五道口AI创业羽毛球俱乐部
+// 适配国内部署：标准 PostgreSQL + Prisma ORM
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum SkillLevel {
+  BEGINNER      // 初学
+  INTERMEDIATE  // 进阶
+  ADVANCED      // 高级
+  EXPERT        // 专家
+}
+
+enum MemberStatus {
+  ACTIVE     // 活跃
+  INACTIVE   // 不活跃
+  SUSPENDED  // 暂停
+}
+
+enum PreferredPosition {
+  SINGLES  // 单打
+  DOUBLES  // 双打
+  BOTH     // 都可以
+}
+
+enum CompanyStage {
+  SEED      // 种子轮
+  SERIES_A  // A轮
+  SERIES_B  // B轮
+  SERIES_C  // C轮及以后
+  GROWTH    // 成长期
+  MATURE    // 成熟期
+}
+
+enum TransactionType {
+  MATCH_WIN          // 比赛胜利
+  MATCH_LOSS         // 比赛失败
+  PARTICIPATION      // 参与活动
+  ADMIN_ADJUSTMENT   // 管理员调整
+  SEASON_BONUS       // 赛季奖励
+  PENALTY            // 惩罚
+}
+
+enum ReservationStatus {
+  OPEN       // 开放报名
+  FULL       // 已满
+  CONFIRMED  // 已确认
+  CANCELLED  // 已取消
+  COMPLETED  // 已完成
+}
+
+enum PaymentMethod {
+  WECHAT  // 微信
+  ALIPAY  // 支付宝
+  CASH    // 现金
+  AA      // AA制
+}
+
+enum MatchType {
+  SINGLES        // 单打
+  DOUBLES        // 双打
+  MIXED_DOUBLES  // 混合双打
+}
+
+enum MatchStatus {
+  PENDING    // 待进行
+  ONGOING    // 进行中
+  COMPLETED  // 已完成
+  CANCELLED  // 已取消
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+// 会员表
+model Member {
+  id        String       @id @default(uuid())
+  userId    String?      @unique @map("user_id") // 关联用户账号（微信/手机号）
+
+  // 基本信息
+  name      String       @db.VarChar(100)
+  nameEn    String?      @map("name_en") @db.VarChar(100)
+  avatarUrl String?      @map("avatar_url") @db.Text
+  bio       String?      @db.Text
+  phone     String?      @db.VarChar(20)
+  wechatId  String?      @map("wechat_id") @db.VarChar(50)
+  email     String?      @db.VarChar(255)
+
+  // AI创业信息
+  companyName   String?       @map("company_name") @db.VarChar(200)
+  companyNameEn String?       @map("company_name_en") @db.VarChar(200)
+  jobTitle      String?       @map("job_title") @db.VarChar(100)
+  aiSector      String?       @map("ai_sector") @db.VarChar(100) // CV/NLP/Robotics/etc
+  companyStage  CompanyStage? @map("company_stage")
+
+  // 羽毛球信息
+  skillLevel        SkillLevel         @default(BEGINNER) @map("skill_level")
+  playStyle         String?            @map("play_style") @db.Text
+  preferredPosition PreferredPosition? @map("preferred_position")
+  achievements      String?            @db.Text // JSON 格式的成就记录
+
+  // 状态与统计
+  status        MemberStatus @default(ACTIVE)
+  totalPoints   Int          @default(0) @map("total_points")
+  matchesPlayed Int          @default(0) @map("matches_played")
+  matchesWon    Int          @default(0) @map("matches_won")
+
+  // 时间戳
+  joinedAt     DateTime  @default(now()) @map("joined_at")
+  lastActiveAt DateTime? @default(now()) @map("last_active_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  pointTransactions         PointTransaction[]
+  organizedReservations     Reservation[]             @relation("organizer")
+  reservationParticipations ReservationParticipant[]
+  matchParticipations       MatchParticipant[]
+  adminTransactions         PointTransaction[]        @relation("admin")
+
+  @@index([userId])
+  @@index([status])
+  @@index([skillLevel])
+  @@index([totalPoints(sort: Desc)])
+  @@index([companyName])
+  @@map("members")
+}
+
+// 积分交易记录表
+model PointTransaction {
+  id           String          @id @default(uuid())
+  memberId     String          @map("member_id")
+
+  // 积分变动
+  points       Int // 正数=获得，负数=扣除
+  balanceAfter Int             @map("balance_after")
+
+  // 原因与关联
+  reason           String          @db.VarChar(200)
+  transactionType  TransactionType @map("transaction_type")
+  matchId          String?         @map("match_id")
+  reservationId    String?         @map("reservation_id")
+
+  // 管理员操作
+  adminId   String? @map("admin_id")
+  adminNote String? @map("admin_note") @db.Text
+
+  // 时间戳
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  member Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  admin  Member? @relation("admin", fields: [adminId], references: [id])
+  match  Match?  @relation(fields: [matchId], references: [id])
+
+  @@index([memberId])
+  @@index([createdAt(sort: Desc)])
+  @@index([matchId])
+  @@index([transactionType])
+  @@map("point_transactions")
+}
+
+// 场地预约表
+model Reservation {
+  id             String            @id @default(uuid())
+
+  // 场地信息
+  venueName      String            @map("venue_name") @db.VarChar(200)
+  venueAddress   String?           @map("venue_address") @db.Text
+  venueDistrict  String?           @map("venue_district") @db.VarChar(50)
+  courtNumber    String?           @map("court_number") @db.VarChar(20)
+
+  // 时间安排
+  date          DateTime          @db.Date
+  startTime     String            @map("start_time") @db.VarChar(5) // "19:00"
+  endTime       String            @map("end_time") @db.VarChar(5)   // "21:00"
+  durationHours Decimal           @map("duration_hours") @db.Decimal(3, 1)
+
+  // 组织者
+  organizerId String @map("organizer_id")
+
+  // 参与者限制
+  maxParticipants     Int @default(8) @map("max_participants")
+  currentParticipants Int @default(1) @map("current_participants")
+
+  // 费用
+  totalCost     Decimal?       @map("total_cost") @db.Decimal(10, 2)
+  costPerPerson Decimal?       @map("cost_per_person") @db.Decimal(10, 2)
+  paymentMethod PaymentMethod? @map("payment_method")
+
+  // 状态
+  status ReservationStatus @default(OPEN)
+
+  // 备注
+  notes                  String?      @db.Text
+  skillLevelRequirement  SkillLevel?  @map("skill_level_requirement")
+  isCompetition          Boolean      @default(false) @map("is_competition")
+
+  // 时间戳
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  organizer    Member                   @relation("organizer", fields: [organizerId], references: [id], onDelete: Cascade)
+  participants ReservationParticipant[]
+  matches      Match[]
+
+  @@index([date(sort: Desc)])
+  @@index([organizerId])
+  @@index([status])
+  @@index([date(sort: Desc), status])
+  @@map("reservations")
+}
+
+// 预约参与者表（多对多关系）
+model ReservationParticipant {
+  id            String   @id @default(uuid())
+  reservationId String   @map("reservation_id")
+  memberId      String   @map("member_id")
+
+  // 支付状态
+  paid          Boolean  @default(false)
+  paymentAmount Decimal? @map("payment_amount") @db.Decimal(10, 2)
+
+  // 时间戳
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  // Relations
+  reservation Reservation @relation(fields: [reservationId], references: [id], onDelete: Cascade)
+  member      Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([reservationId, memberId])
+  @@index([reservationId])
+  @@index([memberId])
+  @@map("reservation_participants")
+}
+
+// 比赛记录表（未来功能）
+model Match {
+  id        String      @id @default(uuid())
+
+  // 比赛基本信息
+  matchDate DateTime    @map("match_date") @db.Date
+  matchType MatchType   @map("match_type")
+
+  // 比分
+  teamAScore Int    @map("team_a_score")
+  teamBScore Int    @map("team_b_score")
+  winner     String @db.VarChar(1) // 'A' or 'B'
+
+  // 关联
+  reservationId String? @map("reservation_id")
+
+  // 积分影响
+  pointsAwarded Int? @map("points_awarded")
+
+  // 状态
+  status   MatchStatus @default(COMPLETED)
+  verified Boolean     @default(false) // 是否经过管理员验证
+
+  // 备注
+  notes String? @db.Text
+
+  // 时间戳
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  reservation         Reservation?        @relation(fields: [reservationId], references: [id])
+  participants        MatchParticipant[]
+  pointTransactions   PointTransaction[]
+
+  @@index([matchDate(sort: Desc)])
+  @@index([reservationId])
+  @@index([status])
+  @@map("matches")
+}
+
+// 比赛参与者表
+model MatchParticipant {
+  id           String @id @default(uuid())
+  matchId      String @map("match_id")
+  memberId     String @map("member_id")
+
+  team         String @db.VarChar(1) // 'A' or 'B'
+  pointsEarned Int    @default(0) @map("points_earned")
+
+  // Relations
+  match  Match  @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([matchId, memberId])
+  @@index([matchId])
+  @@index([memberId])
+  @@map("match_participants")
+}
+
+// ============================================================================
+// VIEWS (使用 Prisma 的原生查询或创建单独的 SQL 文件)
+// Prisma 不直接支持 VIEW，需要在迁移中手动创建
+// ============================================================================
+
+// 注意：排名视图将在迁移 SQL 文件中手动创建
+// CREATE VIEW rankings AS ...

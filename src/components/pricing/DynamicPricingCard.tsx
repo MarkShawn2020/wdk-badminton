@@ -13,7 +13,6 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 import type { PricingTier, CreditOption } from '@/data/pricingData'
 import { getDefaultCreditOption } from '@/data/pricingData'
 
@@ -42,16 +41,9 @@ export function DynamicPricingCard({ tier }: DynamicPricingCardProps) {
     }
   }, [interval, tier])
 
-  // Check authentication
+  // Phase 1: No authentication, always set to false
   useEffect(() => {
-    const checkAuth = async () => {
-      const supabase = createClient()
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-      setIsLoggedIn(!!user)
-    }
-    checkAuth()
+    setIsLoggedIn(false)
   }, [])
 
   const handlePurchase = async () => {

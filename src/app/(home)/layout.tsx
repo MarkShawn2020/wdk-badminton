@@ -1,49 +1,17 @@
 import { SearchProvider, SearchConfig } from 'pliny/search'
-import { createServerClient } from '@/lib/supabase/server'
 import Header from '@/components/Header'
 import SectionContainer from '@/components/SectionContainer'
 import Footer from '@/components/Footer'
-import { WorkspaceView } from '@/components/workspace/WorkspaceView'
 import siteMetadata from '@/data/siteMetadata'
 
 /**
- * Home Layout - Smart layout that adapts to authentication state
+ * Home Layout - Phase 1 MVP
  *
- * This is the ONLY place that checks auth for the homepage.
- * Based on auth state, it either:
- * - Shows workspace (logged in) → No Header/Footer, renders WorkspaceView
- * - Shows landing page (anonymous) → Wraps children with Header/Footer
- *
- * Benefits:
- * - Single auth check (no redundancy)
- * - Clean separation of concerns
- * - No layout conflicts
- * - URL stays at "/"
+ * Simple layout with Header + Footer for static landing pages.
+ * Authentication and workspace features will be added in Phase 2.
  */
-export default async function HomeLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  console.log('HomeLayout: ', { user })
-
-  // Authenticated users: Show workspace directly from layout
-  if (user) {
-    // Fetch user credits
-    const { data: userCredit } = await supabase
-      .from('user_credits')
-      .select('balance')
-      .eq('user_id', user.id)
-      .single()
-
-    const credits = userCredit?.balance || 0
-
-    // Render workspace view (bypassing children/page component)
-    return <WorkspaceView credits={credits} userEmail={user.email || ''} />
-  }
-
-  // Anonymous users: Wrap children (landing page) with Header + Footer
+export default function HomeLayout({ children }: { children: React.ReactNode }) {
+  // Phase 1: No authentication, just static pages
   return (
     <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
       <Header />

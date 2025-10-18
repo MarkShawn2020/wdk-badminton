@@ -5,7 +5,6 @@ import Link from './Link'
 import MobileNav from './MobileNav'
 import ThemeSwitch from './ThemeSwitch'
 import SearchButton from './SearchButton'
-import { UserAvatar } from './auth/UserAvatar'
 
 const Header = () => {
   let headerClass = 'w-full bg-background'
@@ -46,7 +45,7 @@ const Header = () => {
           </div>
           <SearchButton />
           <ThemeSwitch />
-          <UserAvatar />
+          {/* Phase 1: No authentication, UserAvatar will be added in Phase 2 */}
           <MobileNav />
         </div>
       </div>
